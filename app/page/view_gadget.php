@@ -25,6 +25,8 @@ $brandName = htmlspecialchars($s->brand_name);
 $description = htmlspecialchars($s->gadget_description);
 $price = htmlspecialchars($s->gadget_price);
 $stock = htmlspecialchars($s->gadget_stock);
+$_SESSION['gadget_photo'] = $s->gadget_photo;
+$gadget_photo = $_SESSION['gadget_photo'];
 
 // ----------------------------------------------------------------------------
 ?>
@@ -34,10 +36,8 @@ $stock = htmlspecialchars($s->gadget_stock);
         <div class="gadgetInfo">
             <span class="close">&times;</span>
 
-            <label for="photo" class="upload" tabindex="0">
-                <?= html_file('photo', 'image/*', 'hidden') ?>
-                <img src="<?= '/images/' . ($s->photo ?? 'defaultImage.jpg') ?>" id="default_pic" alt="Gadget Image">
-            </label>
+            <input type="file" id="gadget_photo" name="gadget_photo" accept="image/*" class="hidden-input" disabled>
+            <img src="../images/<?= $gadget_photo ?>" alt="Gadget Photo">
 
             <label for="gname">Gadget Name:</label>
             <input type="text" name="gname" id="gname" value="<?= $gadgetName ?>" readonly><br>
@@ -48,14 +48,14 @@ $stock = htmlspecialchars($s->gadget_stock);
             <label for="gbrand">Gadget Brand:</label>
             <input type="text" name="gbrand" id="gbrand" value="<?= $brandName ?>" readonly><br>
 
-            <label for="gdescribe">Gadget Description:</label>
-            <textarea name="gdescribe" id="gdescribe" readonly><?= $description ?></textarea><br>
-
             <label for="gprice">Gadget Price:</label>
             <input type="number" name="gprice" id="gprice" value="<?= $price ?>" readonly><br>
 
             <label for="gstock">Gadget Stock:</label>
             <input type="number" name="gstock" id="gstock" value="<?= $stock ?>" readonly><br>
+
+            <label for="gdescribe">Gadget Description:</label>
+            <textarea name="gdescribe" id="gdescribe" readonly><?= $description ?></textarea><br>
 
             <section>
                 <button data-get="update_gadget.php?id=<?= $gadgetid ?>">Edit Now</button>
@@ -64,4 +64,4 @@ $stock = htmlspecialchars($s->gadget_stock);
     </form>
 </div>
 <?php
-include '../page/admin_products.php';?>
+include '../page/admin_products.php'; ?>

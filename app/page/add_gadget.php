@@ -94,7 +94,7 @@ if (is_post()) {
         <div class="gadgetInfo">
             <span class="close">&times;</span>
 
-            <label for="photo" class="upload" tabindex="0">
+            <label for="photo" class="upload_gadget" tabindex="0">
                 <?= html_file('photo', 'image/*', 'hidden') ?>
                 <img src="/images/defaultImage.png">
             </label>

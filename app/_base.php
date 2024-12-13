@@ -130,6 +130,11 @@ function html_search($key, $attr = '') {
     echo "<input type='search' id='$key' name='$key' value='$value' $attr>";
 }
 
+function html_search2($key, $value = '', $attr = '') {
+    $sanitized_value = htmlspecialchars($value, ENT_QUOTES);
+    echo "<input type='search' id='$key' name='$key' value='$sanitized_value' $attr>";
+}
+
 // Generate <input type='radio'> list
 function html_radios($key, $items, $attr = '', $br = false) {
     $value = encode($GLOBALS[$key] ?? '');

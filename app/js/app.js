@@ -18,7 +18,7 @@ $(() => {
     });
 
     // Photo preview
-    $('label.upload input[type=file]').on('change', e => {
+    $('label.upload, label.upload_gadget').find('input[type=file]').on('change', e => {
         const f = e.target.files[0];
         const img = $(e.target).siblings('img')[0];
 

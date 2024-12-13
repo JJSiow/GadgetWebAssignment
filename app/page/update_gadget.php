@@ -27,7 +27,8 @@ if (is_get()) {
     $gdescribe = $s->gadget_description;
     $gprice = $s->gadget_price;
     $gstock = $s->gadget_stock;
-    $_SESSION['photo'] = $s->gadget_photo;
+    $_SESSION['gadget_photo'] = $s->gadget_photo;
+    $gadget_photo = $_SESSION['gadget_photo'];
 }
 
 if (is_post()) {
@@ -38,8 +39,8 @@ if (is_post()) {
     $gdescribe   = req('gdescribe');
     $gprice      = req('gprice');
     $gstock      = req('gstock');
-    $f     = get_file('photo');
-    $photo =  $_SESSION['photo'];  
+    $f     = get_file('gadget_photo');
+    $gadget_photo =  $_SESSION['gadget_photo'];
 
     if (empty($gname)) {
         $_err['gname'] = 'Gadget Name is required';
@@ -61,7 +62,7 @@ if (is_post()) {
         $_err['gdescribe'] = 'Maximum length for Gadget Description is 10000 characters';
     }
 
-    if ($gprice == ''||$gprice == 0) {
+    if ($gprice == '' || $gprice == 0) {
         $_err['gprice'] = 'Gadget Price is required';
     } elseif (!is_money($gprice)) {
         $_err['gprice'] = 'Gadget Price must in money format (Exp: RM XX.XX)';
@@ -75,35 +76,34 @@ if (is_post()) {
 
     if ($f) {
         if (!str_starts_with($f->type, 'image/')) {
-            $_err['photo'] = 'Must be image';
-        }
-        else if ($f->size > 1 * 1024 * 1024) {
-            $_err['photo'] = 'Maximum 1MB';
+            $_err['gadget_photo'] = 'Must be image';
+        } else if ($f->size > 1 * 1024 * 1024) {
+            $_err['gadget_photo'] = 'Maximum 1MB';
         }
     }
 
     if (!$_err) {
         $gname = strtoupper($gname);
 
-        if($f){
-            unlink("../images/$photo");
-            $photo = save_photo($f,'../images');
+        if ($f) {
+            unlink("../images/$gadget_photo");
+            $gadget_photo = save_photo($f, '../images');
         }
 
         $stm = $_db->prepare('
-            UPDATE gadget 
-            SET 
-                admin_id = ?, 
-                gadget_name = ?, 
-                gadget_price = ?, 
-                category_id = (SELECT category_id FROM category WHERE category_name = ?), 
-                gadget_description = ?, 
-                brand_id = (SELECT brand_id FROM brand WHERE brand_name = ?), 
-                gadget_stock = ?, 
-                gadget_photo = ? 
-            WHERE gadget_id = ?');
+        UPDATE gadget 
+        SET 
+            admin_id = ?, 
+            gadget_name = ?, 
+            gadget_price = ?, 
+            category_id = (SELECT category_id FROM category WHERE category_name = ? AND category_status = "Active"), 
+            gadget_description = ?, 
+            brand_id = (SELECT brand_id FROM brand WHERE brand_name = ? AND brand_status = "Active"), 
+            gadget_stock = ?, 
+            gadget_photo = ? 
+        WHERE gadget_id = ?');
 
-        $stm->execute(['AD_00002', $gname, $gprice, $gcategory, $gdescribe, $gbrand, $gstock, $photo, $gid]);
+        $stm->execute(['AD_00002', $gname, $gprice, $gcategory, $gdescribe, $gbrand, $gstock, $gadget_photo, $gid]);
 
         temp('info', "Gadget ID : $gid updated successfuly");
         redirect('/page/admin_products.php');
@@ -117,11 +117,11 @@ if (is_post()) {
         <div class="gadgetInfo">
             <span class="close">&times;</span>
 
-            <label for="photo" class="upload" tabindex="0">
-                <?= html_file('photo', 'image/*', 'hidden') ?>
-                <img src="/images/<?= htmlspecialchars($photo) ?>" alt="Gadget Photo">
+            <label for="gadget_photo" class="upload_gadget" tabindex="0">
+                <?= html_file('gadget_photo', 'image/*', 'hidden') ?>
+                <img src="../images/<?= $gadget_photo ?>" alt="Gadget Photo">
             </label>
-            <?= err('photo') ?>
+            <?= err('gadget_photo') ?>
 
             <label for="gname">Gadget Name:</label>
             <?= html_text('gname', 'maxlength="50"') ?><br>
@@ -130,28 +130,28 @@ if (is_post()) {
             <label for="gcategory">Gadget Category:</label>
             <?php
             $category_names = array_map(fn($category) => $category->category_name, $categories);
-            html_select2('gcategory', $category_names);
+            html_select2('gcategory', $category_names, '- Select One -',$gcategory ?? '', );
             ?><br>
             <?= err('gcategory') ?>
 
             <label for="gbrand">Gadget Brand:</label>
             <?php
             $brand_names = array_map(fn($brand) => $brand->brand_name, $brands);
-            html_select2('gbrand', $brand_names);
+            html_select2('gbrand', $brand_names, '- Select One -',$gbrand ?? '');
             ?><br>
             <?= err('gbrand') ?>
 
-            <label for="gdescribe">Gadget Description:</label>
-            <textarea name="gdescribe"><?= htmlspecialchars($gdescribe ?? '') ?></textarea><br>
-            <?= err('gdescribe') ?>
-
             <label for="gprice">Gadget Price:</label>
-            <?= html_number('gprice', '10.00', ['min' => '0.01', 'max' => '10000.00', 'step' => '0.01']); ?><br>
+            <?= html_number('gprice', $gprice ?? '10.00', ['min' => '0.01', 'max' => '10000.00', 'step' => '0.01'], 'RM '); ?><br>
             <?= err('gprice') ?>
 
             <label for="gstock">Gadget Stock:</label>
-            <?= html_number('gstock', '0', ['min' => '0', 'max' => '1000', 'step' => '1']); ?><br>
+            <?= html_number('gstock', $gstock ?? '0', ['min' => '0', 'max' => '1000', 'step' => '1']); ?><br>
             <?= err('gstock') ?>
+
+            <label for="gdescribe">Gadget Description:</label>
+            <?php html_textarea('gdescribe'); ?><br>
+            <?= err('gdescribe') ?>
 
             <section>
                 <button id="resetModalBtn">Reset</button>
@@ -161,4 +161,4 @@ if (is_post()) {
     </form>
 </div>
 <?php
-include '../page/admin_products.php';?>
+include '../page/admin_products.php'; ?>

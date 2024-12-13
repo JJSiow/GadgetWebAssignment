@@ -3,7 +3,7 @@ require_once '../_base.php';
 
 // (1) Sorting
 $fields = [
-    'gadget_id' => 'Gadget Id',
+    'gadget_id' => 'Gadget ID',
     'gadget_name' => 'Gadget Name',
     'brand_name' => 'Gadget Brand',
     'category_name' => 'Gadget Category',
@@ -170,8 +170,8 @@ include '../_head.php';
 
     <form method="post">
         <tr>
-            <td><?= html_search('sid', $searchParams['sid']) ?></td>
-            <td><?= html_search('sname', $searchParams['sname']) ?></td>
+            <td><?= html_search2('sid', $searchParams['sid']) ?></td>
+            <td><?= html_search2('sname', $searchParams['sname']) ?></td>
             <td><?= html_select2('sbrand', $brands_name,  'All',$searchParams['sbrand']) ?></td>
             <td><?= html_select2('scategory', $category_name,  'All',$searchParams['scategory']) ?></td>
             <td><?= html_number('sprice', $searchParams['sprice'], ['min' => '0.01', 'max' => '10000.00', 'step' => '0.01'],'RM '); ?></td>

@@ -193,7 +193,7 @@ main h1 {
     cursor: pointer;
 }
 
-.form-container img, .upload {
+.form-container img, .upload_gadget, .view_gadget {
     display: flex;
     justify-content: center;
     align-items: center; 
@@ -205,6 +205,10 @@ main h1 {
     border: 1px solid #333;
     cursor: pointer;
     margin: 5px auto; 
+}
+
+.hidden-input {
+    display: none; /* Hides the file input */
 }
 
 /* save button */
