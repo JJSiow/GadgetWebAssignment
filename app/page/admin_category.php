@@ -62,7 +62,7 @@ include '../_head.php';
         <tr>
             <td><?= html_search('sid') ?></td>
             <td><?= html_search('sname') ?></td>
-            <td><?= html_select2('sstatus', $_status, 'All') ?></td>
+            <td><?= html_select2('sstatus', $_status, 'All',$sstatus ?? '') ?></td>
             <td><button type="submit">Search</button></td>
         </tr>
     </form>
