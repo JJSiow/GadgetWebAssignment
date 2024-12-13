@@ -5,11 +5,13 @@ require '_base.php';
 
 
 // ----------------------------------------------------------------------------
-$_title = 'Index';
+$_title = 'DashBoard';
 include '_head.php';
 ?>
 
-
+<div></div>
+<div></div>
+<div></div>
 
 <?php
 include '_foot.php';
