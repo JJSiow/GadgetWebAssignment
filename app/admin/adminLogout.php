@@ -1,13 +1,9 @@
 <?php
-require '_base.php';
+require '../_base.php';
 //-----------------------------------------------------------------------------
-
-
+adminlogout();
 
 // ----------------------------------------------------------------------------
-$_title = 'DashBoard';
-include '_head.php';
+$_title = 'Admin Logout';
 ?>
 
-<?php
-include '_foot.php';

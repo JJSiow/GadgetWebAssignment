@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;1,500&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    
+}
+
+header li, a, button{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: #edf0f1;
+    text-decoration: none;
+}
+
+header{
+    background-color: #24252A;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+}
+
+.logo {
+    cursor: pointer;
+}
+
+.admin_menu_bar{
+    list-style: none;
+}
+
+.admin_menu_bar li {
+    display: inline-block;
+    padding: 0px 20px;
+}
+
+.admin_menu_bar li a {
+    transition: all 0.3s ease 0s;
+}
+
+.admin_menu_bar li a:hover {
+    color: #0088a9;
+}
+
+button {
+    padding: 9px 25px;
+    background-color: #0088a9;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease 0s;
+}
+
+button:hover{
+    background-color: rgba(0,136,169,0.8);
+}
+
+#info {
+    position: fixed;
+    color: #fff;
+    background: #666;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 10px 20px;
+    left: 50%;
+    translate: -50% 0;
+    z-index: 999;
+
+    top: -100px;
+    opacity: 0;
+}
+
+#info:not(:empty) {
+    animation: fade 5s;
+}
+
+@keyframes fade {
+      0% { top: -100px; opacity: 0; }
+     10% { top:  100px; opacity: 1; }
+     90% { top:  100px; opacity: 1; }
+    100% { top: -100px; opacity: 0; }
+}

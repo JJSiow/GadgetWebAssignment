@@ -2,8 +2,8 @@
 require '../_base.php';
 
 // Get member ID from URL parameter
-$id = req('id');
-$id = "M00002";
+$id = $_member->member_id;
+// $id = "M00002";
 
 if (is_get()) {
     $member_id = req('member_id');
