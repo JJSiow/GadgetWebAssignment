@@ -39,7 +39,7 @@ if (is_post()) {
     if ($member_current_password == '') {
         $_err['member_current_password'] = 'Required';
     }
-    else if ($member_current_password != $member_password) {
+    else if (sha1($member_current_password) != $member_password) {
         $_err['member_current_password'] = 'Incorrect password';
     }
 
@@ -66,7 +66,7 @@ if (is_post()) {
     }
 
     if (count($_err) == 0) {
-        $stm = $_db->prepare('UPDATE member SET member_password = ? WHERE member_id = ?');
+        $stm = $_db->prepare('UPDATE member SET member_password = SHA1(?) WHERE member_id = ?');
         $stm->execute([$member_new_password, $id]);
 
         temp('info', 'Member password updated.');

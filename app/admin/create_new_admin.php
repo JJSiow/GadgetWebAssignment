@@ -86,7 +86,7 @@ if (is_post()) {
 
         $admin_profile_pic = save_photo($photo, '../photos');
 
-        $stm = $_db->prepare('INSERT INTO admin (admin_id, admin_name, admin_phone_no, admin_email, admin_password, admin_profile_pic, admin_status, is_super_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+        $stm = $_db->prepare('INSERT INTO admin (admin_id, admin_name, admin_phone_no, admin_email, admin_password, admin_profile_pic, admin_status, is_super_admin) VALUES (?, ?, ?, ?, SHA1(?), ?, ?, ?)');
         $stm->execute([$admin_id, $admin_name, $admin_phone_no, $admin_email, $admin_password, $admin_profile_pic, 'Active', 'N']);
 
         temp('info', 'Admin created');
