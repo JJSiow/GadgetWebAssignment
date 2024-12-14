@@ -17,22 +17,36 @@ key_exists($sort, $fields) || $sort = 'category_id';
 $dir = req('dir');
 in_array($dir, ['asc', 'desc']) || $dir = 'asc';
 
-$arr = $_db->query("SELECT * FROM category ORDER BY $sort $dir")->fetchAll();
+// (2) Paging
+$page = req('page', 1);
+
+$base_query = "SELECT * FROM category ORDER BY $sort $dir";
+$params = [];
 
 if (is_post()) {
     $sid = req('sid');
     $sname = req('sname');
     $sstatus = req('sstatus');
 
-    $stm = $_db->prepare('SELECT * FROM category
-    WHERE category_name LIKE ?
+    $base_query = "SELECT * FROM category 
+    WHERE category_name LIKE ? 
     AND (category_id = ? OR ?)
-    AND (category_status = ? OR ?)');
+    AND (category_status = ? OR ?)
+    ORDER BY $sort $dir";
 
-    $stm->execute(["%$sname%", $sid, $sid == null, $sstatus, $sstatus == null]);
-
-    $arr = $stm->fetchAll();
+    $params = ["%$sname%", $sid, $sid == null, $sstatus, $sstatus == null];
 }
+
+// Create SimplePager with the appropriate query
+require_once '../lib/SimplePager.php';
+$p = new SimplePager(
+    $base_query,   // Base query (now dynamic)
+    $params,       // Query parameters
+    4,             // Limit (4 items per page)
+    $page          // Current page number
+);
+
+$arr = $p->result;
 
 $_title = 'Gadget Category';
 include '../_head.php';
@@ -46,16 +60,15 @@ include '../_head.php';
     <?php endif; ?>
 </form>
 
-<!-- <p>
+<p>
     <?= $p->count ?> of <?= $p->item_count ?> record(s) |
     Page <?= $p->page ?> of <?= $p->page_count ?>
-</p> -->
+</p>
 
 
 <table class="table">
     <tr>
-        <!-- <?= table_headers2($fields, $sort, $dir, "page=$page") ?> -->
-        <?= table_headers2($fields, $sort, $dir) ?>
+        <?= table_headers($fields, $sort, $dir, "page=$page") ?>
     </tr>
 
     <form method="post">
@@ -89,7 +102,7 @@ include '../_head.php';
     <?php endif; ?>
 </table>
 
-<!-- <?= $p->html("sort=$sort&dir=$dir") ?> -->
+<?= $p->html("sort=$sort&dir=$dir") ?>
 
 <?php
 include '../_foot.php'; ?>
