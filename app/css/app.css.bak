@@ -232,27 +232,3 @@ main h1 {
     padding: 2px 5px;
 }
 
-/* Form -------------------------------------------------------------------- */
-
-label>* {
-    vertical-align: text-top;
-}
-
-.form {
-    display: grid;
-    grid: auto / auto auto auto;
-    gap: 5px;
-    place-content: start;
-    place-items: center start;
-}
-
-.form>label:not(:has(*)) {
-    place-self: stretch;
-    background: #ccc;
-    font-weight: bold;
-    padding: 5px;
-}
-
-.form>section {
-    grid-column: 1 / -1;
-}

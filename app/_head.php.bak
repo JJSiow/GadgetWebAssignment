@@ -14,28 +14,26 @@
     <script src="/js/admin.js"></script>
 </head>
 
-<header>
-    <img class="logo" src="images/sd.jpg" alt="logo">
-    <nav class="user_menu_bar">
-        <ul>
-            <li><a href="/">Dashboard</a></li>
-            <li><a href="../member/login.php">Login</a></li>
-            <li><a href="../member/logout.php">Logout</a></li>
-            <li><a href="../admin/adminHome.php">Admin Home</a></li>
-            <li><a href="../admin/adminLogin.php">Admin Login</a></li>
-            <li><a href="../admin/adminLogout.php">Admin Logout</a></li>
-            <li><a href="/member/member_list.php">Member</a></li>
-            <li><a href="/member/member_profile.php">Member Profile</a></li>
-            <li><a href="/member/member_password.php">Member Password</a></li>
-        </ul>
-    </nav>
-    <a class="logout" href="../member/register.php"><img class="logo" src="images/sda.jpg" alt="logo"></a>
-    <a class="logout" href="../member/register.php"><img class="logo" src="images/sad.jpg" alt="logo"></a>
-</header>
-
 <body>
     <!-- Flash message -->
     <div id="info"><?= temp('info') ?></div>
+
+    <header>
+        <h1><a href="/">Admin Panel</a></h1>
+    </header>
+
+    <nav>
+        <a href="/">Dashboard</a>
+        <a href="/page/admin_products.php">Product</a>
+        <a href="/page/admin_voucher.php">Voucher</a>
+        <a href="/page/admin_member.php">Member</a>
+        <a href="/page/admin_category.php">Category</a>
+        <a href="/page/admin_brand.php">Brand</a>
+
+        <a href="/member/member_list.php">Member</a>
+        <a href="/member/member_profile.php">Member Profile</a>
+        <a href="/member/member_password.php">Member Password</a>
+    </nav>
 
     <!-- <nav class="image-text">
         <span class="image">
