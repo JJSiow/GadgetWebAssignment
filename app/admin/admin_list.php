@@ -32,7 +32,7 @@ include '../_head.php';
             <td><?= $a->admin_email ?></td>
             <td><img src="../photos/<?= $a->admin_profile_pic ?>" width="100"></td>
             <td><?= $a->admin_status ?></td>
-            <td><button data-get="edit_admin_profile_pic.php?admin_id=<?= $a->admin_id ?>">Update</a></td>
+            <td><button data-get="edit_admin_profile_pic.php?admin_id=<?= $a->admin_id ?>">Edit Profile Pic</a></td>
             <td><button data-post="update_admin_status.php?admin_id=<?= $a->admin_id ?>" data-confirm="Are you sure you want to change the status of this member?">Change Status</button></td>
         </tr>
     <?php endforeach ?>

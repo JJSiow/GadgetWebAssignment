@@ -14,7 +14,7 @@ if (is_get()) {
 
     if (!$member) {
         temp('info', 'Member not found.');
-        redirect('member_list.php');
+        redirect('../index.php');
     }
 
     extract((array)$member);
@@ -70,7 +70,7 @@ if (is_post()) {
         $stm->execute([$member_new_password, $id]);
 
         temp('info', 'Member password updated.');
-        redirect('member_list.php');
+        redirect('../index.php');
     }
 }
 

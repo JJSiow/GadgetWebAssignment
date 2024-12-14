@@ -18,7 +18,7 @@
 
     <nav>
         <a href="/">Index</a>
-        <a href="/member/member_list.php">Member List</a>
+        <a href="/admin/member_list.php">Member List</a>
         <a href="/member/member_profile.php">Member Profile</a>
         <a href="/member/member_password.php">Member Password</a>
         <a href="/admin/admin_list.php">Admin List</a>

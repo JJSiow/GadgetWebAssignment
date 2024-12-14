@@ -26,6 +26,8 @@ if (is_post()) {
     $photo = get_file('admin_profile_pic');
     $admin_profile_pic = $_SESSION['admin_profile_pic'];
 
+    $admin = $_db->query('SELECT * FROM admin WHERE admin_id = ' . $_db->quote($id))->fetch(PDO::FETCH_OBJ);
+
     // Validate name
     if ($admin_name == '') {
         $_err['admin_name'] = 'Required';
@@ -44,9 +46,9 @@ if (is_post()) {
     else if (!ctype_digit($admin_phone_no)) {
         $_err['admin_phone_no'] = 'Invalid phone number';
     }
-    // else if (is_exists($admin_phone_no, 'admin', 'admin_phone_no')) {
-    //     $_err['admin_phone_no'] = 'Phone number already exists';
-    // }
+    else if (is_exists($admin_phone_no, 'admin', 'admin_phone_no') && $admin->admin_phone_no != $admin_phone_no) {
+        $_err['admin_phone_no'] = 'Phone number already exists';
+    }
 
     // Validate email
     if ($admin_email == '') {
@@ -55,9 +57,9 @@ if (is_post()) {
     else if (!filter_var($admin_email, FILTER_VALIDATE_EMAIL)) {
         $_err['admin_email'] = 'Invalid email address';
     }
-    // else if (is_exists($admin_email, 'admin', 'admin_email')) {
-    //     $_err['admin_email'] = 'Email already exists';
-    // }
+    else if (is_exists($admin_email, 'admin', 'admin_email') && $admin->admin_email != $admin_email) {
+        $_err['admin_email'] = 'Email already exists';
+    }
 
     if ($photo) {
         if (!str_starts_with($photo->type, 'image/')) {
@@ -78,7 +80,7 @@ if (is_post()) {
         $stm->execute([$admin_name, $admin_phone_no, $admin_email, $admin_profile_pic, $id]);
 
         temp('info', 'Admin profile updated.');
-        redirect('admin_list.php');
+        redirect('../index.php');
     }
     else {
         temp('info', 'Please check the error(s).');

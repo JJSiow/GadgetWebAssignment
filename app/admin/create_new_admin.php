@@ -121,10 +121,11 @@ include '../_head.php';
     <?= err('confirm_password') ?>
 
     <label for="admin_profile_pic">Profile Picture</label>
-    <label class="upload" tabindex="0">
-        <?= html_file('admin_profile_pic', 'image/*', 'hidden') ?>
-        <img src="../photos/<?= $admin_profile_pic ?>">
-    </label>
+    <div class="drop-zone upload" tabindex="0">
+        <p>Drag and drop a photo here or click to select a photo</p>
+        <?= html_file('admin_profile_pic', 'image/*') ?>
+        <img class="preview" src="../photos/<?= $admin_profile_pic ?>">
+    </div>
     <?= err('admin_profile_pic') ?>
 
     <section>

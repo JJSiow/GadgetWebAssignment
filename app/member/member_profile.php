@@ -14,7 +14,7 @@ if (is_get()) {
 
     if (!$member) {
         temp('info', 'Member not found.');
-        redirect('member_list.php');
+        redirect('../index.php');
     }
 
     extract((array)$member);
@@ -30,6 +30,8 @@ if (is_post()) {
     $shipping_address = req('shipping_address');
     $photo = get_file('member_profile_pic');
     $member_profile_pic = $_SESSION['member_profile_pic'];
+
+    $member = $_db->query('SELECT * FROM member WHERE member_id = ' . $_db->quote($id))->fetch(PDO::FETCH_OBJ);
 
     // Validate name
     if ($member_name == '') {
@@ -49,6 +51,9 @@ if (is_post()) {
     else if (!ctype_digit($member_phone_no)) {
         $_err['member_phone_no'] = 'Invalid phone number';
     }
+    else if (is_exists($member_phone_no, 'member', 'member_phone_no') && $member->member_phone_no != $member_phone_no) {
+        $_err['member_phone_no'] = 'Phone number already exists';
+    }
 
     // Validate gender
     if ($member_gender == '') {
@@ -67,6 +72,9 @@ if (is_post()) {
     }
     else if (!filter_var($member_email, FILTER_VALIDATE_EMAIL)) {
         $_err['member_email'] = 'Invalid email format';
+    }
+    else if (is_exists($member_email, 'member', 'member_email') && $member->member_email != $member_email) {
+        $_err['member_email'] = 'Email already exists';
     }
 
     // Validate shipping address
@@ -96,7 +104,7 @@ if (is_post()) {
         $stm->execute([$member_name, $member_phone_no, $member_gender, $member_email, $shipping_address, $member_profile_pic, $id]);
 
         temp('info', 'Member information updated.');
-        redirect('member_list.php');
+        redirect('../index.php');
     }
     else {
         temp('info', 'Please check the error(s).');
