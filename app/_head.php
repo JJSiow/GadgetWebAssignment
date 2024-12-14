@@ -18,10 +18,11 @@
 
     <nav>
         <a href="/">Index</a>
-        <a href="/member/member_list.php">Member</a>
+        <a href="/member/member_list.php">Member List</a>
         <a href="/member/member_profile.php">Member Profile</a>
         <a href="/member/member_password.php">Member Password</a>
-        <a href="/admin/admin.php">Admin</a>
+        <a href="/admin/admin_list.php">Admin List</a>
+        <a href="/admin/admin_profile.php">Admin Profile</a>
     </nav>
 
     <main>

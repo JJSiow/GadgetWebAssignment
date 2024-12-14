@@ -68,8 +68,8 @@ include '../_head.php';
         <td><?= $s->shipping_address ?></td>
         <td><?= $s->member_status ?></td>
         <td><img src="../photos/<?= $s->member_profile_pic ?>"  width="100"></td>
-        <td><button data-post="member_status.php?member_id=<?= $s->member_id ?>&page=<?= $page ?>" data-confirm="Are you sure you want to change the status of this member?">Change Status</button></td>
-        <td><button data-get="admin_edit_profile_pic.php?id=<?= $s->member_id ?>">Edit Profle Pic</a></button></td>
+        <td><button data-get="edit_member_profile_pic.php?member_id=<?= $s->member_id ?>">Edit Profle Pic</a></button></td>
+        <td><button data-post="update_member_status.php?member_id=<?= $s->member_id ?>&page=<?= $page ?>" data-confirm="Are you sure you want to change the status of this member?">Change Status</button></td>
 
     </tr>
     <?php endforeach ?>

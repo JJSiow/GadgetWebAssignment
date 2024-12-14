@@ -3,7 +3,7 @@ require '../_base.php';
 
 // Get member ID from URL parameter
 $id = req('id');
-// $id = "M00002";
+$id = "M00002";
 
 if (is_get()) {
     $member_id = req('member_id');
@@ -43,8 +43,11 @@ if (is_post()) {
     if ($member_phone_no == '') {
         $_err['member_phone_no'] = 'Required';
     }
-    else if (strlen($member_phone_no) > 11) {
-        $_err['member_phone_no'] = 'Maximum length 11';
+    else if (strlen($member_phone_no) > 11 || strlen($member_phone_no) < 10) {
+        $_err['member_phone_no'] = 'Should be 10-11 digits';
+    }
+    else if (!ctype_digit($member_phone_no)) {
+        $_err['member_phone_no'] = 'Invalid phone number';
     }
 
     // Validate gender
@@ -74,7 +77,7 @@ if (is_post()) {
     //$f = get_file('member_profile_pic');
     if ($photo) {
         if (!str_starts_with($photo->type, 'image/')) {
-            $_err['member_profile_pic'] = 'Must be image';
+            $_err['member_profile_pic'] = 'Invalid file type';
         }
         else if ($photo->size > 8 * 1024 * 1024) {
             $_err['member_profile_pic'] = 'Maximum 8MB';
@@ -83,6 +86,7 @@ if (is_post()) {
 
 
     if (count($_err) == 0) {
+        // $member_profile_pic = $_SESSION['member_profile_pic'];
         if ($photo) {
             unlink("../photos/$member_profile_pic");
             $member_profile_pic = save_photo($photo, '../photos');
@@ -131,15 +135,15 @@ include '../_head.php';
     <?= err('shipping_address') ?>
 
     <label for="member_profile_pic">Profile Picture</label>
-    <label class="upload" tabindex="0">
-        <?= html_file('member_profile_pic', 'image/*', 'hidden') ?>
-        <img src="../photos/<?= $member_profile_pic ?>">
-    </label>
+    <div class="drop-zone upload" tabindex="0">
+        <p>Drag and drop a photo here or click to select a photo</p>
+        <?= html_file('member_profile_pic', 'image/*') ?>
+        <img class="preview" src="../photos/<?= $member_profile_pic ?>">
+    </div>
     <?= err('member_profile_pic') ?>
 
     <section>
         <button type="submit">Save</button>
-        <a href="member_list.php">Cancel</a>
     </section>
 </form>
 
