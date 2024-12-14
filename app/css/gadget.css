@@ -1,0 +1,251 @@
+label > * {
+    vertical-align: text-top;
+}
+
+.form {
+    display: grid;
+    grid: auto / auto auto auto;
+    gap: 5px;
+    place-content: start;
+    place-items: center start;
+}
+
+.form > label:not(:has(*)) {
+    place-self: stretch;
+    background: #ccc;
+    font-weight: bold;
+    padding: 5px;
+}
+
+.form > section {
+    grid-column: 1 / -1;
+}
+
+.err {
+    color: red;
+}
+
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+/* Product Grid */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Product Card */
+.product-card {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+}
+
+/* Product Image */
+.product-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Product Info */
+.product-info {
+    padding: 15px;
+}
+
+.product-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+    color: #333;
+}
+
+.product-description {
+    font-size: 14px;
+    color: #777;
+    margin: 10px 0;
+}
+
+.product-price {
+    font-size: 16px;
+    color: #666;
+    font-weight: bold;
+}
+
+.product-category,
+.product-brand {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.product-stock {
+    font-size: 14px;
+    color: #444;
+    margin-top: 10px;
+}
+
+/* Buttons */
+button {
+    background-color: #666;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #666;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .product-card {
+        margin: 0 10px;
+    }
+
+    .product-info {
+        padding: 10px;
+    }
+
+    .product-name {
+        font-size: 16px;
+    }
+
+    .product-price {
+        font-size: 14px;
+    }
+}
+
+/* Wrapper for the quantity input and buttons */
+.quantity-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Style for the input field */
+.quantity-input {
+    width: 50px; /* Adjust size as needed */
+    text-align: center;
+    padding: 5px;
+    margin: 0 5px;
+    font-size: 16px;
+}
+
+/* Wrapper for the quantity input and buttons */
+.quantity-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;  /* Add space between input and buttons */
+}
+
+/* Style for the input field */
+.quantity-input {
+    width: 60px;  /* Slightly larger input for better usability */
+    text-align: center;
+    padding: 8px 12px;
+    font-size: 18px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    transition: border-color 0.3s ease;
+}
+
+/* Input field focus effect */
+.quantity-input:focus {
+    outline: none;
+    border-color: #007BFF; /* Blue border when focused */
+}
+
+/* Style for the minus and plus buttons */
+.quantity-btn {
+    width: 36px;  /* Slightly larger button */
+    height: 36px;
+    font-size: 20px;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 50%;  /* Circular buttons */
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover effect for the buttons */
+.quantity-btn:hover {
+    background-color: #007BFF;
+    color: #fff;  /* Button turns blue and text white */
+    transform: scale(1.1);  /* Slightly enlarge button */
+}
+
+/* Active state for buttons (when clicked) */
+.quantity-btn:active {
+    transform: scale(0.95);  /* Shrink button when clicked */
+}
+
+/* Remove button border and styling for the number input field */
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.quantity-input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Prevent input field from overflowing */
+.quantity-input {
+    max-width: 60px;
+}
+
+/* Mobile-friendly adjustments */
+@media (max-width: 600px) {
+    .quantity-wrapper {
+        gap: 4px;  /* Reduce space between input and buttons */
+    }
+    .quantity-input {
+        width: 50px;
+    }
+    .quantity-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+    }
+}
