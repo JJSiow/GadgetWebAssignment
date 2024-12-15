@@ -2,10 +2,17 @@
 require '../_base.php';
 // ----------------------------------------------------------------------------
 $_title = 'Gadget Store';
-// include '../_head.php';
+include '../_head.php';
 
 // ----------------------------------------------------------------------------
 
+if (!isset($_SESSION['member_id'])) {
+    // Redirect to login page if not logged in
+    header("Location: ../member/login.php");
+    exit();
+}
+
+$member_id = $_SESSION['member_id']; // Get the logged-in user's member_id
 // Database connection
 $conn = new mysqli("localhost", "root", "", "gadgetwebdb");
 
@@ -13,15 +20,6 @@ $conn = new mysqli("localhost", "root", "", "gadgetwebdb");
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-
-// Check if user is logged in (replace with session logic for member_id)
-// session_start();
-// $member_id = isset($_SESSION['member_id']) ? $_SESSION['member_id'] : null; // Assuming member_id is stored in session
-
-// if (!$member_id) {
-//     die("Please log in to add items to the cart.");
-// }
-$member_id = "AAA111";  // For testing purposes; replace with session value in production
 
 if (is_post()) {
     $gadget_id = $_POST['gadget_id'];
@@ -144,7 +142,7 @@ if (!$result) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gadget Store</title>
-    <link rel="stylesheet" href="gadget.css">
+    <link rel="stylesheet" href="/css/gadget.css">
     <script>
         // Function to submit the form when a radio button is clicked
         function submitForm() {
@@ -205,7 +203,10 @@ if (!$result) {
                         <p class="product-brand"><?= $gadget['brand_name'] ?></p>
                         <p class="product-stock"><?= $gadget['gadget_stock'] ?> in stock</p>
 
-                        <button class="view-btn" onclick="window.location.href='gadget_details.php?gadget_id=<?= $gadget['gadget_id'] ?>'">View</button>
+                        
+                        <button class="view-btn" onclick="window.location.href='/page/gadget_details.php?gadget_id=<?= $gadget['gadget_id'] ?>'">View</button>
+
+                        
 
                         <!-- Add to Cart Form -->
                         <form action="gadget.php" method="POST">
@@ -227,5 +228,5 @@ $conn->close();
 ?>
 
 <?php
-include '../_foot.php';
+// include '../_foot.php';
 ?>

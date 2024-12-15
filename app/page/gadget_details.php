@@ -1,5 +1,5 @@
 <?php
-require '../_base.php';
+require '../_base.php';  // This should include session_start()
 
 // ----------------------------------------------------------------------------
 $_title = 'Gadget Store - Product Details';
@@ -10,14 +10,24 @@ include '../_head.php';
 // Check if 'gadget_id' is passed in the URL
 if (isset($_GET['gadget_id'])) {
     $gadget_id = $_GET['gadget_id'];
+
 } else {
     // Redirect to the main page if no gadget_id is provided
     header("Location: gadget.php");
     exit();
 }
 
+echo "Gadget ID: " . $gadget_id; 
+
+// Check if the user is logged in (based on session)
+if (!isset($_SESSION['member_id'])) {
+    // Redirect to login page if not logged in
+    header("Location: login.php");
+    exit();
+}
+
 // Database connection
-$conn = new mysqli("localhost", "root", "", "gadgetwebdb");  // Update to match your actual database
+$conn = new mysqli("localhost", "root", "", "gadgetwebdb");
 
 // Check connection
 if ($conn->connect_error) {
@@ -35,9 +45,10 @@ $query = "
     WHERE g.gadget_id = ?
 ";
 
+
 // Prepare the query and bind parameters
 $stmt = $conn->prepare($query);
-$stmt->bind_param("i", $gadget_id);  // Bind the gadget_id as an integer
+$stmt->bind_param("s", $gadget_id);  // Bind the gadget_id as a string
 $stmt->execute();
 
 // Get the result
@@ -52,17 +63,6 @@ if ($result->num_rows === 0) {
 
 // Fetch the gadget details
 $gadget = $result->fetch_assoc();
-
-// Check if the user is logged in (based on session)
-session_start();
-// if (!isset($_SESSION['member_id'])) {
-//     // Redirect to login page if not logged in
-//     header("Location: login.php");
-//     exit();
-// }
-
-// Get member ID from session
-$member_id = $_SESSION['member_id'];
 ?>
 
 <!DOCTYPE html>
@@ -71,7 +71,7 @@ $member_id = $_SESSION['member_id'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details - <?= htmlspecialchars($gadget['gadget_name']) ?></title>
+    <title>Product Details - <?= $gadget['gadget_name'] ?></title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -82,13 +82,26 @@ $member_id = $_SESSION['member_id'];
     <!-- Display the gadget details -->
     <div class="product-details">
         <div class="product-info">
-            <img src="<?= htmlspecialchars($gadget['gadget_photo']) ?>"
-                alt="<?= htmlspecialchars($gadget['gadget_name']) ?>" class="product-image">
-            <h2 class="product-name"><?= htmlspecialchars($gadget['gadget_name']) ?></h2>
+            <!-- Display gadget photo -->
+            <img src="<?= htmlspecialchars($gadget['gadget_photo']) ?>" 
+                 alt="<?= htmlspecialchars($gadget['gadget_name']) ?>" class="product-image">
+            
+            <!-- Display gadget name -->
+            <h2 class="product-name"><?= $gadget['gadget_name'] ?></h2>
+            
+            <!-- Display gadget description -->
             <p class="product-description"><?= htmlspecialchars($gadget['gadget_description']) ?></p>
-            <p class="product-price">RM <?= htmlspecialchars($gadget['gadget_price']) ?></p>
-            <p class="product-category"><?= htmlspecialchars($gadget['category_name']) ?></p>
-            <p class="product-brand"><?= htmlspecialchars($gadget['brand_name']) ?></p>
+            
+            <!-- Display gadget price -->
+            <p class="product-price">RM <?= number_format($gadget['gadget_price'], 2) ?></p>
+            
+            <!-- Display category name -->
+            <p class="product-category">Category: <?= htmlspecialchars($gadget['category_name']) ?></p>
+            
+            <!-- Display brand name -->
+            <p class="product-brand">Brand: <?= htmlspecialchars($gadget['brand_name']) ?></p>
+            
+            <!-- Display stock availability -->
             <p class="product-stock"><?= $gadget['gadget_stock'] ?> in stock</p>
 
             <!-- Add to Cart Form -->
@@ -105,6 +118,7 @@ $member_id = $_SESSION['member_id'];
 </body>
 
 </html>
+
 
 <?php
 // Close the database connection
