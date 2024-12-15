@@ -29,21 +29,28 @@ if (is_post()) {
     $sstatus = req('sstatus');
 
     $base_query = "SELECT * FROM category 
-    WHERE category_name LIKE ? 
-    AND (category_id = ? OR ?)
+    WHERE (category_name LIKE ? OR category_name = ?)
+    AND (category_id LIKE ? OR ?)
     AND (category_status = ? OR ?)
     ORDER BY $sort $dir";
 
-    $params = ["%$sname%", $sid, $sid == null, $sstatus, $sstatus == null];
+    $params = [
+        "%$sname%",
+        $sname, 
+        "%$sid%",
+        $sid == null, 
+        $sstatus,
+        $sstatus == null  
+    ];
 }
 
 // Create SimplePager with the appropriate query
 require_once '../lib/SimplePager.php';
 $p = new SimplePager(
-    $base_query,   // Base query (now dynamic)
-    $params,       // Query parameters
-    4,             // Limit (4 items per page)
-    $page          // Current page number
+    $base_query,
+    $params,
+    10,
+    $page
 );
 
 $arr = $p->result;
@@ -75,7 +82,7 @@ include '../_head.php';
         <tr>
             <td><?= html_search('sid') ?></td>
             <td><?= html_search('sname') ?></td>
-            <td><?= html_select2('sstatus', $_status, 'All',$sstatus ?? '') ?></td>
+            <td><?= html_select2('sstatus', $_status, 'All', $sstatus ?? '') ?></td>
             <td><button type="submit">Search</button></td>
         </tr>
     </form>

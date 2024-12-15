@@ -65,7 +65,8 @@ function temp($key, $value = null)
 }
 
 // Obtain uploaded file --> cast to object
-function get_file($key) {
+function get_file($key)
+{
     $f = $_FILES[$key] ?? null;
 
     if ($f && $f['error'] == 0) {
@@ -76,9 +77,10 @@ function get_file($key) {
 }
 
 // Crop, resize and save photo
-function save_photo($f, $folder, $width = 200, $height = 200) {
+function save_photo($f, $folder, $width = 200, $height = 200)
+{
     $photo = uniqid() . '.jpg';
-    
+
     require_once 'lib/SimpleImage.php';
     $img = new SimpleImage();
     $img->fromFile($f->tmp_name)
@@ -89,22 +91,26 @@ function save_photo($f, $folder, $width = 200, $height = 200) {
 }
 
 // Is money?
-function is_money($value) {
+function is_money($value)
+{
     return preg_match('/^\-?\d+(\.\d{1,2})?$/', $value);
 }
 
 // Is email?
-function is_email($value) {
+function is_email($value)
+{
     return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
 }
 
 // Return local root path
-function root($path = '') {
+function root($path = '')
+{
     return "$_SERVER[DOCUMENT_ROOT]/$path";
 }
 
 // Return base url (host + port)
-function base($path = '') {
+function base($path = '')
+{
     return "http://$_SERVER[SERVER_NAME]:$_SERVER[SERVER_PORT]/$path";
 }
 
@@ -125,7 +131,8 @@ function html_text($key, $attr = '')
     echo "<input type='text' id='$key' name='$key' value='$value' $attr>";
 }
 
-function html_password($key, $attr = '') {
+function html_password($key, $attr = '')
+{
     $value = encode($GLOBALS[$key] ?? '');
     echo "<input type='password' id='$key' name='$key' value='$value' $attr>";
 }
@@ -139,18 +146,21 @@ function html_password($key, $attr = '') {
 // }
 
 // Generate <input type='search'>
-function html_search($key, $attr = '') {
+function html_search($key, $attr = '')
+{
     $value = encode($GLOBALS[$key] ?? '');
     echo "<input type='search' id='$key' name='$key' value='$value' $attr>";
 }
 
-function html_search2($key, $value = '', $attr = '') {
+function html_search2($key, $value = '', $attr = '')
+{
     $sanitized_value = htmlspecialchars($value, ENT_QUOTES);
     echo "<input type='search' id='$key' name='$key' value='$sanitized_value' $attr>";
 }
 
 // Generate <input type='radio'> list
-function html_radios($key, $items, $attr = '', $br = false) {
+function html_radios($key, $items, $attr = '', $br = false)
+{
     $value = encode($GLOBALS[$key] ?? '');
     echo '<div>';
     foreach ($items as $id => $text) {
@@ -165,21 +175,23 @@ function html_radios($key, $items, $attr = '', $br = false) {
 // Generate <input type="number"> field
 // Render a number input with default value and attributes
 // How to use: html_number('price', '100', ['min' => '0', 'max' => '1000', 'step' => '10', 'class' => 'number-input'], 'RM ');
-function html_number($name, $value = '', $attrs = [], $prefix = '') {
+function html_number($name, $value = '', $attrs = [], $prefix = '')
+{
     $attrs_str = '';
     foreach ($attrs as $k => $v) {
         $attrs_str .= " $k=\"" . htmlspecialchars($v) . '"';
     }
-    
+
     $prefix_html = $prefix ? "<span class='input-prefix'>$prefix</span>" : '';
-    
-    return "$prefix_html<input type='number' name='$name' value='" . 
-           htmlspecialchars($value) . "'$attrs_str>";
+
+    return "$prefix_html<input type='number' id='$name' name='$name' value='" .
+        htmlspecialchars($value) . "'$attrs_str>";
 }
 
 // Generate <select>
 //JJ
-function html_select($key, $items, $default = '- Select One -', $attr = '') {
+function html_select($key, $items, $default = '- Select One -', $attr = '')
+{
     $value = encode($GLOBALS[$key] ?? '');
     echo "<select id='$key' name='$key' $attr>";
     if ($default !== null) {
@@ -193,19 +205,25 @@ function html_select($key, $items, $default = '- Select One -', $attr = '') {
 }
 
 //KYYAP
-function html_select2($key, $items, $default = '- Select One -', $selected = '')
+function html_select2($key, $items, $default = '- Select One -', $selected = null)
 {
-    echo "<select id='$key' name='$key'>";
+    echo "<select id='" . htmlspecialchars($key) . "' name='" . htmlspecialchars($key) . "'>";
+
+    // Default option
     if ($default !== null) {
-        echo "<option value=''>$default</option>";
+        $defaultSelected = empty($selected) ? 'selected' : '';
+        echo "<option value='' $defaultSelected>" . htmlspecialchars($default) . "</option>";
     }
 
+    // Loop through items to create options
     foreach ($items as $item) {
-        $state = $item == $selected ? 'selected' : '';
-        echo "<option value='$item' $state>$item</option>";
+        $isSelected = ($item == $selected) ? 'selected' : '';
+        echo "<option value='" . htmlspecialchars($item) . "' $isSelected>" . htmlspecialchars($item) . "</option>";
     }
+
     echo '</select>';
 }
+
 
 // Generate <input type='file'>
 function html_file($key, $accept = '', $attr = '')
@@ -214,35 +232,37 @@ function html_file($key, $accept = '', $attr = '')
 }
 
 // Generate <textarea>
-function html_textarea($key, $attr = '') {
+function html_textarea($key, $attr = '')
+{
     $value = encode($GLOBALS[$key] ?? '');
     echo "<textarea id='$key' name='$key' $attr>$value</textarea>";
 }
 
 // Generate table headers <th>
-function table_headers($fields, $sort = '', $dir = '', $href = '') {
+function table_headers($fields, $sort = '', $dir = '', $href = '')
+{
     // Parse existing href parameters
     parse_str($href, $params);
-    
+
     foreach ($fields as $k => $v) {
         // Set the direction for the next click
         $next_dir = ($k == $sort) ? ($dir == 'asc' ? 'desc' : 'asc') : 'asc';
-        
+
         // Add sort indicators (arrows)
         $arrow = '';
         if ($k == $sort) {
             $arrow = $dir == 'asc' ? ' ▴' : ' ▾';
         }
-        
+
         // Merge parameters with sort and dir
         $url_params = array_merge($params, [
             'sort' => $k,
             'dir' => $next_dir
         ]);
-        
+
         // Build query string
         $query = http_build_query($url_params);
-        
+
         // Build the header link with sort indicator
         echo "<th><a href='?$query'>$v$arrow</a></th>";
     }
@@ -278,12 +298,12 @@ $_err = [];
 
 // Generate <span class='err'>
 //JJ
-function err($key) {
+function err($key)
+{
     global $_err;
     if ($_err[$key] ?? false) {
         echo "<span class='err'>$_err[$key]</span>";
-    }
-    else {
+    } else {
         echo '<span></span>';
     }
 }
@@ -326,7 +346,7 @@ function auto_id($idColumn, $tableName, $idPrefix, $pattern = '/(\d+)$/', $padLe
     }
 
     if (preg_match($pattern, $lastId, $matches)) {
-        $lastIdNum = (int)$matches[1]; 
+        $lastIdNum = (int)$matches[1];
         $newIdNum = $lastIdNum + 1;
     } else {
         throw new Exception("Invalid ID format in the table.");
@@ -344,42 +364,46 @@ $_member = $_SESSION['member'] ?? null;
 $_admin = $_SESSION['admin'] ?? null;
 
 // Login user
-function login($member, $url = '/home.php') {
+function login($member, $url = '/home.php')
+{
     $_SESSION['member'] = $member;
     redirect($url);
 }
 
 // Logout user
-function logout($url = '/index.php') {
+function logout($url = '/index.php')
+{
     unset($_SESSION['member']);
     redirect($url);
 }
 
-function adminlogin($admin, $url = '../admin/adminHome.php') {
+function adminlogin($admin, $url = '../admin/adminHome.php')
+{
     $_SESSION['admin'] = $admin;
     redirect($url);
 }
 
 // Logout user
-function adminlogout($url = '../admin/adminLogin.php') {
+function adminlogout($url = '../admin/adminLogin.php')
+{
     unset($_SESSION['admin']);
     redirect($url);
 }
 
 // Authorization
-function auth(...$roles) {
+function auth(...$roles)
+{
     global $_user;
     if ($_user) {
         if ($roles) {
             if (in_array($_user->role, $roles)) {
                 return; // OK
             }
-        }
-        else {
+        } else {
             return; // OK
         }
     }
-    
+
     redirect('/home.php');
 }
 
@@ -395,7 +419,8 @@ function auth(...$roles) {
 // liawcv1@gmail.com            obyj shnv prpa kzvj
 
 // Initialize and return mail object
-function get_mail() {
+function get_mail()
+{
     require_once 'lib/PHPMailer.php';
     require_once 'lib/SMTP.php';
 
