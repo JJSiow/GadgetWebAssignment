@@ -10,6 +10,8 @@ if (is_get()) {
     }
 }
 
+$profile_pic = !empty($admin_profile_pic) ? htmlspecialchars($admin_profile_pic) : 'admin_default.jpg';
+
 if (is_post()) {
     $admin_name = req('admin_name');
     $admin_phone_no = req('admin_phone_no');
@@ -77,14 +79,18 @@ if (is_post()) {
             $_err['admin_profile_pic'] = 'Maximum 8MB';
         }
     }
-    else {
-        $_err['admin_profile_pic'] = 'Required';
-    }
+    // else {
+    //     $_err['admin_profile_pic'] = 'Required';
+    // }
 
     if (count($_err) == 0) {
         $admin_id = sprintf('A%02d', $no_of_admin + 1);
 
-        $admin_profile_pic = save_photo($photo, '../photos');
+        if (isset($photo)) {
+            $admin_profile_pic = save_photo($photo, '../photos');
+        } else {
+            $admin_profile_pic = 'admin_default.jpg';
+        }
 
         $stm = $_db->prepare('INSERT INTO admin (admin_id, admin_name, admin_phone_no, admin_email, admin_password, admin_profile_pic, admin_status, is_super_admin) VALUES (?, ?, ?, ?, SHA1(?), ?, ?, ?)');
         $stm->execute([$admin_id, $admin_name, $admin_phone_no, $admin_email, $admin_password, $admin_profile_pic, 'Active', 'N']);
@@ -124,7 +130,7 @@ include '../_head.php';
     <div class="drop-zone upload" tabindex="0">
         <p>Drag and drop a photo here or click to select a photo</p>
         <?= html_file('admin_profile_pic', 'image/*') ?>
-        <img class="preview" src="../photos/<?= $admin_profile_pic ?>">
+        <img class="preview" src="../photos/<?= $profile_pic ?>">
     </div>
     <?= err('admin_profile_pic') ?>
 
