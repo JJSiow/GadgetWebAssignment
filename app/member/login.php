@@ -24,6 +24,11 @@ if (is_post()) {
             if ($member_EncrptPassword === $member->member_password) {
                 // Login successful
                 temp('info', 'Login successful');
+                // Store member_id in session
+                $_SESSION['member_id'] = $member->member_id;
+
+                // Redirect to gadget page
+                redirect('../page/gadget.php');
               login($member);
             } else {
                 $_err['member_password'] = 'Incorrect password';
