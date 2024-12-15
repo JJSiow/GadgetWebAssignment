@@ -130,23 +130,23 @@ if (is_post()) {
             <label for="gcategory">Gadget Category:</label>
             <?php
             $category_names = array_map(fn($category) => $category->category_name, $categories);
-            html_select2('gcategory', $category_names, '- Select One -',$gcategory ?? '', );
+            html_select2('gcategory', $category_names, '- Select One -', $gcategory ?? '',);
             ?><br>
             <?= err('gcategory') ?>
 
             <label for="gbrand">Gadget Brand:</label>
             <?php
             $brand_names = array_map(fn($brand) => $brand->brand_name, $brands);
-            html_select2('gbrand', $brand_names, '- Select One -',$gbrand ?? '');
+            html_select2('gbrand', $brand_names, '- Select One -', $gbrand ?? '');
             ?><br>
             <?= err('gbrand') ?>
 
             <label for="gprice">Gadget Price:</label>
-            <?= html_number('gprice', $gprice ?? '10.00', ['min' => '0.01', 'max' => '10000.00', 'step' => '0.01'], 'RM '); ?><br>
+            <?= html_number('gprice', $gprice, ['min' => '0.01', 'max' => '10000.00', 'step' => '0.01'], 'RM '); ?><br>
             <?= err('gprice') ?>
 
             <label for="gstock">Gadget Stock:</label>
-            <?= html_number('gstock', $gstock ?? '0', ['min' => '0', 'max' => '1000', 'step' => '1']); ?><br>
+            <?= html_number('gstock', $gstock, ['min' => '0', 'max' => '1000', 'step' => '1']); ?><br>
             <?= err('gstock') ?>
 
             <label for="gdescribe">Gadget Description:</label>
@@ -154,7 +154,7 @@ if (is_post()) {
             <?= err('gdescribe') ?>
 
             <section>
-                <button id="resetModalBtn">Reset</button>
+                <button id="resetModalBtn" type="button">Reset</button>
                 <button data-confirm="Are you sure to modify this gadget info ?">Update</button>
             </section>
         </div>
