@@ -18,6 +18,11 @@ if (is_post()) {
 
     // Redirect back to the member list with the current page number
     temp('info', 'Status updated');
-    redirect("member_list.php?page=$page");
+    
+    if (isset($_SERVER['HTTP_REFERER'])) {
+        redirect($_SERVER['HTTP_REFERER']);
+    } else {
+        redirect("member_list.php");
+    }
 }
 ?>

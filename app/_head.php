@@ -29,6 +29,9 @@
             <li><a href="/member/member_password.php">Member Password</a></li>
             <li><a href="/admin/admin_list.php">Admin List</a></li>
             <li><a href="/admin/admin_profile.php">Admin Profile</a></li>
+            <li><a href="/page/gadget.php">Product</a></li>
+            <li><a href="/page/order_cart.php">order_cart</a></li>
+            <li><a href="/page/order_item.php">order_item</a></li>
         </ul>
     </nav>
     <a class="logout" href="../member/register.php"><img class="logo" src="images/sda.jpg" alt="logo"></a>
