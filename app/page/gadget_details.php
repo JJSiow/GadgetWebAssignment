@@ -10,14 +10,14 @@ include '../_head.php';
 // Check if 'gadget_id' is passed in the URL
 if (isset($_GET['gadget_id'])) {
     $gadget_id = $_GET['gadget_id'];
-
 } else {
     // Redirect to the main page if no gadget_id is provided
     header("Location: gadget.php");
     exit();
 }
 
-echo "Gadget ID: " . $gadget_id; 
+// Display Gadget ID (for debugging or testing)
+echo "Gadget ID: " . htmlspecialchars($gadget_id);
 
 // Check if the user is logged in (based on session)
 if (!isset($_SESSION['member_id'])) {
@@ -36,15 +36,17 @@ if ($conn->connect_error) {
 
 // Fetch the gadget details from the database using the gadget_id
 $query = "
-    SELECT g.gadget_id, g.gadget_name, g.gadget_price, g.gadget_stock, g.gadget_photo, g.gadget_description, 
-           c.category_name, 
-           b.brand_name
+    SELECT 
+        g.gadget_id, g.gadget_name, g.gadget_price, g.gadget_stock, g.gadget_description, 
+        c.category_name, 
+        b.brand_name, 
+        ga.photo_path
     FROM gadget g
     LEFT JOIN category c ON g.category_id = c.category_id
     LEFT JOIN brand b ON g.brand_id = b.brand_id
+    LEFT JOIN gallery ga ON g.gadget_id = ga.gadget_id
     WHERE g.gadget_id = ?
 ";
-
 
 // Prepare the query and bind parameters
 $stmt = $conn->prepare($query);
@@ -71,7 +73,7 @@ $gadget = $result->fetch_assoc();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details - <?= $gadget['gadget_name'] ?></title>
+    <title>Product Details - <?= htmlspecialchars($gadget['gadget_name']) ?></title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -83,11 +85,11 @@ $gadget = $result->fetch_assoc();
     <div class="product-details">
         <div class="product-info">
             <!-- Display gadget photo -->
-            <img src="<?= htmlspecialchars($gadget['gadget_photo']) ?>" 
+            <img src="/uploads/<?= htmlspecialchars($gadget['photo_path']) ?>" 
                  alt="<?= htmlspecialchars($gadget['gadget_name']) ?>" class="product-image">
             
             <!-- Display gadget name -->
-            <h2 class="product-name"><?= $gadget['gadget_name'] ?></h2>
+            <h2 class="product-name"><?= htmlspecialchars($gadget['gadget_name']) ?></h2>
             
             <!-- Display gadget description -->
             <p class="product-description"><?= htmlspecialchars($gadget['gadget_description']) ?></p>
@@ -106,8 +108,8 @@ $gadget = $result->fetch_assoc();
 
             <!-- Add to Cart Form -->
             <form action="gadget.php" method="POST">
-                <input type="hidden" name="gadget_id" value="<?= $gadget['gadget_id'] ?>">
-                <input type="number" name="quantity" value="1" min="1" max="<?= $gadget['gadget_stock'] ?>" required>
+                <input type="hidden" name="gadget_id" value="<?= htmlspecialchars($gadget['gadget_id']) ?>">
+                <input type="number" name="quantity" value="1" min="1" max="<?= htmlspecialchars($gadget['gadget_stock']) ?>" required>
                 <button type="submit" name="add_to_cart" class="add-to-cart-btn">Add to Cart</button>
             </form>
         </div>

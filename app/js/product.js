@@ -23,6 +23,10 @@ function updateTotalPrice() {
     document.getElementById("total-price").textContent = "RM " + totalPrice.toFixed(2);
 }
 
+function submitForm() {
+    document.getElementById("filterForm").submit();
+}
+
 async function updateQuantity(cartId, quantity) {
     const formData = new FormData();
     formData.append("update_quantity", true);

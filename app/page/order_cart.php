@@ -54,9 +54,16 @@ if (isset($_POST['update_quantity'])) {
 
 // Fetch cart items for the user
 $query = "
-    SELECT oc.cart_id, oc.quantity, g.gadget_id, g.gadget_name, g.gadget_price, g.gadget_photo
+    SELECT 
+        oc.cart_id, 
+        oc.quantity, 
+        g.gadget_id, 
+        g.gadget_name, 
+        g.gadget_price, 
+        ga.photo_path
     FROM order_cart oc
     JOIN gadget g ON oc.gadget_id = g.gadget_id
+    LEFT JOIN gallery ga ON g.gadget_id = ga.gadget_id
     WHERE oc.member_id = ?
 ";
 $stmt = $conn->prepare($query);
@@ -97,7 +104,7 @@ $result = $stmt->get_result();
                                 value="<?= $item['cart_id'] ?>">
                         </td>
                         <td>
-                            <img src="images/<?= htmlspecialchars($item['gadget_photo']) ?>" alt="<?= $item['gadget_name'] ?>" class="cart-gadget-img">
+                            <img src="/uploads/<?= htmlspecialchars($item['photo_path']) ?>" alt="<?= $item['gadget_name'] ?>" class="cart-gadget-img">
                             <span><?= htmlspecialchars($item['gadget_name']) ?></span>
                         </td>
                         <td class="item-price" data-price="<?= $item['gadget_price'] ?>">RM
