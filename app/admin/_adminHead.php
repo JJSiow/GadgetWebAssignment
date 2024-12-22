@@ -23,7 +23,7 @@
             <li><a href="../admin/adminLogout.php">Admin Logout</a></li>
             <li><a href="/page/admin_products.php">Product</a></li>
             <li><a href="/page/admin_voucher.php">Voucher</a></li>
-            <li><a href="/page/admin_member.php">Member</a></li>
+            <li><a href="/admin/member_list.php">Member</a></li>
             <li><a href="/page/admin_category.php">Category</a></li>
             <li><a href="/page/admin_brand.php">Brand</a></li>
             </ul>

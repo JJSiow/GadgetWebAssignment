@@ -7,20 +7,11 @@ if (is_post()) {
     $member_name       = req('member_name');
     $member_gender     = req('member_gender');
     $member_password     = req('member_password');
-    $member_address     = req('member_address');
+    $shipping_address     = req('shipping_address');
     $member_email     = req('member_email');
-    $member_phoneNum     = req('member_phoneNum');
+    $member_phone_no     = req('member_phone_no');
+    $member_password     = req('member_password');
 
-
-    // validate email
-    if (!is_unique($member_email, 'member', 'member_email')) {
-        $_err['member_email'] = 'Email had been registered';
-    }
-else if(!filter_var($member_email, FILTER_VALIDATE_EMAIL)){
-    $_err['member_email'] = 'Invalid email format';
-}
-
-    
     // Validate name
     if ($member_name == '') {
         $_err['member_name'] = 'Required';
@@ -29,29 +20,71 @@ else if(!filter_var($member_email, FILTER_VALIDATE_EMAIL)){
         $_err['member_name'] = 'Maximum length 100';
     }
 
+    // Validate phone number
+    if ($member_phone_no == '') {
+        $_err['member_phone_no'] = 'Required';
+    }
+    else if (strlen($member_phone_no) > 11 || strlen($member_phone_no) < 10) {
+        $_err['member_phone_no'] = 'Should be 10-11 digits';
+    }
+    else if (!ctype_digit($member_phone_no)) {
+        $_err['member_phone_no'] = 'Invalid phone number';
+    }
+    else if (is_exists($member_phone_no, 'member', 'member_phone_no')) {
+        $_err['member_phone_no'] = 'Phone number already exists';
+    }
+
     // Validate gender
     if ($member_gender == '') {
         $_err['member_gender'] = 'Required';
     }
     else if (!array_key_exists($member_gender, $_genders)) {
-        $_err['member_name'] = 'Invalid value';
+        $_err['member_gender'] = 'Invalid value';
+    }
+
+    // Validate email
+    if ($member_email == '') {
+        $_err['member_email'] = 'Required';
+    }
+    else if (strlen($member_email) > 100) {
+        $_err['member_email'] = 'Maximum length 100';
+    }
+    else if (!filter_var($member_email, FILTER_VALIDATE_EMAIL)) {
+        $_err['member_email'] = 'Invalid email format';
+    }
+    else if (is_exists($member_email, 'member', 'member_email')) {
+        $_err['member_email'] = 'Email already exists';
+    }
+
+    // Validate shipping address
+    if ($shipping_address == '') {
+        $_err['shipping_address'] = 'Required';
+    }
+
+    // Validate password
+    if ($member_password == '') {
+        $_err['member_password'] = 'Required';
+    }
+    else if (strlen($member_password) > 100) {
+        $_err['member_password'] = 'Maximum length 100';
+    }
+    else if (strlen($member_password) < 8) {
+        $_err['member_password'] = 'Minimum length 8';
     }
 
     // Output
     if (!$_err) {
         // TODO
         if (!$_err) {
-            do{
-            $code = rand(10000,99999);
-            $member_id = "M".$code;
-            }while(!is_unique($member_id, 'member', 'member_id'));
+            $no_of_member = $_db->query('SELECT COUNT(*) FROM member')->fetchColumn();
+            $member_id = sprintf('M%05d', $no_of_member + 1);
             $member_EncrptPassword = sha1($member_password);
             $stm = $_db->prepare('INSERT INTO member
-                                  (member_id, member_name, member_gender,member_phone_no,member_email,shipping_address,member_password,member_profile_pic)
-                                  VALUES(?, ?, ?, ?, ?, ?, ?,?)');
-            $stm->execute([$member_id, $member_name, $member_gender,$member_phoneNum,$member_email,$member_address,$member_EncrptPassword,'default_user.jpg']);
+                                  (member_id, member_name, member_gender,member_phone_no,member_email,shipping_address,member_password,member_profile_pic,member_status)
+                                  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)');
+            $stm->execute([$member_id, $member_name, $member_gender,$member_phone_no,$member_email,$shipping_address,$member_EncrptPassword,'default_user.jpg','Active']);
             
-            temp('info', 'Record inserted');
+            temp('info', 'Account created');
             redirect('/');
         }
     }
@@ -68,9 +101,9 @@ include '../_head.php';
     <?= html_text('member_name', 'maxlength="100"') ?>
     <?= err('member_name') ?>
 
-    <label for="member_phoneNum">Phone Number</label>
-    <?= html_text('member_phoneNum', 'maxlength="11"') ?>
-    <?= err('member_phoneNum') ?>
+    <label for="member_phone_no">Phone Number</label>
+    <?= html_text('member_phone_no', 'maxlength="11"') ?>
+    <?= err('member_phone_no') ?>
 
     <label>Gender</label>
     <?= html_radios('member_gender', $_genders) ?>
@@ -80,9 +113,9 @@ include '../_head.php';
     <?= html_text('member_email', 'maxlength="40"') ?>
     <?= err('member_email') ?>
 
-    <label for="member_address">Shipping Address</label>
-    <?= html_text('member_address', 'maxlength="100"') ?>
-    <?= err('member_address') ?>
+    <label for="shipping_address">Shipping Address</label>
+    <?= html_text('shipping_address', 'maxlength="100"') ?>
+    <?= err('shipping_address') ?>
 
     <label for="member_password">Password</label>
     <?= html_password('member_password', 'maxlength="100"') ?>

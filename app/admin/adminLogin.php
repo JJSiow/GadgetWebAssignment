@@ -24,9 +24,14 @@ if (is_post()) {
             //$admin_EncrptPassword = sha1($admin_password);
             // Verify password
             if (sha1($admin_password) === $admin->admin_password) {
-                // Login successful
-                temp('info', $admin->admin_id.' Login successful');
-                adminlogin($admin);
+                if ($admin->admin_status == 'Disabled') {
+                    $_err['admin_email'] = 'Account blocked';
+                }
+                else {
+                    // Login successful
+                    temp('info', $admin->admin_id.' Login successful');
+                    adminlogin($admin);
+                }
             } else {
                 $_err['admin_password'] = 'Incorrect password';
             }

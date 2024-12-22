@@ -13,7 +13,7 @@ if (is_get()) {
     $member = $stm->fetch();
 
     if (!$member) {
-        temp('info', 'Member not found.');
+        temp('info', 'Please login.');
         redirect('../index.php');
     }
 
@@ -79,9 +79,11 @@ include '../_head.php';
 
 ?>
 
-
-
 <form method="post" class="form">
+    <label for="member_id">Member ID</label>
+    <b><?= $id ?></b>
+    <?= err('member_id') ?>
+
     <label for="member_current_password">Current Password</label>
     <?= html_password('member_current_password', 'maxlength="100"') ?>
     <?= err('member_current_password') ?>

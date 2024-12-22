@@ -1,14 +1,16 @@
 <?php
 require '../_base.php';
 
-// $id = req('id');
-// $id = "A01";
+if ($_admin == null) {
+    temp('info', 'Please login');
+    redirect('/');
+}
+else if ($_admin->is_super_admin == 'N') {
+    temp('info', 'You are not authorized to access this page');
+    redirect('adminHome.php');
+}
 
-// $stm = $_db->prepare('SELECT * FROM admin WHERE admin_id = ?');
-// $stm->execute([$id]);
-// $admin = $stm->fetch();
-
-$arr = $_db->query('SELECT * FROM admin')->fetchAll();
+$arr = $_db->query('SELECT * FROM admin WHERE is_super_admin = "N"')->fetchAll();
 
 // ----------------------------------------------------------------------------
 $_title = 'Admin | Admin Management';

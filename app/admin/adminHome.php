@@ -18,11 +18,10 @@ $_title = 'admin Home';
 include '../admin/_adminHead.php';
 ?>
 
-
+<img src="/photos/<?= $_admin->admin_profile_pic ?>">
 <p>ID : <?= $_admin->admin_id ?></p>
 <p>Name :<?= $_admin->admin_name ?></p>
-<p>Password :<?= $_admin->admin_password ?></p>
-<p>Phone Number :<?= $_admin->admin_phoneNo ?></p>
+<p>Phone Number :<?= $_admin->admin_phone_no ?></p>
 <p>Email :<?= $_admin->admin_email ?></p>
 
 <?php

@@ -1,9 +1,14 @@
 <?php
 require '../_base.php';
 
+if ($_member == null) {
+    temp('info', 'Please login');
+    redirect('/');
+}
+
 // Get member ID from URL parameter
 $id = $_member->member_id;
-// $id = "M00002";
+// $id = "M00001";
 
 if (is_get()) {
     $member_id = req('member_id');
@@ -103,6 +108,14 @@ if (is_post()) {
         $stm = $_db->prepare('UPDATE member SET member_name = ?, member_phone_no = ?, member_gender = ?, member_email = ?, shipping_address = ?, member_profile_pic = ? WHERE member_id = ?');
         $stm->execute([$member_name, $member_phone_no, $member_gender, $member_email, $shipping_address, $member_profile_pic, $id]);
 
+        // Refresh session data with updated member information
+        $stm = $_db->prepare('SELECT * FROM member WHERE member_id = ?');
+        $stm->execute([$id]);
+        $updated_member = $stm->fetch(PDO::FETCH_OBJ);
+
+        $_SESSION['member'] = $updated_member;
+        // $_member = $updated_member; // Update the $_member variable if it's used elsewhere
+
         temp('info', 'Member information updated.');
         redirect('../index.php');
     }
@@ -152,6 +165,7 @@ include '../_head.php';
 
     <section>
         <button type="submit">Save</button>
+        <button type="button" data-post="delete_member_account.php?member_id=<?= $id ?>" data-confirm="Are you sure you want to delete your account permanently?">Delete Account</button>
     </section>
 </form>
 
