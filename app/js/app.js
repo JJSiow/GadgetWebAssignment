@@ -4,7 +4,6 @@ $(() => {
     // When the close element is clicked, hide the modal
     $('.close').on("click", function () {
         $(".form-container").fadeOut().css("display", "none");
-
         window.location.href = "admin_products.php";
     });
 
@@ -12,13 +11,12 @@ $(() => {
     $(window).on("click", function (event) {
         if ($(event.target).is($(".form-container"))) {
             $(".form-container").fadeOut().css("display", "none");
-
             window.location.href = "admin_products.php";
         }
     });
 
     // Photo preview
-    $('label.upload, label.upload_gadget').find('input[type=file]').on('change', e => {
+    $('label.upload').find('input[type=file]').on('change', e => {
         const f = e.target.files[0];
         const img = $(e.target).siblings('img')[0];
 
@@ -55,37 +53,37 @@ $(() => {
 
     var changes = [];
     var updatedText;
-    
+
     $('.edit').on('dblclick', function (e) {
         var $editElement = $(this);
         var currentText = $editElement.text();
         var currentId = $editElement.data('id');
         var updateUrl = $editElement.data('update-url')
-    
+
         var inputContainer = $('<div>', {
             class: 'input-container'
         });
-    
+
         var inputField = $('<input>', {
             type: 'text',
             value: currentText,
             class: 'edit-input'
         });
-    
+
         var saveButton = $('<button>', {
             text: 'Save',
             class: 'save-btn',
-            click: function(event) {
+            click: function (event) {
                 event.stopPropagation(); // Prevent double-click from triggering
-                updatedText = inputField.val().toUpperCase(); 
-    
+                updatedText = inputField.val().toUpperCase();
+
                 // Only add to changes if text actually changed
                 if (updatedText != currentText.toUpperCase()) {
                     changes.push({
                         id: currentId,
                         name: updatedText
                     });
-    
+
                     $.ajax({
                         url: updateUrl,
                         method: 'POST',
@@ -109,21 +107,21 @@ $(() => {
                 }
             }
         });
-    
+
         var cancelButton = $('<button>', {
             text: 'Cancel',
             class: 'cancel-btn',
-            click: function(event) {
-                event.stopPropagation(); 
+            click: function (event) {
+                event.stopPropagation();
                 inputContainer.replaceWith(inputContainer.text(currentText));
             }
         });
-    
+
         inputContainer.append(inputField, saveButton, cancelButton);
         $editElement.html(inputContainer);
         inputField.focus();
-    
-        inputField.on('keydown', function(event) {
+
+        inputField.on('keydown', function (event) {
             if (event.key === 'Enter') {
                 saveButton.click();
             } else if (event.key === 'Escape') {
@@ -131,7 +129,6 @@ $(() => {
             }
         });
     });
-
 });
 
 // ============================================================================

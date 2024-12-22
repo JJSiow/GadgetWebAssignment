@@ -6,7 +6,7 @@ $categories = $_db->query("SELECT category_name FROM category WHERE category_sta
 $brands = $_db->query("SELECT brand_name from brand WHERE brand_status = 'Active'")->fetchAll();
 
 if (is_post()) {
-    $f = get_file('photo');
+    $files = get_files('photos');
     $gname       = req('gname');
     $gcategory   = req('gcategory');
     $gbrand      = req('gbrand');
@@ -18,12 +18,18 @@ if (is_post()) {
     $existingGadget->execute([$gname]);
     $count = $existingGadget->fetchColumn();
 
-    if ($f == null) {
-        $_err['photo'] = 'Gadget Photo is Required';
-    } else if (!str_starts_with($f->type, 'image/')) {
-        $_err['photo'] = 'Invalid format, must be image';
-    } else if ($f->size > 2 * 1024 * 1024) {
-        $_err['photo'] = 'Exceed maximum image size 2 MB';
+    if (!$files || count($files) === 0) {
+        $_err['photos'] = 'At least one photo is required';
+    } else {
+        foreach ($files as $file) {
+            if (!str_starts_with($file->type, 'image/')) {
+                $_err['photos'] = 'Invalid format, all files must be images';
+                break;
+            } elseif ($file->size > 2 * 1024 * 1024) {
+                $_err['photos'] = 'Each image must not exceed 2 MB';
+                break;
+            }
+        }
     }
 
     if (empty($gname)) {
@@ -62,10 +68,11 @@ if (is_post()) {
         $_err['gstock'] = 'Gadget Stock must ranged between 0 and 1000';
     }
 
+    $_db->beginTransaction();
     if (!$_err) {
-        $newGadgetId = $newProductId = auto_id('gadget_id', 'gadget', 'GD_', '/GD_(\d{5})/', 5);
+        $newGadgetId = auto_id('gadget_id', 'gadget', 'GD_', '/GD_(\d{5})/', 5);
 
-        $photo = save_photo($f, '../images');
+        $photos = save_photos($files, '../images');
         $gname = strtoupper($gname);
 
         $fetchCategoryStmt = $_db->prepare('SELECT category_id FROM category WHERE category_name = ?');
@@ -77,9 +84,17 @@ if (is_post()) {
         $brandId = $fetchBrandStmt->fetchColumn();
 
         $stm = $_db->prepare('INSERT INTO gadget
-        (gadget_id, admin_id, gadget_name, gadget_price, category_id, gadget_description, brand_id, gadget_stock, gadget_status, gadget_photo)
-        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-        $stm->execute([$newGadgetId, 'AD_00002', $gname, $gprice, $categoryId, $gdescribe, $brandId, $gstock, 'Active', $photo]);
+        (gadget_id, admin_id, gadget_name, gadget_price, category_id, gadget_description, brand_id, gadget_stock, gadget_status)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $stm->execute([$newGadgetId, 'AD_00002', $gname, $gprice, $categoryId, $gdescribe, $brandId, $gstock, 'Active']);
+
+        // Insert photos into gallery
+        $stm = $_db->prepare('INSERT INTO gallery (gallery_id, photo_path, gadget_id) VALUES (?, ?, ?)');
+        foreach ($photos as $path) {
+            $newGalleryId = auto_id('gallery_id', 'gallery', 'GA_', '/GA_(\d{5})/', 5);
+            $stm->execute([$newGalleryId, $path, $newGadgetId]);
+        }
+        $_db->commit();
 
         temp('info', 'Gadget added successfuly');
         redirect('/page/admin_products.php');
@@ -94,11 +109,23 @@ if (is_post()) {
         <div class="gadgetInfo">
             <span class="close">&times;</span>
 
-            <label for="photo" class="upload_gadget" tabindex="0">
-                <?= html_file('photo', 'image/*', 'hidden') ?>
-                <img src="/images/defaultImage.png">
-            </label>
-            <?= err('photo') ?>
+            <div class="image-carousel">
+                <button type="button" id="prevPhoto" class="carousel-btn">&lt;</button>
+                <div class="image-preview-container">
+                    <label for="photos[]" class="upload_gadget" tabindex="0">
+                        <?= html_file('photos[]', 'image/*', 'multiple hidden') ?>
+                        <img src="/images/defaultImage.png" id="defaultPreview">
+                    </label>
+                    <button type="button" id="deletePhoto" class="control-btn delete-btn" style="display: none;">
+                        Delete
+                    </button>
+                    <button type="button" id="addMorePhotos" class="control-btn add-btn" style="display: none;">
+                        Add More
+                    </button>
+                </div>
+                <button type="button" id="nextPhoto" class="carousel-btn">&gt;</button>
+            </div>
+            <?= err('photos') ?>
 
             <label for="gname">Gadget Name:</label>
             <?= html_text('gname', 'maxlength="50"') ?><br>

@@ -76,6 +76,32 @@ function get_file($key)
     return null;
 }
 
+// Obtain multiple uploaded file --> cast to object
+function get_files($key)
+{
+    $files = $_FILES[$key] ?? null;
+
+    if (!$files || !is_array($files['name'])) {
+        return null; // Return null if no files or invalid structure
+    }
+
+    $uploadedFiles = [];
+
+    foreach ($files['name'] as $index => $name) {
+        if ($files['error'][$index] === 0) {
+            $uploadedFiles[] = (object)[
+                'name' => $files['name'][$index],
+                'type' => $files['type'][$index],
+                'tmp_name' => $files['tmp_name'][$index],
+                'error' => $files['error'][$index],
+                'size' => $files['size'][$index]
+            ];
+        }
+    }
+
+    return $uploadedFiles;
+}
+
 // Crop, resize and save photo
 function save_photo($f, $folder, $width = 200, $height = 200)
 {
@@ -88,6 +114,26 @@ function save_photo($f, $folder, $width = 200, $height = 200)
         ->toFile("$folder/$photo", 'image/jpeg');
 
     return $photo;
+}
+
+function save_photos($files, $folder, $width = 200, $height = 200)
+{
+    $photos = [];
+
+    require_once 'lib/SimpleImage.php';
+
+    foreach ($files as $f) {
+        $photo = uniqid() . '.jpg';
+
+        $img = new SimpleImage();
+        $img->fromFile($f->tmp_name)
+            ->thumbnail($width, $height)
+            ->toFile("$folder/$photo", 'image/jpeg');
+
+        $photos[] = $photo;
+    }
+
+    return $photos;
 }
 
 // Is money?

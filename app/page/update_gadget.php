@@ -27,8 +27,22 @@ if (is_get()) {
     $gdescribe = $s->gadget_description;
     $gprice = $s->gadget_price;
     $gstock = $s->gadget_stock;
-    $_SESSION['gadget_photo'] = $s->gadget_photo;
-    $gadget_photo = $_SESSION['gadget_photo'];
+
+    $images = $_db->prepare('SELECT gallery_id, photo_path FROM gallery WHERE gadget_id = ?');
+    $images->execute([$id]);
+    $gadget_images = $images->fetchAll();
+
+    // Initialize merged_files as an array
+    $_SESSION['merged_files'] = []; 
+
+    foreach ($gadget_images as $image) {
+        // Add existing images to the merged array
+        $_SESSION['merged_files'][] = (object)[
+            'type' => 'image/*',
+            'size' => filesize("../images/{$image->photo_path}"),
+            'path' => "../images/{$image->photo_path}"
+        ];
+    }
 }
 
 if (is_post()) {
@@ -39,8 +53,8 @@ if (is_post()) {
     $gdescribe   = req('gdescribe');
     $gprice      = req('gprice');
     $gstock      = req('gstock');
-    $f     = get_file('gadget_photo');
-    $gadget_photo =  $_SESSION['gadget_photo'];
+    $files = get_files('photos');
+    $merged_files = array_merge($_SESSION['merged_files'] ?? [], $files ?? []); 
 
     if (empty($gname)) {
         $_err['gname'] = 'Gadget Name is required';
@@ -74,21 +88,23 @@ if (is_post()) {
         $_err['gstock'] = 'Gadget Stock must ranged between 0 and 1000';
     }
 
-    if ($f) {
-        if (!str_starts_with($f->type, 'image/')) {
-            $_err['gadget_photo'] = 'Must be image';
-        } else if ($f->size > 1 * 1024 * 1024) {
-            $_err['gadget_photo'] = 'Maximum 1MB';
+    if (count($merged_files) === 0) {
+        $_err['photos'] = 'At least one photo is required';
+    } else {
+        foreach ($merged_files as $file) {
+            if (isset($file->type) && !str_starts_with($file->type, 'image/')) {
+                $_err['photos'] = 'Invalid format, all files must be images';
+                break;
+            } elseif ($file->size > 2 * 1024 * 1024) {
+                $_err['photos'] = 'Each image must not exceed 2 MB';
+                break;
+            }
         }
     }
 
     if (!$_err) {
         $gname = strtoupper($gname);
-
-        if ($f) {
-            unlink("../images/$gadget_photo");
-            $gadget_photo = save_photo($f, '../images');
-        }
+        $photos = save_photos($files, '../images');
 
         $stm = $_db->prepare('
         UPDATE gadget 
@@ -99,14 +115,38 @@ if (is_post()) {
             category_id = (SELECT category_id FROM category WHERE category_name = ? AND category_status = "Active"), 
             gadget_description = ?, 
             brand_id = (SELECT brand_id FROM brand WHERE brand_name = ? AND brand_status = "Active"), 
-            gadget_stock = ?, 
-            gadget_photo = ? 
+            gadget_stock = ?
         WHERE gadget_id = ?');
 
-        $stm->execute(['AD_00002', $gname, $gprice, $gcategory, $gdescribe, $gbrand, $gstock, $gadget_photo, $gid]);
+        $stm->execute(['AD_00002', $gname, $gprice, $gcategory, $gdescribe, $gbrand, $gstock, $gid]);
+
+        $stm = $_db->prepare('INSERT INTO gallery (gallery_id, photo_path, gadget_id) VALUES (?, ?, ?)');
+        foreach ($photos as $path) {
+            $newGalleryId = auto_id('gallery_id', 'gallery', 'GA_', '/GA_(\d{5})/', 5);
+            $stm->execute([$newGalleryId, $path, $gid]);
+        }
 
         temp('info', "Gadget ID : $gid updated successfuly");
         redirect('/page/admin_products.php');
+    }
+
+    if (isset($_POST['action']) && $_POST['action'] === 'delete_image') {
+        $gallery_id = $_POST['gallery_id'];
+        $photo_path = $_POST['photo_path'];
+
+        try {
+            $stm = $_db->prepare('DELETE FROM gallery WHERE gallery_id = ?');
+            $stm->execute([$gallery_id]);
+
+            if (file_exists("../images/$photo_path")) {
+                unlink("../images/$photo_path");
+            }
+            echo json_encode(['success' => true]);
+            exit;
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            exit;
+        }
     }
 }
 // ----------------------------------------------------------------------------
@@ -117,11 +157,43 @@ if (is_post()) {
         <div class="gadgetInfo">
             <span class="close">&times;</span>
 
-            <label for="gadget_photo" class="upload_gadget" tabindex="0">
-                <?= html_file('gadget_photo', 'image/*', 'hidden') ?>
-                <img src="../images/<?= $gadget_photo ?>" alt="Gadget Photo">
-            </label>
-            <?= err('gadget_photo') ?>
+            <div class="image-carousel">
+                <button type="button" id="prevPhoto" class="carousel-btn" style="display: none;">&lt;</button>
+
+                <div class="image-preview-container">
+                    <label for="photos[]" class="upload_gadget" tabindex="0">
+                        <?= html_file('photos[]', 'image/*', 'multiple hidden') ?>
+                        <img id="defaultPreview" class="main-preview" alt="Gadget Preview">
+                    </label>
+
+                    <!-- Hidden container for existing images -->
+                    <div class="existing-images" style="display: none;">
+                        <?php foreach ($gadget_images as $image): ?>
+                            <img
+                                class="existing-image"
+                                src="<?= htmlspecialchars('../images/' . $image->photo_path) ?>"
+                                data-id="<?= htmlspecialchars($image->gallery_id) ?>"
+                                alt="Gadget Preview">
+                        <?php endforeach; ?>
+                    </div>
+
+                    <!-- Control buttons -->
+                    <div class="control-buttons" style="margin-top: 10px; text-align: center;">
+                        <button type="button" id="deletePhotos" class="control-btn delete-btn" style="display: none; margin: 0 5px;">
+                            Delete
+                        </button>
+                        <button type="button" id="addMorePhotos" class="control-btn add-btn" style="display: none; margin: 0 5px;">
+                            Add More
+                        </button>
+                    </div>
+
+                    <!-- Image counter -->
+                    <div id="imageCounter" class="image-counter" style="text-align: center; margin-top: 5px; display: none;"></div>
+                </div>
+
+                <button type="button" id="nextPhoto" class="carousel-btn" style="display: none;">&gt;</button>
+            </div>
+            <?= err('photos') ?>
 
             <label for="gname">Gadget Name:</label>
             <?= html_text('gname', 'maxlength="50"') ?><br>

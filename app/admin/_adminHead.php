@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="/css/adminNav.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="/js/app.js"></script>
+    <script src="/js/multiple_photo.js"></script>
+    <script src="/js/view_gadget.js"></script>
 </head>
 
 <body>
@@ -23,7 +25,7 @@
             <li><a href="../admin/adminLogout.php">Admin Logout</a></li>
             <li><a href="/page/admin_products.php">Product</a></li>
             <li><a href="/page/admin_voucher.php">Voucher</a></li>
-            <li><a href="/page/admin_member.php">Member</a></li>
+            <li><a href="/page/admin_order.php">Order</a></li>
             <li><a href="/page/admin_category.php">Category</a></li>
             <li><a href="/page/admin_brand.php">Brand</a></li>
             </ul>
