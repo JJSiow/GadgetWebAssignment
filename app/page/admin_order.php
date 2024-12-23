@@ -57,6 +57,23 @@ if (is_post()) {
 $_title = 'Order';
 include '../_head.php';
 ?>
+<form method="post" class="flex gap-4">
+    <div>
+        <label for="sorder">Order ID:</label>
+        <input type="text" id="sorder" name="sorder"
+            value="<?= htmlspecialchars($sorder) ?>"
+            placeholder="Search by Order ID">
+    </div>
+    <div>
+        <label for="smember">Member ID:</label>
+        <input type="text" id="smember" name="smember"
+            value="<?= htmlspecialchars($smember) ?>"
+            placeholder="Search by Member ID">
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a href="<?= $_SERVER['PHP_SELF'] ?>" class="btn btn-secondary">Clear</a>
+    </div>
+</form>
 
 <div>
     <button>Pending</button>
@@ -90,7 +107,7 @@ include '../_head.php';
                     <td rowspan="<?= count($group['gadget_details']) + 1 ?>">
                         <form method="POST">
                             <input type="hidden" name="order_id" value="<?= htmlspecialchars($group['order_id']) ?>">
-                            <button type="submit" class="btn btn-primary">Mark as Delivered</button>
+                            <button type="submit" class="btn btn-primary" data-confirm='Are you sure this order delivered?'>Mark as Delivered</button>
                         </form>
                     </td>
                 </tr>
