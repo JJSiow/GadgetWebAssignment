@@ -1,10 +1,12 @@
 <?php
 require '../_base.php';
 
-if ($_member == null) {
-    temp('info', 'Please login');
-    redirect('/');
-}
+// if ($_member == null) {
+//     temp('info', 'Please login as member');
+//     redirect('/');
+// }
+
+auth_member();
 
 // Get member ID from URL parameter
 $id = $_member->member_id;

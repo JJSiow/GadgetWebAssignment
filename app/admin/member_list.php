@@ -1,10 +1,12 @@
 <?php
 require '../_base.php';
 
-if ($_admin == null) {
-    temp('info', 'Please login as admin');
-    redirect('/');
-}
+// if ($_admin == null) {
+//     temp('info', 'Please login as admin');
+//     redirect('/');
+// }
+
+auth_admin();
 
 $sort = req('sort');
 if (!key_exists($sort, $_member_attr)) {

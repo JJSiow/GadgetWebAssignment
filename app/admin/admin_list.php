@@ -1,14 +1,12 @@
 <?php
 require '../_base.php';
 
-if ($_admin == null) {
-    temp('info', 'Please login');
-    redirect('/');
-}
-else if ($_admin->is_super_admin == 'N') {
-    temp('info', 'You are not authorized to access this page');
-    redirect('adminHome.php');
-}
+// if ($_admin->is_super_admin == 'N' || $_admin == null) {
+//     temp('info', 'Please login as super admin');
+//     redirect('adminHome.php');
+// }
+
+auth_super_admin();
 
 $arr = $_db->query('SELECT * FROM admin WHERE is_super_admin = "N"')->fetchAll();
 

@@ -13,7 +13,7 @@ if (is_get()) {
     $member = $stm->fetch();
 
     if (!$member) {
-        temp('info', 'Please login.');
+        temp('info', 'Please login as member.');
         redirect('../index.php');
     }
 

@@ -1,16 +1,11 @@
 <?php
 require '../_base.php';
 // ----------------------------------------------------------------------------
-if (!empty($_SESSION["member"])) {
+if ($_member) {
     redirect('../home.php'); 
 }
 
-// // Initialize login attempt variables if not set
-// if (!isset($_SESSION['login_attempts'])) {
-//     $_SESSION['login_attempts'] = 0;
-// }
-
-// $max_attempts = 3;
+auth_member(false);
 
 if (is_post()) {
 
@@ -42,8 +37,8 @@ if (is_post()) {
                     // Store member_id in session
                     $_SESSION['member'] = $member;
 
-                    // // Reset login attempts on successful login
-                    // $_SESSION['login_attempts'] = 0;
+                    // Reset login attempts on successful login
+                    $_db->prepare('UPDATE member SET login_attempt = 0 WHERE member_id = ?')->execute([$member->member_id]);
 
                     // Redirect to gadget page
                     redirect('../page/gadget.php');
@@ -52,19 +47,24 @@ if (is_post()) {
             } else {
                 $_err['member_password'] = 'Incorrect password';
 
-                // // Increment login_attempts
-                // $_SESSION['login_attempts'] += 1;
+                // Increment login_attempts
+                $_db->prepare('UPDATE member SET login_attempt = login_attempt + 1 WHERE member_id = ?')->execute([$member->member_id]);
 
-                // // Check if max attempts reached
-                // if ($_SESSION['login_attempts'] >= $max_attempts) {
-                //     // Disable account
-                //     $_db->prepare('UPDATE member SET member_status = ? WHERE member_id = ?')->execute(['Disabled', $member->member_id]);
-                //     $_err['member_email'] = 'Account blocked';
-                // }
-                // else {
-                //     $remaining_attempts = $max_attempts - $_SESSION['login_attempts'];
-                //     $_err['member_email'] = 'You have ' . $remaining_attempts . ' login attempt(s) remaining.';
-                // }
+                // Fetch login_attempts
+                $stm = $_db->prepare('SELECT login_attempt FROM member WHERE member_id = ?');
+                $stm->execute([$member->member_id]);
+                $login_attempts = $stm->fetchColumn();
+
+                // Check if max attempts reached
+                if ($login_attempts >= 3) {
+                    // Disable account
+                    $_db->prepare('UPDATE member SET member_status = ? WHERE member_id = ?')->execute(['Disabled', $member->member_id]);
+                    $_err['member_email'] = 'Account blocked';
+                }
+                else {
+                    $remaining_attempts = 3 - $login_attempts;
+                    $_err['member_email'] = 'You have ' . $remaining_attempts . ' login attempt(s) remaining.';
+                }
             }
         } else {
             $_err['member_email'] = 'Email not registered';

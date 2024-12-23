@@ -240,9 +240,6 @@ function html_select($key, $items, $default = '- Select One -', $attr = '')
 {
     $value = encode($GLOBALS[$key] ?? '');
     echo "<select id='$key' name='$key' $attr>";
-    if ($default !== null) {
-        echo "<option value=''>$default</option>";
-    }
     foreach ($items as $id => $text) {
         $state = $id == $value ? 'selected' : '';
         echo "<option value='$id' $state>$text</option>";
@@ -406,8 +403,8 @@ function auto_id($idColumn, $tableName, $idPrefix, $pattern = '/(\d+)$/', $padLe
 // ============================================================================
 
 // Global user object
-$_member = $_SESSION['member'] ?? null;
-$_admin = $_SESSION['admin'] ?? null;
+$_member = isset($_SESSION['member']) ? $_SESSION['member'] : null;
+$_admin = isset($_SESSION['admin']) ? $_SESSION['admin'] : null;
 
 // Login user
 function login($member, $url = '/home.php')
@@ -437,20 +434,41 @@ function adminlogout($url = '../admin/adminLogin.php')
 }
 
 // Authorization
-function auth(...$roles)
-{
-    global $_user;
-    if ($_user) {
-        if ($roles) {
-            if (in_array($_user->role, $roles)) {
-                return; // OK
-            }
-        } else {
-            return; // OK
+function auth_member($requireLogin = true) {
+    global $_member;
+    if ($requireLogin) {
+        if ($_member == null) {
+            temp('info', 'Please login as member');
+            redirect('/');
+        }
+    } 
+    else {
+        if ($_member) {
+            redirect('../home.php');
         }
     }
+}
 
-    redirect('/home.php');
+function auth_admin($requireLogin = true) {
+    global $_admin;
+    if ($requireLogin) {
+        if ($_admin == null) {
+            temp('info', 'Please login as admin');
+            redirect('/');
+        }
+    } else {
+        if ($_admin) {
+            redirect('../admin/adminHome.php');
+        }
+    }
+}
+
+function auth_super_admin() {
+    global $_admin;
+    if ($_admin == null || $_admin->is_super_admin == 'N') {
+        temp('info', 'Please login as super admin');
+        redirect('../admin/adminHome.php');
+    }
 }
 
 // ============================================================================

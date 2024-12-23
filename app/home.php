@@ -2,10 +2,13 @@
 require '_base.php';
 //-----------------------------------------------------------------------------
 
-if (empty($_SESSION["member"])) {
-    temp('info', 'Please login');
-    redirect('/');
-}
+// if ($_member == null) {
+//     temp('info', 'Please login as member');
+//     redirect('/');
+// }
+
+auth_member();
+
 // ----------------------------------------------------------------------------
 $_title = 'Home';
 include '_head.php';

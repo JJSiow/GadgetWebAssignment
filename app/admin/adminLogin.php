@@ -3,9 +3,11 @@
 <?php
 require '../_base.php';
 // ----------------------------------------------------------------------------
-if (!empty($_SESSION["admin"])) {
-    redirect('adminHome.php'); 
-}
+// if ($_admin != null) {
+//     redirect('adminHome.php'); 
+// }
+
+auth_admin(false);
 
 if (is_post()) {
     // Input
@@ -59,6 +61,7 @@ $_title = 'Admin Login';
         <button type="submit">Login</button>
         <button type="reset">Reset</button>
         <a href="../admin/adminForgot_password.php">Forgot password?</a>
+        <a href="../member/login.php">Member Login</a>
     </form>
 </div>
 

@@ -2,16 +2,12 @@
 require '../_base.php';
 //-----------------------------------------------------------------------------
 
-if (!empty($_SESSION["admin"])) {
-  // $admin_id = $_SESSION["admin_id"];
+// if ($_admin == null) {
+//     temp('info', 'Please login as admin');
+//     redirect('/');
+// }
 
-  //  $stm = $_db->prepare('SELECT * FROM admin WHERE admin_id = ?');
-  //  $stm->execute([$admin_id]);
-  //  $admin = $stm->fetch(PDO::FETCH_ASSOC);
-} else {
-  temp('info', 'Please login');
-  redirect('adminLogin.php');
-}
+auth_admin();
 
 // ----------------------------------------------------------------------------
 $_title = 'admin Home';
