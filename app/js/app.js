@@ -4,7 +4,6 @@ $(() => {
     // When the close element is clicked, hide the modal
     $('.close').on("click", function () {
         $(".form-container").fadeOut().css("display", "none");
-
         window.location.href = "admin_products.php";
     });
 
@@ -12,13 +11,12 @@ $(() => {
     $(window).on("click", function (event) {
         if ($(event.target).is($(".form-container"))) {
             $(".form-container").fadeOut().css("display", "none");
-
             window.location.href = "admin_products.php";
         }
     });
 
     // Photo preview
-    $('label.upload, label.upload_gadget').find('input[type=file]').on('change', e => {
+    $('label.upload').find('input[type=file]').on('change', e => {
         const f = e.target.files[0];
         const img = $(e.target).siblings('img')[0];
 
@@ -55,37 +53,80 @@ $(() => {
 
     var changes = [];
     var updatedText;
-    
-    $('.edit').on('dblclick', function (e) {
+
+    $('.edit, .edit2').on('dblclick', function (e) {
         var $editElement = $(this);
-        var currentText = $editElement.text();
+        // Prevent re-initialization if already in edit mode
+        if ($editElement.find('.input-container').length > 0) {
+            return; // Exit if already editing
+        }
+
         var currentId = $editElement.data('id');
-        var updateUrl = $editElement.data('update-url')
-    
+        var updateUrl = $editElement.data('update-url');
+        var isEditableText = $editElement.hasClass('edit');
+        var isEditableNumber = $editElement.hasClass('edit2');
+        var currentText = $editElement.text().trim();
+
+        console.log(currentText);
+        if (isEditableNumber) {
+            currentText = currentText.startsWith('RM ')
+                ? parseFloat(currentText.replace('RM ', '').replace(/,/g, '').trim()) 
+                : parseFloat(currentText.replace(/,/g, '').trim()); 
+
+            console.log(currentText);
+            if (isNaN(currentText)) currentText = 0; 
+        }
+
         var inputContainer = $('<div>', {
             class: 'input-container'
         });
-    
+
+        if (isEditableNumber) {
+            var rmLabel = $('<span>', {
+                text: 'RM ',
+                class: 'rm-label'
+            });
+            inputContainer.append(rmLabel); // Add RM before the input field
+        }
+
         var inputField = $('<input>', {
-            type: 'text',
-            value: currentText,
-            class: 'edit-input'
+            type: isEditableNumber ? 'number' : 'text',
+            value: isEditableNumber ? currentText.toFixed(2) : currentText,
+            class: isEditableNumber ? 'edit2-input' : 'edit-input',
+            step: isEditableNumber ? '0.01' : null,
+            min: isEditableNumber ? '0.01' : null,
+            max: isEditableNumber ? '10000.00' : null
         });
-    
+
         var saveButton = $('<button>', {
             text: 'Save',
             class: 'save-btn',
-            click: function(event) {
+            click: function (event) {
                 event.stopPropagation(); // Prevent double-click from triggering
-                updatedText = inputField.val().toUpperCase(); 
-    
+                updatedText = inputField.val();
+                console.log(updatedText);
+
+                if (isEditableNumber) {
+                    updatedText = parseFloat(updatedText).toFixed(2);
+                    if (isNaN(updatedText)) {
+                        alert('Invalid number');
+                        return;
+                    }
+                    if (updatedText < 0) {
+                        alert('The value cannot be negative. Please enter a positive number.');
+                        return;
+                    }
+                } else if (isEditableText) {
+                    updatedText = updatedText.trim().toUpperCase(); // Convert to uppercase for text input
+                }
+
                 // Only add to changes if text actually changed
-                if (updatedText != currentText.toUpperCase()) {
+                if (updatedText != currentText.toString()) {
                     changes.push({
                         id: currentId,
                         name: updatedText
                     });
-    
+
                     $.ajax({
                         url: updateUrl,
                         method: 'POST',
@@ -94,36 +135,69 @@ $(() => {
                         },
                         success: function (response) {
                             console.log('Server response:', response);
-                            $editElement.text(updatedText);
+                            if (isEditableNumber) {
+                                const formattedText = `RM ${parseFloat(updatedText).toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                })}`;
+                                $editElement.text(formattedText);
+                                inputContainer.replaceWith(formattedText);
+                            } else {
+                                $editElement.text(updatedText);
+                                inputContainer.replaceWith(updatedText);
+                            }
                             changes = [];
-                            inputContainer.replaceWith(inputContainer.text(updatedText));
                         },
                         error: function (xhr, status, error) {
-                            console.error('Error updating category:', error);
-                            alert('Error updating category');
-                            inputContainer.replaceWith(inputContainer.text(currentText));
+                            console.error('Error updating:', error);
+                            alert('Error updating');
+                            if (isEditableNumber) {
+                                const formattedText = `RM ${parseFloat(currentText).toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                })}`;
+                                inputContainer.replaceWith(formattedText);
+                            } else {
+                                inputContainer.replaceWith(currentText);
+                            }
                         }
                     });
                 } else {
-                    inputContainer.replaceWith(inputContainer.text(currentText));
+                    if (isEditableNumber) {
+                        const formattedText = `RM ${parseFloat(currentText).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        })}`;
+                        inputContainer.replaceWith(formattedText);
+                    } else {
+                        inputContainer.replaceWith(currentText);
+                    }
                 }
             }
         });
-    
+
         var cancelButton = $('<button>', {
             text: 'Cancel',
             class: 'cancel-btn',
-            click: function(event) {
-                event.stopPropagation(); 
-                inputContainer.replaceWith(inputContainer.text(currentText));
+            click: function (event) {
+                event.stopPropagation();
+                if (isEditableNumber) {
+                    const formattedText = `RM ${parseFloat(currentText).toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    })}`;
+                    inputContainer.replaceWith(formattedText);
+                } else {
+                    inputContainer.replaceWith(currentText);
+                }
             }
         });
-    
+
         inputContainer.append(inputField, saveButton, cancelButton);
         $editElement.html(inputContainer);
         inputField.focus();
-    
-        inputField.on('keydown', function(event) {
+
+        inputField.on('keydown', function (event) {
             if (event.key === 'Enter') {
                 saveButton.click();
             } else if (event.key === 'Escape') {
@@ -131,7 +205,6 @@ $(() => {
             }
         });
     });
-
 });
 
 // ============================================================================

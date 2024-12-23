@@ -1,6 +1,6 @@
 <?php
 require_once '../_base.php';
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------- 
 
 $id = req('id');
 $stm = $_db->prepare(
@@ -11,7 +11,11 @@ $stm = $_db->prepare(
      WHERE gadget_id = ?'
 );
 $stm->execute([$id]);
-$s = $stm->fetch();
+$s = $stm->fetch(PDO::FETCH_OBJ);
+
+$gallery = $_db->prepare('SELECT * FROM gallery WHERE gadget_id = ?');
+$gallery->execute([$id]);
+$s2 = $gallery->fetchAll(PDO::FETCH_ASSOC);
 
 if (!$s) {
     redirect('/');
@@ -25,9 +29,6 @@ $brandName = htmlspecialchars($s->brand_name);
 $description = htmlspecialchars($s->gadget_description);
 $price = htmlspecialchars($s->gadget_price);
 $stock = htmlspecialchars($s->gadget_stock);
-$_SESSION['gadget_photo'] = $s->gadget_photo;
-$gadget_photo = $_SESSION['gadget_photo'];
-
 // ----------------------------------------------------------------------------
 ?>
 
@@ -36,8 +37,20 @@ $gadget_photo = $_SESSION['gadget_photo'];
         <div class="gadgetInfo">
             <span class="close">&times;</span>
 
-            <input type="file" id="gadget_photo" name="gadget_photo" accept="image/*" class="hidden-input" disabled>
-            <img src="../images/<?= $gadget_photo ?>" alt="Gadget Photo">
+            <div class="gallery-photos-container">
+                <button type="button" class="prev-btn">&#10094;</button>
+
+                <div class="gallery-photos">
+                    <?php foreach ($s2 as $index => $photo) { ?>
+                        <img src="../images/<?= htmlspecialchars($photo['photo_path']) ?>"
+                             alt="Gadget Photo"
+                             class="gadget-photo <?= $index === 0 ? 'active' : 'hidden' ?>"
+                             data-index="<?= $index ?>">
+                    <?php } ?>
+                </div>
+
+                <button type="button" class="next-btn">&#10095;</button>
+            </div>
 
             <label for="gname">Gadget Name:</label>
             <input type="text" name="gname" id="gname" value="<?= $gadgetName ?>" readonly><br>
@@ -63,5 +76,8 @@ $gadget_photo = $_SESSION['gadget_photo'];
         </div>
     </form>
 </div>
+
+
 <?php
-include '../page/admin_products.php'; ?>
+include '../page/admin_products.php';
+?>

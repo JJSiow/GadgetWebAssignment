@@ -52,30 +52,29 @@ $dir = req('dir');
 $dir = in_array($dir, ['asc', 'desc']) ? $dir : $searchParams['dir'];
 
 // Handle pagination
-$page = req('page', $searchParams['page']);
+$page = is_post() ? 1 : (int)req('page', $searchParams['page']);
 
 // If it's a POST request (new search), update session parameters
 if (is_post()) {
     $searchParams = [
         'sid' => req('sid', $searchParams['sid']), 
         'sname' => req('sname', $searchParams['sname']),
-        'sbrand' => req('sbrand', $searchParams['sbrand']),
-        'scategory' => req('scategory', $searchParams['scategory']),
-        'sprice' => req('sprice', $searchParams['sprice']),
-        'sstock' => req('sstock', $searchParams['sstock']),
+        'sbrand' => req('sbrand', $searchParams['sbrand']?? ''),
+        'scategory' => req('scategory', $searchParams['scategory']?? ''),
+        'sprice' => req('sprice', $searchParams['sprice']?? ''),
+        'sstock' => req('sstock', $searchParams['sstock']?? ''),
         'sstatus' => req('sstatus', $searchParams['sstatus']),
         'sort' => $sort,
         'dir' => $dir,
-        'page' => $page
+        'page' => 1
     ];
-
-    // Save to session
-    $_SESSION['gadget_search_params'] = $searchParams;
+} else {
+    // For GET requests (pagination/sorting), maintain search parameters but update page/sort
+    $searchParams['sort'] = $sort;
+    $searchParams['dir'] = $dir;
+    $searchParams['page'] = $page;
 }
-// Update sort and dir in session if changed
-$searchParams['sort'] = $sort;
-$searchParams['dir'] = $dir;
-$searchParams['page'] = $page;
+
 $_SESSION['gadget_search_params'] = $searchParams;
 
 // Prepare base query
@@ -106,22 +105,22 @@ if ($searchParams['sname']) {
     $params[] = "%{$searchParams['sname']}%";
 }
 
-if ($searchParams['sbrand']) {
+if ($searchParams['sbrand'] ?? '') {
     $conditions[] = "b.brand_name = ?";
     $params[] = $searchParams['sbrand'];
 }
 
-if ($searchParams['scategory']) {
+if ($searchParams['scategory'] ?? '' ) {
     $conditions[] = "c.category_name = ?";
     $params[] = $searchParams['scategory'];
 }
 
-if ($searchParams['sprice']) {
+if ($searchParams['sprice'] ?? '') {
     $conditions[] = "ROUND(g.gadget_price, 2) = ROUND(?, 2)";
     $params[] = $searchParams['sprice'];
 }
 
-if ($searchParams['sstock']) {
+if ($searchParams['sstock'] ?? '') {
     $conditions[] = "g.gadget_stock = ?";
     $params[] = $searchParams['sstock'];
 }
@@ -146,8 +145,9 @@ require_once '../lib/SimplePager2.php';
 $p = new SimplePager2(
     $searchQuery,
     $params,
-    5,
-    $searchParams['page']
+    10,
+    $searchParams['page'],
+    false
 );
 
 $arr = $p->result;
@@ -172,10 +172,10 @@ include '../_head.php';
         <tr>
             <td><?= html_search2('sid', $searchParams['sid']) ?></td>
             <td><?= html_search2('sname', $searchParams['sname']) ?></td>
-            <td><?= html_select2('sbrand', $brands_name,  'All',$searchParams['sbrand']) ?></td>
-            <td><?= html_select2('scategory', $category_name,  'All',$searchParams['scategory']) ?></td>
-            <td><?= html_number('sprice', $searchParams['sprice'], ['min' => '0.01', 'max' => '10000.00', 'step' => '0.01'],'RM '); ?></td>
-            <td><?= html_number('sstock', $searchParams['sstock'], ['min' => '0', 'max' => '1000', 'step' => '1']); ?></td>
+            <td><?= html_select2('sbrand', $brands_name,  'All',$searchParams['sbrand'] ?? '') ?></td>
+            <td><?= html_select2('scategory', $category_name,  'All',$searchParams['scategory'] ?? '') ?></td>
+            <td><?= html_number('sprice', $searchParams['sprice'] ?? '', ['min' => '0.01', 'max' => '10000.00', 'step' => '0.01'],'RM '); ?></td>
+            <td><?= html_number('sstock', $searchParams['sstock'] ?? '', ['min' => '0', 'max' => '1000', 'step' => '1']); ?></td>
             <td><?= html_select2('sstatus', $_status, 'All',$searchParams['sstatus'] ) ?></td>
             <td>
                 <button type="submit">Search</button>
@@ -212,7 +212,10 @@ include '../_head.php';
     <?php endif; ?>
 </table>
 
-<?= $p->html("sort={$searchParams['sort']}&dir={$searchParams['dir']}") ?>
+<?= $p->html(http_build_query([
+    'sort' => $searchParams['sort'],
+    'dir' => $searchParams['dir']
+])); ?>
 
 <?php
 include '../_foot.php'; ?>
