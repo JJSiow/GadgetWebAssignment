@@ -9,7 +9,7 @@ class SimplePager2
     public $result;     // Result set (array of records)
     public $count;      // Item count on the current page
 
-    public function __construct($query, $params, $limit, $page)
+    public function __construct($query, $params, $limit, $page, $choose)
     {
         global $_db;
 
@@ -18,7 +18,11 @@ class SimplePager2
         $this->page = is_numeric($page) ? max((int)$page, 1) : 1;
 
         // Set [item count]
-        $q = preg_replace('/SELECT.+?FROM/is', 'SELECT COUNT(DISTINCT g.gadget_id) FROM', $query, 1);
+        if ($choose) {
+            $q = preg_replace('/SELECT.+FROM/', 'SELECT COUNT(*) FROM', $query, 1);
+        } else {
+            $q = preg_replace('/SELECT.+?FROM/is', 'SELECT COUNT(DISTINCT g.gadget_id) FROM', $query, 1);
+        }
         $stm = $_db->prepare($q);
         $stm->execute($params);
         $this->item_count = (int)$stm->fetchColumn();
