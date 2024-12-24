@@ -85,7 +85,7 @@ $gadget = $result->fetch_assoc();
     <div class="product-details">
         <div class="product-info">
             <!-- Display gadget photo -->
-            <img src="/uploads/<?= htmlspecialchars($gadget['photo_path']) ?>" 
+            <img src="/images/<?= htmlspecialchars($gadget['photo_path']) ?>" 
                  alt="<?= htmlspecialchars($gadget['gadget_name']) ?>" class="product-image">
             
             <!-- Display gadget name -->

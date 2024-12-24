@@ -154,7 +154,7 @@ if (!$result) {
         <div class="sidebar">
             <form action="gadget.php" method="GET" id="filterForm" class="filter-form">
                 <!-- Search -->
-                <input type="text" name="search" placeholder="Search gadgets..." value="<?= htmlspecialchars($search) ?>">
+                <input type="text" name="search" placeholder="Search gadgets..." value="<?= $search ?>">
                 
                 <!-- Search Button -->
                 <button type="submit" name="search_button" class="search-btn">Search</button>
@@ -166,7 +166,7 @@ if (!$result) {
                     $category_result = $conn->query($category_query);
                     while ($category = $category_result->fetch_assoc()) {
                         $checked = ($category['category_name'] == $category_filter) ? 'checked' : '';
-                        echo "<label><input type='radio' name='category' value='" . htmlspecialchars($category['category_name']) . "' onclick='submitForm()' $checked>" . htmlspecialchars($category['category_name']) . "</label><br>";
+                        echo "<label><input type='radio' name='category' value='" . $category['category_name'] . "' onclick='submitForm()' $checked>" . $category['category_name'] . "</label><br>";
                     }
                     ?>
                 </div>
@@ -178,7 +178,7 @@ if (!$result) {
                     $brand_result = $conn->query($brand_query);
                     while ($brand = $brand_result->fetch_assoc()) {
                         $checked = ($brand['brand_name'] == $brand_filter) ? 'checked' : '';
-                        echo "<label><input type='radio' name='brand' value='" . htmlspecialchars($brand['brand_name']) . "' onclick='submitForm()' $checked>" . htmlspecialchars($brand['brand_name']) . "</label><br>";
+                        echo "<label><input type='radio' name='brand' value='" . $brand['brand_name'] . "' onclick='submitForm()' $checked>" . $brand['brand_name'] . "</label><br>";
                     }
                     ?>
                 </div>
@@ -189,21 +189,22 @@ if (!$result) {
         <div class="product-grid">
             <?php while ($gadget = $result->fetch_assoc()): ?>
                 <div class="product-card">
-                    <img src="/images/<?= htmlspecialchars($gadget['photo_path']) ?>" alt="<?= htmlspecialchars($gadget['gadget_name']) ?>" class="product-image">
+                    <img src="/images/<?= $gadget['photo_path'] ?>" alt="<?= $gadget['gadget_name'] ?>" class="product-image">
                     <div class="product-info">
-                        <h3 class="product-name"><?= htmlspecialchars($gadget['gadget_name']) ?></h3>
-                        <p class="product-description"><?= htmlspecialchars(substr($gadget['gadget_description'], 0, 100)) ?>...</p>
-                        <p class="product-price">RM <?= htmlspecialchars($gadget['gadget_price']) ?></p>
-                        <p class="product-category"><?= htmlspecialchars($gadget['category_name']) ?></p>
-                        <p class="product-brand"><?= htmlspecialchars($gadget['brand_name']) ?></p>
-                        <p class="product-stock"><?= htmlspecialchars($gadget['gadget_stock']) ?> in stock</p>
+                        <h3 class="product-name"><?= $gadget['gadget_name'] ?></h3>
+                        <p class="product-description"><?= substr($gadget['gadget_description'], 0, 100) ?>...</p>
+                        <p class="product-price">RM <?= $gadget['gadget_price'] ?></p>
+                        <p class="product-category"><?= $gadget['category_name'] ?></p>
+                        <p class="product-brand"><?= $gadget['brand_name'] ?></p>
+                        <p class="product-stock"><?= $gadget['gadget_stock'] ?> in stock</p>
                         
-                        <button class="view-btn" onclick="window.location.href='/page/gadget_details.php?gadget_id=<?= htmlspecialchars($gadget['gadget_id']) ?>'">View</button>
+                        <button class="view-btn" onclick="window.location.href='/page/gadget_details.php?gadget_id=<?= $gadget['gadget_id'] ?>'">View</button>
 
                         <!-- Add to Cart Form -->
                         <form action="gadget.php" method="POST">
-                            <input type="hidden" name="gadget_id" value="<?= htmlspecialchars($gadget['gadget_id']) ?>">
-                            <input type="number" name="quantity" value="1" min="1" max="<?= htmlspecialchars($gadget['gadget_stock']) ?>" required>
+                            
+                            <input type="hidden" name="gadget_id" value="<?= $gadget['gadget_id'] ?>">
+                            <input type="number" name="quantity" value="1" min="1" max="<?= $gadget['gadget_stock'] ?>" required>
                             <button type="submit" name="add_to_cart" class="add-to-cart-btn">Add to Cart</button>
                         </form>
                     </div>
@@ -212,7 +213,6 @@ if (!$result) {
         </div>
     </div>
 </body>
-</html>
 
 <?php
 // Close the database connection
