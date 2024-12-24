@@ -57,15 +57,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
     
     $order_id = $order_stmt->insert_id;  // Get the order ID
 
-    // Now insert into the `order_item` table
+    // Now insert into the `order_item` table and update gadget stock
     foreach ($cart_items as $item) {
         // Calculate the order price (total price for the item)
         $order_item_price = $item['gadget_price'] * $item['quantity'];
 
+        // Insert into `order_item` table
         $order_item_query = "INSERT INTO order_item (gadget_id, order_id, order_price, member_id) VALUES (?, ?, ?, ?)";
         $order_item_stmt = $conn->prepare($order_item_query);
         $order_item_stmt->bind_param("ssss", $item['gadget_id'], $order_id, $order_item_price, $member_id);  // All are strings (varchar)
         $order_item_stmt->execute();
+
+        // Update gadget stock in the `gadget` table
+        $update_stock_query = "UPDATE gadget SET gadget_stock = gadget_stock - ? WHERE gadget_id = ?";
+        $update_stock_stmt = $conn->prepare($update_stock_query);
+        $update_stock_stmt->bind_param("is", $item['quantity'], $item['gadget_id']); // Bind quantity and gadget_id
+        $update_stock_stmt->execute();
     }
 
     // Remove items from the cart
@@ -88,8 +95,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Checkout</h1>
-
     <form action="checkout.php" method="POST">
         <table>
             <thead>
@@ -103,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
             <tbody>
                 <?php foreach ($cart_items as $item): ?>
                 <tr class="cart-row">
-                    <td><?= htmlspecialchars($item['gadget_name']) ?></td>
+                    <td><?= $item['gadget_name'] ?></td>
                     <td class="item-price">RM <?= number_format($item['gadget_price'], 2) ?></td>
                     <td><?= $item['quantity'] ?></td>
                     <td>RM <?= number_format($item['gadget_price'] * $item['quantity'], 2) ?></td>

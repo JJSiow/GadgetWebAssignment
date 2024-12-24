@@ -64,16 +64,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Initialize variables for search, category filter, and brand filter
+// Initialize variables for search, category filter, brand filter, and price range filter
 $search = '';
 $category_filter = '';
 $brand_filter = '';
+$price_filter = '';
 
 // Check if the form is submitted (via GET)
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $search = $_GET['search'] ?? '';
     $category_filter = $_GET['category'] ?? '';
     $brand_filter = $_GET['brand'] ?? '';
+    $price_filter = $_GET['price'] ?? '';
 }
 
 // Build the query with optional filters
@@ -102,6 +104,23 @@ if (!empty($category_filter)) {
 // Apply the brand filter (if exists)
 if (!empty($brand_filter)) {
     $query .= " AND b.brand_name = ?";
+}
+
+// Apply the price range filter (if exists)
+if (!empty($price_filter)) {
+    $price_ranges = [
+        '1-100' => 'g.gadget_price BETWEEN 1 AND 100',
+        '100-1000' => 'g.gadget_price BETWEEN 100 AND 1000',
+        '1000-2000' => 'g.gadget_price BETWEEN 1000 AND 2000',
+        '2000-4000' => 'g.gadget_price BETWEEN 2000 AND 4000',
+        '4000-6000' => 'g.gadget_price BETWEEN 4000 AND 6000',
+        '6000-10000' => 'g.gadget_price BETWEEN 6000 AND 10000',
+        '>10000' => 'g.gadget_price >= 10000'
+    ];
+
+    if (isset($price_ranges[$price_filter])) {
+        $query .= " AND " . $price_ranges[$price_filter];
+    }
 }
 
 // Prepare the query statement
@@ -141,6 +160,7 @@ if (!$result) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -148,6 +168,7 @@ if (!$result) {
     <link rel="stylesheet" href="/css/gadget.css">
     <script src="/js/product.js" defer></script>
 </head>
+
 <body>
     <div class="store-container">
         <!-- Left Sidebar -->
@@ -155,10 +176,10 @@ if (!$result) {
             <form action="gadget.php" method="GET" id="filterForm" class="filter-form">
                 <!-- Search -->
                 <input type="text" name="search" placeholder="Search gadgets..." value="<?= $search ?>">
-                
+
                 <!-- Search Button -->
                 <button type="submit" name="search_button" class="search-btn">Search</button>
-                
+
                 <h4>Category</h4>
                 <div>
                     <?php
@@ -182,6 +203,26 @@ if (!$result) {
                     }
                     ?>
                 </div>
+
+                <h4>Price Range</h4>
+                <div>
+                    <?php
+                    $price_options = [
+                        '1-100' => 'RM 1 - RM 100',
+                        '100-1000' => 'RM 100 - RM 1000',
+                        '1000-2000' => 'RM 1000 - RM 2000',
+                        '2000-4000' => 'RM 2000 - RM 4000',
+                        '4000-6000' => 'RM 4000 - RM 6000',
+                        '6000-10000' => 'RM 6000 - RM 10000',
+                        '>10000' => '> RM 10000'
+                    ];
+
+                    foreach ($price_options as $value => $label) {
+                        $checked = ($value == $price_filter) ? 'checked' : '';
+                        echo "<label><input type='radio' name='price' value='$value' onclick='submitForm()' $checked> $label</label><br>";
+                    }
+                    ?>
+                </div>
             </form>
         </div>
 
@@ -189,7 +230,10 @@ if (!$result) {
         <div class="product-grid">
             <?php while ($gadget = $result->fetch_assoc()): ?>
                 <div class="product-card">
-                    <img src="/images/<?= $gadget['photo_path'] ?>" alt="<?= $gadget['gadget_name'] ?>" class="product-image">
+                    <a href="/page/gadget_details.php?gadget_id=<?= $gadget['gadget_id'] ?>">
+                        <img src="/images/<?= $gadget['photo_path'] ?>" alt="<?= $gadget['gadget_name'] ?>"
+                            class="product-image">
+                    </a>
                     <div class="product-info">
                         <h3 class="product-name"><?= $gadget['gadget_name'] ?></h3>
                         <p class="product-description"><?= substr($gadget['gadget_description'], 0, 100) ?>...</p>
@@ -197,14 +241,15 @@ if (!$result) {
                         <p class="product-category"><?= $gadget['category_name'] ?></p>
                         <p class="product-brand"><?= $gadget['brand_name'] ?></p>
                         <p class="product-stock"><?= $gadget['gadget_stock'] ?> in stock</p>
-                        
-                        <button class="view-btn" onclick="window.location.href='/page/gadget_details.php?gadget_id=<?= $gadget['gadget_id'] ?>'">View</button>
+
+                        <button class="view-btn"
+                            onclick="window.location.href='/page/gadget_details.php?gadget_id=<?= $gadget['gadget_id'] ?>'">View</button>
 
                         <!-- Add to Cart Form -->
                         <form action="gadget.php" method="POST">
-                            
                             <input type="hidden" name="gadget_id" value="<?= $gadget['gadget_id'] ?>">
-                            <input type="number" name="quantity" value="1" min="1" max="<?= $gadget['gadget_stock'] ?>" required>
+                            <input type="number" name="quantity" value="1" min="1" max="<?= $gadget['gadget_stock'] ?>"
+                                required>
                             <button type="submit" name="add_to_cart" class="add-to-cart-btn">Add to Cart</button>
                         </form>
                     </div>
@@ -212,6 +257,13 @@ if (!$result) {
             <?php endwhile; ?>
         </div>
     </div>
+
+    <script>
+        // Submit the form automatically when a filter is selected
+        function submitForm() {
+            document.getElementById('filterForm').submit();
+        }
+    </script>
 </body>
 
 <?php
