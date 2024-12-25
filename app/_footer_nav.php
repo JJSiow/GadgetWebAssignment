@@ -17,7 +17,7 @@
                 <ul>
                     <li><a href="#">About Us</a></li>
                     <li><a href="/member/register.php">Register</a></li>
-                    <li><a href="/member/login.php">Log In</a></li>
+                    <li><a href="/login.php">Log In</a></li>
                     <li><a href="/member/member_profile.php">Member Profile</a></li>
                     <li><a href="/page/order_item.php">Order</a></li>
                 </ul>

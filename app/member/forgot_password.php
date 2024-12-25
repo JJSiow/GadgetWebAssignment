@@ -58,7 +58,7 @@ if (is_post()) {
         $m->send();
 
         temp('info', 'Email sent');
-        redirect('/member/login.php');
+        redirect('../login.php');
     }
 }
 

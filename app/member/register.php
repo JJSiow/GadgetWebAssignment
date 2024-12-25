@@ -196,6 +196,6 @@ include '../_head.php';
     </section>
 </form>
 
-<a href="/member/login.php">Login</a>
+<a href="/login.php">Login</a>
 <?php
 include '../_foot.php';

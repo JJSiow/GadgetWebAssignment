@@ -441,7 +441,7 @@ function login($member, $url = 'index.php')
 }
 
 // Logout user
-function logout($url = '../login.php')
+function logout($url = '/login.php')
 {
     unset($_SESSION['member']);
     unset($_SESSION['member_id']);

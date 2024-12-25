@@ -28,7 +28,7 @@ if (is_post()) {
         $stm->execute(["Active", $id, $id]);
 
         temp('info', 'You have activate your account successfully');
-        redirect('/member/login.php');
+        redirect('/login.php');
 
     } 
 }
