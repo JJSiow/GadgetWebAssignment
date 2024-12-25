@@ -6,13 +6,9 @@ include '../_head.php';
 
 // ----------------------------------------------------------------------------
 
-if (!isset($_SESSION['member_id'])) {
-    // Redirect to login page if not logged in
-    header("Location: ../member/login.php");
-    exit();
-}
+auth_member();
+$member_id = $_member->member_id; 
 
-$member_id = $_SESSION['member_id']; // Get the logged-in user's member_id
 // Database connection
 $conn = new mysqli("localhost", "root", "", "gadgetwebdb");
 

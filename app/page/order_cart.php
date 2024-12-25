@@ -10,13 +10,8 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-if (!isset($_SESSION['member_id'])) {
-    // Redirect to login page if not logged in
-    header("Location: ../member/login.php");
-    exit();
-}
-
-$member_id = $_SESSION['member_id'];  // Get logged-in member ID
+auth_member();
+$member_id = $_member->member_id;
 
 // Handle item deletion
 if (isset($_GET['delete_cart_id'])) {
