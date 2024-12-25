@@ -55,7 +55,7 @@ $topSellingGadgets = $_db->query("
 $query = "SELECT g.gadget_id, g.gadget_name, c.category_name, g.gadget_stock 
 	FROM gadget g
 	JOIN category c ON g.category_id = c.category_id
-	WHERE g.gadget_stock <= 10 
+	WHERE g.gadget_stock < 10 
 	AND g.gadget_status = 'Active'
 	ORDER BY g.gadget_stock ASC
 	LIMIT 5";
@@ -145,7 +145,7 @@ include '../admin/_adminHead.php';
 <div class="table-container">
 	<div class="table-header">
 		<h3>Low Gadget Stock</h3>
-		<button data-get="../admin/admin_products.php?stock=10&operator=<=">Show More</button>
+		<button data-get="../admin/admin_products.php?stock=10&operator=<">Show More</button>
 	</div>
 	<table class="table">
 		<thead>

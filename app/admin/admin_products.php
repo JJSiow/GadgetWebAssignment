@@ -49,6 +49,34 @@ foreach ($currentStocks as $item) {
     $_SESSION['previous_stock_levels'][$item->gadget_id] = $item->gadget_stock;
 }
 
+$admin_emails = $_db->query("SELECT admin_email, admin_name FROM admin")->fetchAll();
+
+if (!empty($newLowStockItems)) {
+    foreach ($admin_emails as $admin) {
+        $m = get_mail();
+        $m->addAddress($admin->admin_email, $admin->admin_name);
+        $m->isHTML(true);
+        $m->Subject = 'New Low Stock Alert';
+
+        $itemList = '';
+        foreach ($newLowStockItems as $item) {
+            $itemList .= "<li><strong>{$item->gadget_name}</strong> - {$item->gadget_stock} units remaining</li>";
+        }
+
+        $m->Body = "
+        <p>Dear {$admin->admin_name},</p>
+        <h1 style='color: red'>Low Stock Warning</h1>
+        <p>The following items have dropped below 10 units:</p>
+        <ul>
+            $itemList
+        </ul>
+        <p>Please take necessary action to restock.</p>
+        <p>From, 📦 Stock Management System</p>
+    ";
+        $m->send();
+    }
+}
+
 if (is_get()) {
     $stock = req('stock');
     $operator = req('operator');
@@ -274,7 +302,7 @@ include '../admin/_adminHead.php';
             if ($gadget->gadget_stock == 0) {
                 $rowColor = 'background-color: #ffcdd2;';
                 $stock_status = "Out Of Stock";
-            } elseif ($gadget->gadget_stock <= 10) {
+            } elseif ($gadget->gadget_stock < 10) {
                 $rowColor = 'background-color: #fff59d;';
                 $stock_status = "Low Stock";
             } else {
