@@ -88,6 +88,3 @@ while ($item = $order_result->fetch_assoc()) {
 include '../_foot.php';
 $conn->close();
 ?>
-
-
-<?php include '../_foot.php'; ?>

@@ -19,38 +19,6 @@ body {
     grid: auto auto 1fr auto / auto;
 }
 
-header {
-    background-color: #ccc;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 5%;
-}
-
-header li,
-header a,
-header button {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 500;
-    font-size: 16px;
-    color: #edf0f1;
-    text-decoration: none;
-}
-
-header>a>img {
-    size: 20px;
-    color: aqua;
-}
-
-.user_menu_bar {
-    list-style: none;
-}
-
-.user_menu_bar li {
-    display: inline-block;
-    padding: 0px 20px;
-}
-
 .admin_menu_bar li a {
     transition: all 0.3s ease 0s;
 }
@@ -147,15 +115,31 @@ main h1 {
 }
 
 @keyframes fade {
-      0% { top: -100px; opacity: 0; }
-     10% { top:  100px; opacity: 1; }
-     90% { top:  100px; opacity: 1; }
-    100% { top: -100px; opacity: 0; }
+    0% {
+        top: -100px;
+        opacity: 0;
+    }
+
+    10% {
+        top: 100px;
+        opacity: 1;
+    }
+
+    90% {
+        top: 100px;
+        opacity: 1;
+    }
+
+    100% {
+        top: -100px;
+        opacity: 0;
+    }
 }
 
 /* admin_products */
 .form-container {
-    display: flex; /* Initially hidden */
+    display: flex;
+    /* Initially hidden */
     position: fixed;
     top: 0;
     left: 0;
@@ -166,7 +150,8 @@ main h1 {
     align-items: center;
     justify-content: center;
     z-index: 1;
-    overflow: auto; /* Enable scroll if needed */
+    overflow: auto;
+    /* Enable scroll if needed */
 }
 
 .gadgetInfo {
@@ -198,10 +183,12 @@ main h1 {
     cursor: pointer;
 }
 
-.form-container img, .upload_gadget, .view_gadget {
+.form-container img,
+.upload_gadget,
+.view_gadget {
     display: flex;
     justify-content: center;
-    align-items: center; 
+    align-items: center;
     flex-direction: column;
     width: 160px;
     height: 160px;
@@ -209,11 +196,12 @@ main h1 {
     object-fit: cover;
     border: 1px solid #333;
     cursor: pointer;
-    margin: 5px auto; 
+    margin: 5px auto;
 }
 
 .hidden-input {
-    display: none; /* Hides the file input */
+    display: none;
+    /* Hides the file input */
 }
 
 /* save button */
@@ -227,7 +215,8 @@ main h1 {
     margin-right: 5px;
 }
 
-.save-btn, .cancel-btn {
+.save-btn,
+.cancel-btn {
     margin-left: 5px;
     padding: 2px 5px;
 }
@@ -256,5 +245,3 @@ label>* {
 .form>section {
     grid-column: 1 / -1;
 }
-
-

@@ -9,57 +9,124 @@ if (is_post()) {
     $member_password     = req('member_password');
     $member_address     = req('member_address');
     $member_email     = req('member_email');
-    $member_phoneNum     = req('member_phoneNum');
+    $member_phone_no     = req('member_phone_no');
+    $member_passwordconfirm     = req('member_passwordconfirm');
 
 
     // validate email
-    if (!is_unique($member_email, 'member', 'member_email')) {
+    if ($member_email == '') {
+        $_err['member_email'] = 'Required';
+    } else if (!is_unique($member_email, 'member', 'member_email')) {
         $_err['member_email'] = 'Email had been registered';
+    } else if (!filter_var($member_email, FILTER_VALIDATE_EMAIL)) {
+        $_err['member_email'] = 'Invalid email format';
     }
-else if(!filter_var($member_email, FILTER_VALIDATE_EMAIL)){
-    $_err['member_email'] = 'Invalid email format';
-}
 
-    
+
     // Validate name
     if ($member_name == '') {
         $_err['member_name'] = 'Required';
-    }
-    else if (strlen($member_name) > 100) {
+    } else if (strlen($member_name) > 100) {
         $_err['member_name'] = 'Maximum length 100';
+    }
+
+    if ($member_phone_no == '') {
+        $_err['member_phone_no'] = 'Required';
     }
 
     // Validate gender
     if ($member_gender == '') {
         $_err['member_gender'] = 'Required';
-    }
-    else if (!array_key_exists($member_gender, $_genders)) {
+    } else if (!array_key_exists($member_gender, $_genders)) {
         $_err['member_name'] = 'Invalid value';
     }
 
+    if ($member_password == '') {
+        $_err['member_password'] = 'Required';
+    }
+
+    if ($member_passwordconfirm == '') {
+        $_err['member_passwordconfirm'] = 'Required';
+    } else if ($member_passwordconfirm != $member_password) {
+        $_err['member_passwordconfirm'] = 'Not Match';
+    }
+
+    if($_POST['g-recaptcha-response'] == ""){
+        $_err['g-recaptcha-response'] = 'google recaptcha does not response';
+    }else{
+
+    $secret = '6Lc4AqUqAAAAAD3xemwtZ433ZDXxMIak1Eds0r9U';
+    $verifyResponse = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . $secret . '&response=' . $_POST['g-recaptcha-response']);
+    $responseData = json_decode($verifyResponse);
+    if (!$responseData->success) {
+        $_err['g-recaptcha-response'] = 'robot validation failed';
+    }
+}
+
     // Output
+
+    // TODO
     if (!$_err) {
-        // TODO
-        if (!$_err) {
-            do{
-            $code = rand(10000,99999);
-            $member_id = "M".$code;
-            }while(!is_unique($member_id, 'member', 'member_id'));
-            $member_EncrptPassword = sha1($member_password);
-            $stm = $_db->prepare('INSERT INTO member
-                                  (member_id, member_name, member_gender,member_phone_no,member_email,shipping_address,member_password,member_profile_pic)
-                                  VALUES(?, ?, ?, ?, ?, ?, ?,?)');
-            $stm->execute([$member_id, $member_name, $member_gender,$member_phoneNum,$member_email,$member_address,$member_EncrptPassword,'default_user.jpg']);
-            
-            temp('info', 'Record inserted');
-            redirect('/');
-        }
+        do {
+            $code = rand(10000, 99999);
+            $member_id = "M" . $code;
+        } while (!is_unique($member_id, 'member', 'member_id'));
+        $member_EncrptPassword = sha1($member_password);
+        $stm = $_db->prepare('INSERT INTO member
+                                  (member_id, member_name, member_gender,member_phone_no,member_email,shipping_address,member_password,member_profile_pic,member_status)
+                                  VALUES(?, ?, ?, ?, ?, ?, ?,?,?)');
+        $stm->execute([$member_id, $member_name, $member_gender, $member_phone_no, $member_email, $member_address, $member_EncrptPassword, 'default_user.jpg', 'Inactive']);
+
+        // TODO: (2) Generate token id
+        $id = sha1(uniqid() . rand());
+
+        // TODO: (3) Delete old and insert new token
+        $stm = $_db->prepare('
+            DELETE FROM token WHERE user_id = ? AND token_type = ?;
+
+            INSERT INTO token (id, expire, user_id,token_type)
+            VALUES (?, ADDTIME(NOW(), "00:05"), ?,?);
+        ');
+        $stm->execute([$member_id,'Activate', $id, $member_id,'Activate']);
+
+        // TODO: (4) Generate token url
+        $url = base("account_verify.php?id=$id");
+
+        // TODO: (5) Send email
+        $m = get_mail();
+        $m->addAddress($member_email, $member_name);
+        $m->isHTML(true);
+        $m->Subject = 'Activate Account';
+        $m->Body = "
+            <img src='cid:photo'
+                 style='width: 200px; height: 200px;
+                        border: 1px solid #333'>
+            <p>Dear $member_name,<p>
+            <h1 style='color: red'>Activate Account</h1>
+            <p>
+            If this action is not done by yourself. Please ignore the email.<br>
+                Please click <a href='$url'>here</a>
+                to activate your account.
+            </p>
+            <p>From, 😺 Admin</p>
+        ";
+        $m->send();
+
+        temp('info', 'Email sent');
+        redirect('/login.php');
     }
 }
 // ----------------------------------------------------------------------------
 $_title = 'Register';
 include '../_head.php';
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
 
 <form method="post" class="form">
 
@@ -68,9 +135,9 @@ include '../_head.php';
     <?= html_text('member_name', 'maxlength="100"') ?>
     <?= err('member_name') ?>
 
-    <label for="member_phoneNum">Phone Number</label>
-    <?= html_text('member_phoneNum', 'maxlength="11"') ?>
-    <?= err('member_phoneNum') ?>
+    <label for="member_phone_no">Phone Number</label>
+    <?= html_text('member_phone_no', 'maxlength="11"') ?>
+    <?= err('member_phone_no') ?>
 
     <label>Gender</label>
     <?= html_radios('member_gender', $_genders) ?>
@@ -88,12 +155,19 @@ include '../_head.php';
     <?= html_password('member_password', 'maxlength="100"') ?>
     <?= err('member_password') ?>
 
+    <label for="member_passwordconfirm">Confirm Password</label>
+    <?= html_password('member_passwordconfirm', 'maxlength="100"') ?>
+    <?= err('member_passwordconfirm') ?>
+
+    <div class="g-recaptcha" data-sitekey="6Lc4AqUqAAAAAJXaWZC7V2bFfeasBlRlqdwOZLBq"></div>
+    <?= err('g-recaptcha-response') ?>
+
     <section>
         <button>Submit</button>
         <button type="reset">Reset</button>
     </section>
 </form>
 
-<a href="/index.php">Login</a>
+<a href="/member/login.php">Login</a>
 <?php
 include '../_foot.php';

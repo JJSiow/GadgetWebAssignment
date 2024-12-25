@@ -5,7 +5,7 @@ include '_base.php';
 // ----------------------------------------------------------------------------
 
 // TODO: (1) Delete expired tokens
-$_db->query('DELETE FROM token WHERE expire < NOW()');
+$_db->query('DELETE FROM token WHERE expire < NOW() AND token_type="ForgotPassword"');
 
 $id = req('id');
 $role = req('role');

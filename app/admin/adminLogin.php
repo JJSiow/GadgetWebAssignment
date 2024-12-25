@@ -58,5 +58,5 @@ $_title = 'Admin Login';
 </div>
 
 <?php
-include '../_foot.php';
+// include '../_foot.php';
 

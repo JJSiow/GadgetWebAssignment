@@ -10,11 +10,9 @@ if (is_post()) {
     // Validate: email
     if ($email == '') {
         $_err['email'] = 'Required';
-    }
-    else if (!is_email($email)) {
+    } else if (!is_email($email)) {
         $_err['email'] = 'Invalid email';
-    }
-    else if (!is_exists($email, 'member', 'member_email')) {
+    } else if (!is_exists($email, 'member', 'member_email')) {
         $_err['email'] = 'Not exists';
     }
 
@@ -30,12 +28,12 @@ if (is_post()) {
 
         // TODO: (3) Delete old and insert new token
         $stm = $_db->prepare('
-            DELETE FROM token WHERE user_id = ?;
+            DELETE FROM token WHERE user_id = ? AND token_type = ?;
 
-            INSERT INTO token (id, expire, user_id)
-            VALUES (?, ADDTIME(NOW(), "00:05"), ?);
+            INSERT INTO token (id, expire, user_id,token_type)
+            VALUES (?, ADDTIME(NOW(), "00:05"), ?,?);
         ');
-        $stm->execute([$u->member_id, $id, $u->member_id]);
+        $stm->execute([$u->member_id, 'ForgotPassword', $id, $u->member_id, 'ForgotPassword']);
 
         // TODO: (4) Generate token url
         $url = base("token.php?id=$id&role=member");
@@ -49,7 +47,7 @@ if (is_post()) {
             <img src='cid:photo'
                  style='width: 200px; height: 200px;
                         border: 1px solid #333'>
-            <p>Dear $u->name,<p>
+            <p>Dear $u->member_name,<p>
             <h1 style='color: red'>Reset Password</h1>
             <p>
                 Please click <a href='$url'>here</a>
@@ -60,7 +58,7 @@ if (is_post()) {
         $m->send();
 
         temp('info', 'Email sent');
-        redirect('/');
+        redirect('/member/login.php');
     }
 }
 

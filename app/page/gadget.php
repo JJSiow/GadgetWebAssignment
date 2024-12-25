@@ -6,13 +6,14 @@ include '../_head.php';
 
 // ----------------------------------------------------------------------------
 
-if (!isset($_SESSION['member_id'])) {
+if (!isset($_SESSION['member'])) {
     // Redirect to login page if not logged in
     header("Location: ../member/login.php");
     exit();
 }
 
-$member_id = $_SESSION['member_id']; // Get the logged-in user's member_id
+
+$member_id = $_member->member_id; // Get the logged-in user's member_id
 // Database connection
 $conn = new mysqli("localhost", "root", "", "gadgetwebdb");
 
@@ -228,5 +229,5 @@ $conn->close();
 ?>
 
 <?php
-// include '../_foot.php';
+include '../_foot.php';
 ?>

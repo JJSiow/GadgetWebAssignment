@@ -317,6 +317,28 @@ $_db = new PDO('mysql:dbname=gadgetwebdb', 'root', '', [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
 ]);
 
+function cookies_setting($member_id){
+    setcookie('member_id',$member_id,time() + (60*60*24*7));
+    echo "Cookies member_id setting successfully.";
+}
+
+function unCookies_setting(){
+    setcookie('member_id','',time() - (60*60*24*7));
+    echo "Cookies member_id setting failure.";
+}
+
+if(isset($_COOKIE['member_id'])){  
+    global $_db; 
+    $id = $_COOKIE['member_id'];
+    $stm = $_db->prepare('SELECT * FROM member WHERE member_id = ?');
+    $stm->execute([$id]);
+    $member = $stm->fetch();
+    $_SESSION['member_id'] = $id;
+    $_SESSION['member'] = $member;
+}else if(!isset($_COOKIE['member_id'])){
+
+}
+
 // Is unique?
 function is_unique($value, $table, $field)
 {
@@ -363,17 +385,24 @@ function auto_id($idColumn, $tableName, $idPrefix, $pattern = '/(\d+)$/', $padLe
 $_member = $_SESSION['member'] ?? null;
 $_admin = $_SESSION['admin'] ?? null;
 
+// if ($_member && empty($_SESSION['remember_me'])) {
+//     // Session is not remembered, force logout when browser closes
+//     session_write_close();
+// }
+
 // Login user
-function login($member, $url = '/home.php')
+function login($member, $url = 'index.php')
 {
     $_SESSION['member'] = $member;
-    redirect($url);
+    // redirect($url);
 }
 
 // Logout user
-function logout($url = '/index.php')
+function logout($url = '../login.php')
 {
     unset($_SESSION['member']);
+    unset($_SESSION['member_id']);
+    setcookie('member_id','',time() - (60*60*24*8));
     redirect($url);
 }
 
@@ -429,8 +458,8 @@ function get_mail()
     $m->SMTPAuth = true;
     $m->Host = 'smtp.gmail.com';
     $m->Port = 587;
-    $m->Username = 'AACS3173@gmail.com';
-    $m->Password = 'npsg gzfd pnio aylm';
+    $m->Username = 'liaw.casual@gmail.com';
+    $m->Password = 'buvq yftx klma vezl';
     $m->CharSet = 'utf-8';
     $m->setFrom($m->Username, '😺 Admin');
 
