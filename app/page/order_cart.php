@@ -31,6 +31,31 @@ if (isset($_GET['delete_cart_id'])) {
     exit();
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_quantity'])) {
+    $cart_id = intval($_POST['cart_id']);
+    $quantity = intval($_POST['quantity']);
+    $member_id = $_member->member_id;
+
+    if ($cart_id > 0 && $quantity > 0) {
+        $updateQuery = "UPDATE order_cart SET quantity = ? WHERE cart_id = ? AND member_id = ?";
+        $stmt = $conn->prepare($updateQuery);
+        $stmt->bind_param("iii", $quantity, $cart_id, $member_id);
+
+        if ($stmt->execute()) {
+            http_response_code(200);
+            echo json_encode(["status" => "success", "message" => "Quantity updated"]);
+        } else {
+            http_response_code(500);
+            echo json_encode(["status" => "error", "message" => "Failed to update quantity"]);
+        }
+        exit();
+    } else {
+        http_response_code(400);
+        echo json_encode(["status" => "error", "message" => "Invalid cart ID or quantity"]);
+        exit();
+    }
+}
+
 // Fetch cart items for the user (only the first photo for each product)
 $query = "
     SELECT 
@@ -106,38 +131,6 @@ $result = $stmt->get_result();
         <button type="submit">Proceed to Checkout</button>
     </form>
     <a href="gadget.php" class="back-to-products">Back to Products</a>
-
-    <script>
-        // Calculate total price dynamically
-        function calculateTotal() {
-            const itemRows = document.querySelectorAll('.cart-row');
-            let totalPrice = 0;
-
-            itemRows.forEach(row => {
-                const price = parseFloat(row.querySelector('.item-price').dataset.price);
-                const quantity = parseInt(row.querySelector('.item-quantity').value);
-                totalPrice += price * quantity;
-            });
-
-            document.getElementById('total-price').innerText = `RM ${totalPrice.toFixed(2)}`;
-        }
-
-        // Initial total calculation
-        calculateTotal();
-
-        // Update total price when quantity changes
-        const quantityInputs = document.querySelectorAll('.item-quantity');
-        quantityInputs.forEach(input => {
-            input.addEventListener('input', function () {
-                const row = input.closest('.cart-row');
-                const price = parseFloat(row.querySelector('.item-price').dataset.price);
-                const quantity = parseInt(input.value);
-                row.querySelector('.item-total').innerText = `RM ${(price * quantity).toFixed(2)}`;
-
-                calculateTotal();
-            });
-        });
-    </script>
 </body>
 
 </html>
