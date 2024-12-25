@@ -13,6 +13,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="/js/app.js"></script>
     <script src="/js/admin.js"></script>
+    <script src="/js/multiple_photo.js"></script>
+    <script src="/js/view_gadget.js"></script>
 </head>
 
 <body>

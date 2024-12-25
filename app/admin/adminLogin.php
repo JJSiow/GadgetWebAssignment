@@ -3,9 +3,11 @@
 <?php
 require '../_base.php';
 // ----------------------------------------------------------------------------
-if (!empty($_SESSION["admin"])) {
-    redirect('adminHome.php'); 
-}
+// if ($_admin != null) {
+//     redirect('adminHome.php'); 
+// }
+
+auth_admin(false);
 
 if (is_post()) {
     // Input
@@ -24,9 +26,14 @@ if (is_post()) {
             //$admin_EncrptPassword = sha1($admin_password);
             // Verify password
             if (sha1($admin_password) === $admin->admin_password) {
-                // Login successful
-                temp('info', $admin->admin_id.' Login successful');
-                adminlogin($admin);
+                if ($admin->admin_status == 'Disabled') {
+                    $_err['admin_email'] = 'Account blocked';
+                }
+                else {
+                    // Login successful
+                    temp('info', $admin->admin_id.' Login successful');
+                    adminlogin($admin);
+                }
             } else {
                 $_err['admin_password'] = 'Incorrect password';
             }
@@ -54,6 +61,7 @@ $_title = 'Admin Login';
         <button type="submit">Login</button>
         <button type="reset">Reset</button>
         <a href="../admin/adminForgot_password.php">Forgot password?</a>
+        <a href="../member/login.php">Member Login</a>
     </form>
 </div>
 

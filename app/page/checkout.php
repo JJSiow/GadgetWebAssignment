@@ -10,18 +10,12 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-if (!isset($_SESSION['member_id'])) {
-    // Redirect to login page if not logged in
-    header("Location: ../member/login.php");
-    exit();
-}
-
-$member_id = $_SESSION['member_id']; // Get the member_id from the session
+auth_member();
+$member_id = $_member->member_id;
 
 $selected_items = isset($_POST['selected_items']) ? $_POST['selected_items'] : [];
 $total_price = 0;
 
-// If no items are selected, redirect back to the cart
 if (empty($selected_items)) {
     header("Location: order_cart.php");
     exit();
@@ -35,48 +29,55 @@ $items_query = "
     WHERE oc.cart_id IN (" . implode(',', array_map('intval', $selected_items)) . ") AND oc.member_id = ?
 ";
 $stmt = $conn->prepare($items_query);
-$stmt->bind_param("s", $member_id); // Use 's' for string type (varchar)
+$stmt->bind_param("s", $member_id);
 $stmt->execute();
 $items_result = $stmt->get_result();
 
 $cart_items = [];
 while ($item = $items_result->fetch_assoc()) {
     $cart_items[] = $item;
-    $total_price += $item['gadget_price'] * $item['quantity'];  // Calculate total price for the cart
+    $total_price += $item['gadget_price'] * $item['quantity'];
 }
 
+// Handle form submission for checkout
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
     $voucher_id = !empty($_POST['voucher_id']) ? $_POST['voucher_id'] : NULL;  // Handle voucher as NULL if empty
     $payment_method = $_POST['payment_method'];
+    $final_price = floatval($_POST['final_price']); // Get the final price
 
-    // Insert into the `order` table first
-    $order_query = "INSERT INTO `order` (member_id, order_date, order_status, voucher_id) VALUES (?, NOW(), 'pending', ?)";
+    // Insert into the `order` table
+    $order_query = "INSERT INTO `order` (member_id, order_date, order_status, voucher_id, total_order_price) VALUES (?, NOW(), 'PENDING', ?, ?)";
     $order_stmt = $conn->prepare($order_query);
-    $order_stmt->bind_param("ss", $member_id, $voucher_id); // Both are strings (varchar)
+    $order_stmt->bind_param("ssd", $member_id, $voucher_id, $final_price);
     $order_stmt->execute();
-    
-    $order_id = $order_stmt->insert_id;  // Get the order ID
 
-    // Now insert into the `order_item` table and include the member_id
+    $order_id = $order_stmt->insert_id; // Get the generated order ID
+
+    // Insert items into the `order_item` table and update gadget stock
     foreach ($cart_items as $item) {
-        // Calculate the order price (total price for the item)
         $order_item_price = $item['gadget_price'] * $item['quantity'];
 
+        // Insert into `order_item` table
         $order_item_query = "INSERT INTO order_item (gadget_id, order_id, order_price, member_id) VALUES (?, ?, ?, ?)";
         $order_item_stmt = $conn->prepare($order_item_query);
-        $order_item_stmt->bind_param("ssss", $item['gadget_id'], $order_id, $order_item_price, $member_id);  // All are strings (varchar)
+        $order_item_stmt->bind_param("sdss", $item['gadget_id'], $order_id, $order_item_price, $member_id);
         $order_item_stmt->execute();
+
+        // Update gadget stock in the `gadget` table
+        $update_stock_query = "UPDATE gadget SET gadget_stock = gadget_stock - ? WHERE gadget_id = ?";
+        $update_stock_stmt = $conn->prepare($update_stock_query);
+        $update_stock_stmt->bind_param("is", $item['quantity'], $item['gadget_id']);
+        $update_stock_stmt->execute();
     }
 
     // Remove items from the cart
     $delete_query = "DELETE FROM order_cart WHERE cart_id IN (" . implode(',', array_map('intval', $selected_items)) . ")";
     $conn->query($delete_query);
 
-    // Redirect to the order summary page
+    // Redirect to order summary page
     header("Location: order_item.php?order_id=" . $order_id);
     exit();
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -86,16 +87,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="/js/product.js" defer></script>  <!-- Defer loading of app.js -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/product.js" defer></script>
 </head>
 <body>
-    <h1>Checkout</h1>
-
     <form action="checkout.php" method="POST">
         <table>
             <thead>
                 <tr>
-                    <th>Select</th>
                     <th>Gadget</th>
                     <th>Price</th>
                     <th>Quantity</th>
@@ -105,22 +104,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
             <tbody>
                 <?php foreach ($cart_items as $item): ?>
                 <tr class="cart-row">
-                    <td>
-                        <input type="checkbox" class="item-select" checked onchange="updateTotalPrice()">
-                    </td>
-                    <td><?= htmlspecialchars($item['gadget_name']) ?></td>
-                    <td class="item-price" data-price="<?= $item['gadget_price'] ?>">RM <?= number_format($item['gadget_price'], 2) ?></td>
-                    <td><input type="number" class="item-quantity" value="<?= $item['quantity'] ?>" onchange="updateTotalPrice()"></td>
-                    <td>RM <span class="item-total"><?= number_format($item['gadget_price'] * $item['quantity'], 2) ?></span></td>
+                    <td><?= $item['gadget_name'] ?></td>
+                    <td class="item-price">RM <?= number_format($item['gadget_price'], 2) ?></td>
+                    <td><?= $item['quantity'] ?></td>
+                    <td>RM <?= number_format($item['gadget_price'] * $item['quantity'], 2) ?></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
 
-        <p>Total Price: <span id="total-price">RM 0.00</span></p>
+        <p><strong>Total Price: RM <span id="total-price"><?= number_format($total_price, 2) ?></span></strong></p>
 
         <label for="voucher_id">Voucher Code (optional):</label>
         <input type="text" name="voucher_id" id="voucher_id" placeholder="Enter voucher code">
+        <button type="button" id="apply-voucher-btn">Apply Voucher</button>
+
+        <p id="voucher-message"></p>
+
+        <p><strong>Final Price: RM <span id="final-price"><?= number_format($total_price, 2) ?></span></strong></p>
 
         <br><br>
 
@@ -131,6 +132,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
         <?php foreach ($selected_items as $selected_item): ?>
             <input type="hidden" name="selected_items[]" value="<?= $selected_item ?>">
         <?php endforeach; ?>
+
+        <!-- Hidden field for final price -->
+        <input type="hidden" name="final_price" id="hidden-final-price" value="<?= $total_price ?>">
 
         <button type="submit" name="checkout">Confirm Checkout</button>
     </form>

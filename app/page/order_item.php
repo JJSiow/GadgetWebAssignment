@@ -10,13 +10,8 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-if (!isset($_SESSION['member_id'])) {
-    // Redirect to login page if not logged in
-    header("Location: ../member/login.php");
-    exit();
-}
-
-$member_id = $_SESSION['member_id']; // Get the logged-in member ID
+auth_member();
+$member_id = $_member->member_id;
 
 // Query to fetch all order items for the logged-in member (without quantity)
 $order_query = "

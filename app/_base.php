@@ -76,6 +76,32 @@ function get_file($key)
     return null;
 }
 
+// Obtain multiple uploaded file --> cast to object
+function get_files($key)
+{
+    $files = $_FILES[$key] ?? null;
+
+    if (!$files || !is_array($files['name'])) {
+        return null; // Return null if no files or invalid structure
+    }
+
+    $uploadedFiles = [];
+
+    foreach ($files['name'] as $index => $name) {
+        if ($files['error'][$index] === 0) {
+            $uploadedFiles[] = (object)[
+                'name' => $files['name'][$index],
+                'type' => $files['type'][$index],
+                'tmp_name' => $files['tmp_name'][$index],
+                'error' => $files['error'][$index],
+                'size' => $files['size'][$index]
+            ];
+        }
+    }
+
+    return $uploadedFiles;
+}
+
 // Crop, resize and save photo
 function save_photo($f, $folder, $width = 200, $height = 200)
 {
@@ -88,6 +114,26 @@ function save_photo($f, $folder, $width = 200, $height = 200)
         ->toFile("$folder/$photo", 'image/jpeg');
 
     return $photo;
+}
+
+function save_photos($files, $folder, $width = 200, $height = 200)
+{
+    $photos = [];
+
+    require_once 'lib/SimpleImage.php';
+
+    foreach ($files as $f) {
+        $photo = uniqid() . '.jpg';
+
+        $img = new SimpleImage();
+        $img->fromFile($f->tmp_name)
+            ->thumbnail($width, $height)
+            ->toFile("$folder/$photo", 'image/jpeg');
+
+        $photos[] = $photo;
+    }
+
+    return $photos;
 }
 
 // Is money?
@@ -194,9 +240,6 @@ function html_select($key, $items, $default = '- Select One -', $attr = '')
 {
     $value = encode($GLOBALS[$key] ?? '');
     echo "<select id='$key' name='$key' $attr>";
-    if ($default !== null) {
-        echo "<option value=''>$default</option>";
-    }
     foreach ($items as $id => $text) {
         $state = $id == $value ? 'selected' : '';
         echo "<option value='$id' $state>$text</option>";
@@ -382,8 +425,8 @@ function auto_id($idColumn, $tableName, $idPrefix, $pattern = '/(\d+)$/', $padLe
 // ============================================================================
 
 // Global user object
-$_member = $_SESSION['member'] ?? null;
-$_admin = $_SESSION['admin'] ?? null;
+$_member = isset($_SESSION['member']) ? $_SESSION['member'] : null;
+$_admin = isset($_SESSION['admin']) ? $_SESSION['admin'] : null;
 
 // if ($_member && empty($_SESSION['remember_me'])) {
 //     // Session is not remembered, force logout when browser closes
@@ -420,20 +463,41 @@ function adminlogout($url = '../admin/adminLogin.php')
 }
 
 // Authorization
-function auth(...$roles)
-{
-    global $_user;
-    if ($_user) {
-        if ($roles) {
-            if (in_array($_user->role, $roles)) {
-                return; // OK
-            }
-        } else {
-            return; // OK
+function auth_member($requireLogin = true) {
+    global $_member;
+    if ($requireLogin) {
+        if ($_member == null) {
+            temp('info', 'Please login as member');
+            redirect('/');
+        }
+    } 
+    else {
+        if ($_member) {
+            redirect('../home.php');
         }
     }
+}
 
-    redirect('/home.php');
+function auth_admin($requireLogin = true) {
+    global $_admin;
+    if ($requireLogin) {
+        if ($_admin == null) {
+            temp('info', 'Please login as admin');
+            redirect('/');
+        }
+    } else {
+        if ($_admin) {
+            redirect('../admin/adminHome.php');
+        }
+    }
+}
+
+function auth_super_admin() {
+    global $_admin;
+    if ($_admin == null || $_admin->is_super_admin == 'N') {
+        temp('info', 'Please login as super admin');
+        redirect('../admin/adminHome.php');
+    }
 }
 
 // ============================================================================

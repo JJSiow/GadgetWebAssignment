@@ -3,7 +3,7 @@ require '../_base.php';
 // ----------------------------------------------------------------------------
 
 // TODO
-$member_id = $_SESSION['member_id'];
+$member_id = $_member->member_id;
 
 $query = $_db->prepare('SELECT * FROM address where member_id = ?');
 $query->execute([$member_id]);

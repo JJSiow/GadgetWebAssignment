@@ -1,14 +1,14 @@
 <?php
 require '../_base.php';
 
-// $id = req('id');
-// $id = "A01";
+// if ($_admin->is_super_admin == 'N' || $_admin == null) {
+//     temp('info', 'Please login as super admin');
+//     redirect('adminHome.php');
+// }
 
-// $stm = $_db->prepare('SELECT * FROM admin WHERE admin_id = ?');
-// $stm->execute([$id]);
-// $admin = $stm->fetch();
+auth_super_admin();
 
-$arr = $_db->query('SELECT * FROM admin')->fetchAll();
+$arr = $_db->query('SELECT * FROM admin WHERE is_super_admin = "N"')->fetchAll();
 
 // ----------------------------------------------------------------------------
 $_title = 'Admin | Admin Management';
