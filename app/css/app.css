@@ -19,38 +19,6 @@ body {
     grid: auto auto 1fr auto / auto;
 }
 
-header {
-    background-color: #ccc;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 5%;
-}
-
-header li,
-header a,
-header button {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 500;
-    font-size: 16px;
-    color: #edf0f1;
-    text-decoration: none;
-}
-
-header>a>img {
-    size: 20px;
-    color: aqua;
-}
-
-.user_menu_bar {
-    list-style: none;
-}
-
-.user_menu_bar li {
-    display: inline-block;
-    padding: 0px 20px;
-}
-
 .admin_menu_bar li a {
     transition: all 0.3s ease 0s;
 }
