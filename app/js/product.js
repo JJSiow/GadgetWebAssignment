@@ -111,3 +111,41 @@ $(() => {
 
     updateTotalPrice();
 });
+
+// ============================================================================
+// Apply Voucher Logic
+// ============================================================================
+
+$(document).ready(function () {
+    $('#apply-voucher-btn').click(function () {
+        const voucherId = $('#voucher_id').val();
+        const totalPrice = parseFloat($('#total-price').text().replace('RM ', '').replace(',', ''));
+
+        if (!voucherId.trim()) {
+            alert('Please enter a voucher code.');
+            return;
+        }
+
+        $.ajax({
+            url: 'apply_voucher.php',
+            method: 'POST',
+            data: { voucher_id: voucherId, total_price: totalPrice },
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    $('#final-price').text(response.final_price);
+                    $('#hidden-final-price').val(response.final_price.replace(',', ''));
+                    $('#voucher-message').text(response.message).css('color', 'green');
+                } else {
+                    $('#voucher-message').text(response.message).css('color', 'red');
+                }
+            },
+            error: function () {
+                alert('Failed to apply the voucher. Please try again.');
+            }
+        });
+    });
+});
+
+
+

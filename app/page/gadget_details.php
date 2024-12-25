@@ -11,10 +11,7 @@ if (isset($_GET['gadget_id'])) {
     exit();
 }
 
-if (!isset($_SESSION['member_id'])) {
-    header("Location: login.php");
-    exit();
-}
+auth_member();
 
 $conn = new mysqli("localhost", "root", "", "gadgetwebdb");
 
