@@ -11,7 +11,7 @@ $(() => {
             tooltip.style.padding = '5px';
             tooltip.style.borderRadius = '5px';
             tooltip.style.top = `${this.offsetTop + 310}px`;
-            tooltip.style.left = `${this.offsetLeft + 280}px`;
+            tooltip.style.left = `${this.offsetLeft + 180}px`;
             document.body.appendChild(tooltip);
 
             bar.addEventListener('mouseleave', () => {
@@ -23,9 +23,10 @@ $(() => {
     // Pie Chart Labels
     const pieChart = document.getElementById('pie-chart');
     const labels = [
-        { percentage: '30%', label: 'Electronics', color: '#4CAF50', x: '35%', y: '10%' },
-        { percentage: '40%', label: 'Clothing', color: '#FF9800', x: '80%', y: '50%' },
-        { percentage: '30%', label: 'Groceries', color: '#2196F3', x: '35%', y: '85%' },
+        { percentage: '20%', label: 'Electronics', color: '#4CAF50', x: '35%', y: '10%' },
+        { percentage: '30%', label: 'Clothing', color: '#FF9800', x: '80%', y: '50%' },
+        { percentage: '20%', label: 'Groceries', color: '#2196F3', x: '35%', y: '85%' },
+        { percentage: '30%', label: 'Tv', color: '#2196F3', x: '35%', y: '85%' },
     ];
     labels.forEach(label => {
         const span = document.createElement('span');

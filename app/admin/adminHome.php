@@ -24,11 +24,54 @@ $totalUser = $_db->query("SELECT COUNT(member_id) AS total FROM `member` WHERE m
 $totalGadget = $_db->query("SELECT COUNT(gadget_id) AS total FROM `gadget` WHERE gadget_status = 'Active'")->fetch(PDO::FETCH_ASSOC);
 $totalSales = 0;
 
-$totalUserCount = $totalUser['total']; 
+$totalUserCount = $totalUser['total'];
 $totalGadgetCount = $totalGadget['total'];
 
 foreach ($orderPrices as $orderPrice) {
-    $totalSales += $orderPrice['total_order_price']; 
+	$totalSales += $orderPrice['total_order_price'];
+}
+
+// Query to get total sales of all gadgets
+$totalResult = $_db->query("
+SELECT SUM(oi.item_quantity) AS total_quantity_sold 
+FROM order_item oi         
+JOIN `order` o ON oi.order_id = o.order_id
+WHERE o.order_status = 'DELIVERED'")->fetch(PDO::FETCH_ASSOC);
+$totalQty = $totalResult['total_quantity_sold'];
+
+// Query to get top 5 best-selling gadgets
+$topSellingGadgets = $_db->query("
+        SELECT g.gadget_id,g.gadget_name,SUM(oi.item_quantity) AS total_quantity_sold
+        FROM order_item oi
+        JOIN gadget g ON oi.gadget_id = g.gadget_id
+        JOIN `order` o ON oi.order_id = o.order_id
+        WHERE o.order_status = 'DELIVERED'
+        GROUP BY oi.gadget_id
+        ORDER BY total_quantity_sold DESC
+        LIMIT 5;
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+$query = "SELECT g.gadget_id, g.gadget_name, c.category_name, g.gadget_stock 
+	FROM gadget g
+	JOIN category c ON g.category_id = c.category_id
+	WHERE g.gadget_stock <= 10 
+	AND g.gadget_status = 'Active'
+	ORDER BY g.gadget_stock ASC
+	LIMIT 5";
+
+$low_stock_gadgets = $_db->query($query)->fetchAll();
+
+// Add stock function
+if (is_post()) {
+	$gadget_id = req('gadget_id');
+	$add_stock = req('add_stock');
+
+	if ($gadget_id && $add_stock > 0) {
+		$update_query = "UPDATE gadget 
+				  SET gadget_stock = gadget_stock + ? 
+				  WHERE gadget_id = ?";
+		$_db->prepare($update_query)->execute([$add_stock, $gadget_id]);
+	}
 }
 // ----------------------------------------------------------------------------
 $_title = '';
@@ -59,31 +102,29 @@ include '../admin/_adminHead.php';
 
 <div class="charts-container">
 	<div class="chart-box">
-		<div class="chart-title">Top 5 Best Selling Gadget</div>
-		<div class="chart-box-content">
-			<div class="bar-chart">
-				<div class="bar" style="height: 50%;" data-info="January: $5000">
-					<span class="bar-value">$5000</span>
-					<div class="bar-label">Jan</div>
-				</div>
-				<div class="bar" style="height: 70%;" data-info="February: $7000">
-					<span class="bar-value">$7000</span>
-					<div class="bar-label">Feb</div>
-				</div>
-				<div class="bar" style="height: 80%;" data-info="March: $8000">
-					<span class="bar-value">$8000</span>
-					<div class="bar-label">Mar</div>
-				</div>
-				<div class="bar" style="height: 60%;" data-info="April: $6000">
-					<span class="bar-value">$6000</span>
-					<div class="bar-label">Apr</div>
-				</div>
-				<div class="bar" style="height: 90%;" data-info="May: $9000">
-					<span class="bar-value">$9000</span>
-					<div class="bar-label">May</div>
+		<div class="chart-title">Top 5 Best Selling Sold Gadgets</div>
+		<?php if (empty($topSellingGadgets)): ?>
+			<div>
+				<p style="color: #777; font-size: 16px; text-align: center;">There are no gadgets placed.</p>
+			</div>
+		<?php else: ?>
+			<div class="chart-box-content">
+				<div class="bar-chart">
+					<?php
+					foreach ($topSellingGadgets as $index => $gadget) {
+						$percentageValue = ($gadget['total_quantity_sold'] / $totalQty) * 100;
+
+						echo "
+						<div class='bar' style='height: {$percentageValue}%;' data-info='{$gadget['gadget_name']} - {$gadget['total_quantity_sold']} sold'>
+							<span class='bar-value'>" . number_format($percentageValue, 2) . "%</span>
+							<div class='bar-label'>{$gadget['gadget_name']}</div>
+						</div>
+					";
+					}
+					?>
 				</div>
 			</div>
-		</div>
+		<?php endif; ?>
 	</div>
 
 	<div class="chart-box">
@@ -94,6 +135,7 @@ include '../admin/_adminHead.php';
 				<div class="legend"><span class="legend-color electronics"></span>Electronics - 30%</div>
 				<div class="legend"><span class="legend-color clothing"></span>Clothing - 40%</div>
 				<div class="legend"><span class="legend-color groceries"></span>Groceries - 30%</div>
+				<div class="legend"><span class="legend-color tv"></span>Groceries - 30%</div>
 			</div>
 		</div>
 	</div>
@@ -101,58 +143,63 @@ include '../admin/_adminHead.php';
 
 <div class="table-container">
 	<div class="table-header">
-		<h3>Low Stock Gadget</h3>
-		<button class="show-more">Show More</button>
+		<h3>Low Gadget Stock</h3>
+		<button data-get="../page/admin_products.php?stock=10&operator=<=">Show More</button>
 	</div>
-	<table>
+	<table class="table">
 		<thead>
 			<tr>
-				<th>ID</th>
+				<th>Gadget ID</th>
 				<th>Name</th>
 				<th>Category</th>
-				<th>Status</th>
+				<th>Stock Status</th>
+				<th>Add Stock</th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr>
-				<td>1</td>
-				<td>Product A</td>
-				<td>Electronics</td>
-				<td>Available</td>
-			</tr>
-			<tr>
-				<td>2</td>
-				<td>Product B</td>
-				<td>Clothing</td>
-				<td>Out of Stock</td>
-			</tr>
-			<tr>
-				<td>3</td>
-				<td>Product C</td>
-				<td>Groceries</td>
-				<td>Available</td>
-			</tr>
-			<tr>
-				<td>4</td>
-				<td>Product D</td>
-				<td>Electronics</td>
-				<td>Available</td>
-			</tr>
-			<tr>
-				<td>5</td>
-				<td>Product E</td>
-				<td>Clothing</td>
-				<td>Out of Stock</td>
-			</tr>
+			<?php if (empty($low_stock_gadgets)): ?>
+				<tr>
+					<td colspan="5">No low stock gadgets found.</td>
+				</tr>
+			<?php else: ?>
+				<?php foreach ($low_stock_gadgets as $gadget): ?>
+					<?php
+					$row_class = $gadget->gadget_stock == 0 ? 'out-of-stock' : 'low-stock';
+					$stock_status = $gadget->gadget_stock == 0 ? 'Out of Stock' : 'Low Stock';
+					?>
+					<tr class="<?= $row_class ?>">
+						<td><?= $gadget->gadget_id ?></td>
+						<td><?= $gadget->gadget_name ?></td>
+						<td><?= $gadget->category_name ?></td>
+						<td>
+							<span class="stock-status">
+								<?= $stock_status ?> (<?= $gadget->gadget_stock ?>)
+							</span>
+						</td>
+						<td>
+							<form method="post" class="add-stock-form">
+								<input type="hidden" name="gadget_id" value="<?= $gadget->gadget_id ?>">
+								<input type="number"
+									name="add_stock"
+									class="add-stock-input"
+									min="1"
+									max="100"
+									required>
+								<button type="submit" class="add-stock-btn">Add</button>
+							</form>
+						</td>
+					</tr>
+				<?php endforeach; ?>
+			<?php endif; ?>
 		</tbody>
 	</table>
 </div>
 
-<img src="/photos/<?= $_admin->admin_profile_pic ?>">
+<!-- <img src="/photos/<?= $_admin->admin_profile_pic ?>">
 <p>ID : <?= $_admin->admin_id ?></p>
 <p>Name :<?= $_admin->admin_name ?></p>
 <p>Phone Number :<?= $_admin->admin_phone_no ?></p>
-<p>Email :<?= $_admin->admin_email ?></p>
+<p>Email :<?= $_admin->admin_email ?></p> -->
 
 <?php
 // include '../_foot.php';

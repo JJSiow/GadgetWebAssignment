@@ -6,6 +6,7 @@ $fields = [
     'order_id' => 'Order ID',
     'member_id' => 'Member ID',
     'gadget_name_price' => 'Gadget Purchased',
+    'quantity' => 'Qty',
     'total_order_price' => 'Order Price',
     'action' => 'Action',
 ];
@@ -15,6 +16,7 @@ $searchParams = $_SESSION['order_search_params'] ?? [
     'soid' => '',
     'smid' => '',
     'sgadget' => '',
+    'sstock' => '',
     'sprice' => '',
     'sort' => 'order_id',
     'dir' => 'asc',
@@ -28,6 +30,7 @@ if (isset($_GET['clear_search'])) {
         'soid' => '',
         'smid' => '',
         'sgadget' => '',
+        'sstock' => '',
         'sprice' => '',
         'sort' => 'order_id',
         'dir' => 'asc',
@@ -52,6 +55,7 @@ if (is_post()) {
         'smid' => req('smid', ''),
         'sgadget' => req('sgadget', ''),
         'sprice' => req('sprice', ''),
+        'sstock' => req('sstock', ''),
         'sort' => $sort,
         'dir' => $dir,
         'page' => 1
@@ -76,7 +80,7 @@ function buildOrderQuery($searchParams)
             i.member_id, 
             GROUP_CONCAT(g.gadget_name) as gadget_names,
             GROUP_CONCAT(i.order_price) as order_prices,
-            GROUP_CONCAT(i.gadget_id) as gadget_ids,
+            GROUP_CONCAT(i.item_quantity) as itemQtys,
             o.total_order_price
         FROM `order` o
         JOIN `order_item` i ON o.order_id = i.order_id
@@ -102,6 +106,15 @@ function buildOrderQuery($searchParams)
         $params[] = "%{$searchParams['sgadget']}%";
     }
 
+    if (!empty($searchParams['sstock'])) {
+        $conditions[] = "o.order_id IN (
+            SELECT oi.order_id 
+            FROM order_item oi 
+            WHERE oi.item_quantity = ?
+        )";
+        $params[] = $searchParams['sstock'];
+    }
+
     if ($searchParams['sprice']) {
         $conditions[] = "ROUND(o.total_order_price, 2) = ROUND(?, 2)";
         $params[] = $searchParams['sprice'];
@@ -110,10 +123,11 @@ function buildOrderQuery($searchParams)
     $baseQuery .= " WHERE " . implode(" AND ", $conditions);
     $baseQuery .= " GROUP BY o.order_id) as subquery";
 
-    // Handle sorting
     $sortField = $searchParams['sort'];
     if ($sortField === 'gadget_name_price') {
         $sortField = 'gadget_names';
+    } elseif ($sortField === 'quantity') {
+        $sortField = 'itemQtys';
     }
     $baseQuery .= " ORDER BY {$sortField} {$searchParams['dir']}";
 
@@ -135,78 +149,12 @@ $p = new SimplePager2(
 
 $orders = $p->result;
 
-// if (is_post() && isset($_POST['checkboxName'])) {
-//     $orderIds = explode(',', req('checkboxName', ''));
-//     $gadgetIds = explode(',', req('gadgetID', ''));
-
-//     // Start transaction
-//     $_db->beginTransaction();
-
-//     try {
-//         // First update the order status
-//         if (!empty($orderIds)) {
-//             $placeholders = implode(',', array_fill(0, count($orderIds), '?'));
-//             $stm = $_db->prepare("UPDATE `order` SET order_status = 'delivered' WHERE order_id IN ($placeholders)");
-
-//             if (!$stm->execute($orderIds)) {
-//                 throw new Exception("Failed to update orders.");
-//             }
-
-//             // Now deduct stock for each gadget
-//             if (!empty($gadgetIds)) {
-//                 // Get order quantities for each gadget from order_item
-//                 $gadgetPlaceholders = implode(',', array_fill(0, count($gadgetIds), '?'));
-//                 $quantityStm = $_db->prepare("
-//                     SELECT gadget_id, SUM(quantity) as total_quantity 
-//                     FROM order_item 
-//                     WHERE order_id IN ($placeholders) AND gadget_id IN ($gadgetPlaceholders)
-//                     GROUP BY gadget_id
-//                 ");
-
-//                 // Combine orderIds and gadgetIds for the query
-//                 $params = array_merge($orderIds, $gadgetIds);
-//                 $quantityStm->execute($params);
-//                 $quantities = $quantityStm->fetchAll(PDO::FETCH_ASSOC);
-
-//                 // Update stock for each gadget
-//                 $updateStockStm = $_db->prepare("
-//                     UPDATE gadget 
-//                     SET gadget_stock = gadget_stock - ? 
-//                     WHERE gadget_id = ?
-//                 ");
-
-//                 foreach ($quantities as $quantity) {
-//                     if (!$updateStockStm->execute([$quantity['total_quantity'], $quantity['gadget_id']])) {
-//                         throw new Exception("Failed to update stock for gadget ID: " . $quantity['gadget_id']);
-//                     }
-//                 }
-//             }
-
-//             // If everything succeeded, commit the transaction
-//             $_db->commit();
-//             temp('info', "Orders updated successfully and stock deducted.");
-//             header('Location: ' . $_SERVER['PHP_SELF']);
-//             exit;
-//         }
-//     } catch (Exception $e) {
-//         // If anything fails, rollback the transaction
-//         $_db->rollBack();
-//         temp('error', $e->getMessage());
-//     }
-// } else {
-//     temp('error', "No orders selected for update.");
-// }
-
 if (is_post() && isset($_POST['checkboxName'])) {
     $orderIds = explode(',', req('checkboxName', ''));
-    $gadgetIds = explode(',', req('gadgetID', ''));
-    echo '<pre>';
-    print_r($gadgetIds);
-    echo '</pre>';
 
     if (!empty($orderIds)) {
         $placeholders = implode(',', array_fill(0, count($orderIds), '?'));
-        $stm = $_db->prepare("UPDATE order SET order_status = 'delivered' WHERE order_id IN ($placeholders)");
+        $stm = $_db->prepare("UPDATE `order` SET order_status = 'delivered' WHERE order_id IN ($placeholders)");
 
         if ($stm->execute($orderIds)) {
             temp('info', "Orders updated successfully.");
@@ -223,7 +171,7 @@ if (is_post() && isset($_POST['checkboxName'])) {
 // Process the results
 $processedOrders = [];
 foreach ($orders as $order) {
-    $gadgetIDs = explode(',', $order->gadget_ids ?? '');
+    $itemQtys = explode(',', $order->itemQtys ?? '');
     $gadgetNames = explode(',', $order->gadget_names);
     $orderPrices = explode(',', $order->order_prices);
 
@@ -232,7 +180,7 @@ foreach ($orders as $order) {
         $gadgetDetails[] = [
             'gadget_name' => $gadgetNames[$i],
             'order_price' => $orderPrices[$i] ?? 0,
-            'gadget_id' => $gadgetIDs[$i] ?? ''
+            'item_quantity' => $itemQtys[$i] ?? ''
         ];
     }
 
@@ -255,6 +203,11 @@ include '../_head.php';
     <button>Received</button>
 </div>
 
+<p>
+    <?= $p->count ?> of <?= $p->item_count ?> record(s) |
+    Page <?= $p->page ?> of <?= $p->page_count ?>
+</p>
+
 <form id="mark-all-form" method="post">
     <button id="submit-mark-all" class="btn btn-primary" style="display: none;">Mark All Delivered</button>
 </form>
@@ -273,6 +226,7 @@ include '../_head.php';
                 <td><?= html_search2('soid', $searchParams['soid']) ?></td>
                 <td><?= html_search2('smid', $searchParams['smid']) ?></td>
                 <td><?= html_search2('sgadget', $searchParams['sgadget']) ?></td>
+                <td><?= html_number('sstock', $searchParams['sstock'] ?? '', ['min' => '0', 'max' => '1000', 'step' => '1']); ?></td>
                 <td><?= html_number('sprice', $searchParams['sprice'] ?? '', ['min' => '0.01', 'max' => '10000.00', 'step' => '0.01'], 'RM '); ?></td>
                 <td>
                     <button type="submit">Search</button>
@@ -282,39 +236,37 @@ include '../_head.php';
         </form>
         <?php if (empty($processedOrders)): ?>
             <tr>
-                <td colspan="6">No pending orders found...</td>
+                <td colspan="7">No pending orders found...</td>
             </tr>
         <?php else: ?>
             <?php foreach ($processedOrders as $order): ?>
+                <?php
+                $gadgetCount = count($order['gadget_details']);
+                $firstGadget = $order['gadget_details'][0];
+                ?>
                 <tr>
-                    <td rowspan="<?= count($order['gadget_details']) ?>">
+                    <td rowspan="<?= $gadgetCount ?>">
                         <input type="checkbox"
                             name="id[]"
                             value="<?= htmlspecialchars($order['order_id']) ?>"
-                            class="checkbox"
-                            data-gadget-ids="<?= htmlspecialchars(implode(',', array_column($order['gadget_details'], 'gadget_id'))) ?>">
+                            class="checkbox">
                     </td>
-                    <td rowspan="<?= count($order['gadget_details']) ?>"><?= htmlspecialchars($order['order_id']) ?></td>
-                    <td rowspan="<?= count($order['gadget_details']) ?>"><?= htmlspecialchars($order['member_id']) ?></td>
-
-                    <?php $firstGadget = array_shift($order['gadget_details']); ?>
+                    <td rowspan="<?= $gadgetCount ?>"><?= htmlspecialchars($order['order_id']) ?></td>
+                    <td rowspan="<?= $gadgetCount ?>"><?= htmlspecialchars($order['member_id']) ?></td>
                     <td><?= htmlspecialchars($firstGadget['gadget_name']) ?> - RM <?= number_format($firstGadget['order_price'], 2) ?></td>
-                    <td rowspan="<?= count($order['gadget_details']) + 1 ?>">RM <?= number_format($order['total_order_price'], 2) ?></td>
-                    <td rowspan="<?= count($order['gadget_details']) + 1 ?>">
+                    <td><?= htmlspecialchars($firstGadget['item_quantity']) ?></td>
+                    <td rowspan="<?= $gadgetCount ?>">RM <?= number_format($order['total_order_price'], 2) ?></td>
+                    <td rowspan="<?= $gadgetCount ?>">
                         <form method="POST">
-                            <?php
-                            $allGadgetIds = array_column($order['gadget_details'], 'gadget_id');
-                            array_unshift($allGadgetIds, $firstGadget['gadget_id']);
-                            ?>
-                            <input type="hidden" name="gadgetID" value="<?= htmlspecialchars(implode(',', $allGadgetIds)) ?>">
                             <input type="hidden" name="checkboxName" value="<?= htmlspecialchars($order['order_id']) ?>">
                             <button type="submit" class="btn btn-primary" data-confirm="Are you sure this order is delivered?">Mark as Delivered</button>
                         </form>
                     </td>
                 </tr>
-                <?php foreach ($order['gadget_details'] as $gadget): ?>
+                <?php foreach (array_slice($order['gadget_details'], 1) as $gadget): ?>
                     <tr>
                         <td><?= htmlspecialchars($gadget['gadget_name']) ?> - RM <?= number_format($gadget['order_price'], 2) ?></td>
+                        <td><?= htmlspecialchars($gadget['item_quantity']) ?></td>
                     </tr>
                 <?php endforeach; ?>
             <?php endforeach; ?>
@@ -327,4 +279,4 @@ include '../_head.php';
     'dir' => $searchParams['dir']
 ])) ?>
 
-<?php include '../_foot.php'; ?>
+<!-- <?php include '../_foot.php'; ?> -->

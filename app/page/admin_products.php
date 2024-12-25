@@ -21,12 +21,42 @@ $searchParams = $_SESSION['gadget_search_params'] ?? [
     'scategory' => '',
     'sprice' => '',
     'sstock' => '',
-    'sstock_operator' => '=', // Add new operator parameter
+    'sstock_operator' => '=',
     'sstatus' => '',
     'sort' => 'gadget_id',
     'dir' => 'asc',
     'page' => 1
 ];
+
+if (is_get()) {
+    $stock = req('stock');
+    $operator = req('operator');
+
+    if ($stock !== '' && $operator !== '') {
+        $searchParams['sstock'] = $stock;
+        $searchParams['sstock_operator'] = $operator;
+        $searchParams['sort'] = 'gadget_stock';
+        $searchParams['dir'] = 'asc';
+        $searchParams['page'] = 1;
+    }
+
+    $sort = req('sort');
+    if ($sort && key_exists($sort, $fields)) {
+        $searchParams['sort'] = $sort;
+    }
+
+    $dir = req('dir');
+    if ($dir && in_array($dir, ['asc', 'desc'])) {
+        $searchParams['dir'] = $dir;
+    }
+
+    $page = req('page');
+    if ($page) {
+        $searchParams['page'] = (int)$page;
+    }
+
+    $_SESSION['gadget_search_params'] = $searchParams;
+}
 
 // Check for clear search request
 if (isset($_GET['clear_search'])) {
@@ -64,7 +94,7 @@ if (is_post()) {
         'sbrand' => req('sbrand', $searchParams['sbrand'] ?? ''),
         'scategory' => req('scategory', $searchParams['scategory'] ?? ''),
         'sprice' => req('sprice', $searchParams['sprice'] ?? ''),
-        'sstock' => req('sstock', $searchParams['sstock'] ?? ''),
+        'sstock' => req('sstock', $searchParams['sstock']),
         'sstock_operator' => req('sstock_operator', $searchParams['sstock_operator']),
         'sstatus' => req('sstatus', $searchParams['sstatus']),
         'sort' => $sort,
@@ -156,6 +186,8 @@ $p = new SimplePager2(
 
 $arr = $p->result;
 
+$gadget_images = $_db->query('SELECT gallery_id, photo_path, gadget_id FROM gallery')->fetchAll();
+
 $_title = 'Gadget';
 include '../_head.php';
 ?>
@@ -225,7 +257,23 @@ include '../_head.php';
                         class="checkbox">
                 </td>
                 <td style="<?= $rowColor ?>"><?= $gadget->gadget_id ?></td>
-                <td style="<?= $rowColor ?>"><?= $gadget->gadget_name ?></td>
+                <td style="<?= $rowColor ?>">
+                    <?= $gadget->gadget_name ?>
+                    <div class="slideshow-container" data-gadget-id="<?= $gadget->gadget_id ?>">
+                        <?php
+                        $gadget_specific_images = array_values(
+                            array_filter($gadget_images, function ($image) use ($gadget) {
+                                return $image->gadget_id == $gadget->gadget_id; // Ensure strict matching
+                            })
+                        );
+                        foreach ($gadget_specific_images as $index => $image): ?>
+                            <img
+                                class="gadget-image <?= $index === 0 ? 'active' : '' ?>"
+                                src="<?= htmlspecialchars('../images/' . $image->photo_path) ?>"
+                                alt="Gadget Preview">
+                        <?php endforeach; ?>
+                    </div>
+                </td>
                 <td style="<?= $rowColor ?>"><?= $gadget->brand_name ?></td>
                 <td style="<?= $rowColor ?>"><?= $gadget->category_name ?></td>
                 <td style="<?= $rowColor ?>">RM <?= number_format($gadget->gadget_price, 2) ?></td>

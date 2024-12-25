@@ -70,6 +70,9 @@
     position: relative;
     transition: transform 0.3s, background-color 0.3s;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
 }
 
 .bar:hover {
@@ -84,13 +87,18 @@
     font-size: 14px;
     font-weight: bold;
     color: #333;
+    white-space: nowrap;
 }
 
 .bar-label {
-    position: absolute;
-    bottom: -25px;
+    font-weight: bold;
+    margin-top: 10px; /* Space between the bar and label */
     font-size: 14px;
-    color: #666;
+    color: #181916;
+    position: absolute;
+    bottom: -20px; /* Position it below the bar */
+    left: 50%;
+    transform: translateX(-50%); /* Center the label horizontally */
 }
 
 /* Pie Chart Styling */
@@ -132,6 +140,7 @@
 .electronics { background-color: #4CAF50; }
 .clothing { background-color: #FF9800; }
 .groceries { background-color: #2196F3; }
+.tv{background-color: #f3f021;}
 
 /* Dashboard Containers */
 .dashboard-container {
@@ -236,4 +245,33 @@ tr:nth-child(even) td {
 
 tr:hover td {
     background-color: #f1f1f1;
+}
+
+
+
+.out-of-stock {
+    background-color: #ffcdd2;
+}
+.low-stock {
+    background-color: #fff59d;
+}
+.add-stock-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.add-stock-input {
+    width: 80px;
+    padding: 5px;
+}
+.add-stock-btn {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.stock-status {
+    font-weight: bold;
 }
