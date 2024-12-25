@@ -118,6 +118,11 @@ include '../_head.php';
     <?php endif; ?>
 </form>
 
+<form id="mark-all-form" action="delete_brand.php" method="post">
+    <button id="submit-mark-unactive" class="btn btn-primary" data-post="delete_brand.php?action=Unactive" style="display: none;" data-confirm='Are you sure to unactivate all selected brand?'>Unactivate All</button>
+    <button id="submit-mark-active" class="btn btn-primary" data-post="delete_brand.php?action=Active" style="display: none;" data-confirm='Are you sure to activate all selected brand?'>Activate All</button>
+</form>
+
 <p>
     <?= $p->count ?> of <?= $p->item_count ?> record(s) |
     Page <?= $p->page ?> of <?= $p->page_count ?>
@@ -126,11 +131,13 @@ include '../_head.php';
 
 <table class="table">
     <tr>
+        <th></th>
         <?= table_headers2($fields, $sort, $dir, "page=$page") ?>
     </tr>
 
     <form method="post">
         <tr>
+            <td><input type="checkbox" id="check-all">All</td>
             <td><?= html_search2('sid', $searchParams['sid']) ?></td>
             <td><?= html_search2('sname', $searchParams['sname']) ?></td>
             <td><?= html_select2('sstatus', $_status, 'All', $searchParams['sstatus']) ?></td>
@@ -147,15 +154,26 @@ include '../_head.php';
     <?php else: ?>
         <?php foreach ($arr as $brand): ?>
             <tr>
+                <td>
+                    <input type="checkbox"
+                        name="id[]"
+                        value="<?= htmlspecialchars($brand->brand_id) ?>"
+                        class="checkbox">
+                </td>
                 <td><?= $brand->brand_id ?></td>
                 <td class="edit" data-id="<?= $brand->brand_id ?>" data-update-url="update_brand.php"><?= $brand->brand_name ?></td>
                 <td><?= $brand->brand_status ?></td>
                 <td>
-                    <?php if ($brand->brand_status == 'Active'): ?>
-                        <a data-post="delete_brand.php?action=Unactive&id=<?= $brand->brand_id ?>" data-confirm='Are you sure you want to unactivate this brand?'>Unactivate</a>
-                    <?php else: ?>
-                        <a data-post="delete_brand.php?action=Active&id=<?= $brand->brand_id ?>" data-confirm='Are you sure you want to activate this brand?'>Activate</a>
-                    <?php endif; ?>
+                    <form id="mark-all-form" action="delete_brand.php" method="post">
+                        <input type="hidden" name="checkboxName" value="<?= htmlspecialchars($brand->brand_id) ?>">
+                        <?php if ($brand->brand_status == 'Active'): ?>
+                            <a id="next_unactive" data-post="delete_brand.php?action=Unactive"
+                                data-confirm='Are you sure you want to unactivate this brand?'>Unactivate</a>
+                        <?php else: ?>
+                            <a id="next_active" data-post="delete_brand.php?action=Active"
+                                data-confirm='Are you sure you want to activate this brand?'>Activate</a>
+                        <?php endif; ?>
+                    </form>
                 </td>
             </tr>
         <?php endforeach ?>

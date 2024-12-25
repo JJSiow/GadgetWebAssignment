@@ -227,7 +227,7 @@ if (is_post()) {
 
             <section>
                 <button id="resetModalBtn" type="button">Reset</button>
-                <button data-confirm="Are you sure to modify this gadget info ?">Update</button>
+                <button id="updateBtn" data-confirm="Are you sure to modify this gadget info ?">Update</button>
             </section>
         </div>
     </form>

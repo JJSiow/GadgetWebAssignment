@@ -2,17 +2,27 @@
 require_once '../_base.php';
 
 if (is_post()) {
-    $id = req('id'); 
-    $action = req('action'); 
+    if (!empty($_POST['checkboxName'])) {
+        print_r($_POST['checkboxName']);
+        $ids = explode(',', $_POST['checkboxName']);
+        if (!empty($ids)) {
+            $action = isset($_POST['action']) ? $_POST['action'] : '';
+            $status = ($action === 'Unactive') ? 'Unactive' : 'Active';
 
-    if (in_array($action, ['Active', 'Unactive'])) {
-        $updateGadget = $_db->prepare('UPDATE gadget SET gadget_status = ? WHERE gadget_id = ?');
-        $updateGadget->execute([$action, $id]);
+            $stmUpdateStatus = $_db->prepare('UPDATE gadget SET gadget_status = ? WHERE gadget_id = ?');
+            foreach ($ids as $id) {
+                $stmUpdateStatus->execute([$status, $id]);
+            }
 
-        temp('info', "Gadget status updated to $action.");
+            temp('info', count($ids) . " gadget status(s) updated to {$status}.");
+        } else {
+            temp('error', 'Invalid gadget IDs.');
+        }
     } else {
-        temp('error', 'Invalid action.');
+        temp('error', 'No gadget selected.');
     }
+} else {
+    temp('error', 'Invalid request method.');
 }
 
 redirect('admin_products.php');

@@ -11,6 +11,8 @@
     <script src="/js/app.js"></script>
     <script src="/js/multiple_photo.js"></script>
     <script src="/js/view_gadget.js"></script>
+    <script src="/js/chart.js"></script>
+    <link rel="stylesheet" href="/css/app.css">
 </head>
 
 <body>

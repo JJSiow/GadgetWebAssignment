@@ -2,17 +2,27 @@
 require_once '../_base.php';
 
 if (is_post()) {
-    $id = req('id'); 
-    $action = req('action'); 
+    if (!empty($_POST['checkboxName'])) {
+        print_r($_POST['checkboxName']);
+        $ids = explode(',', $_POST['checkboxName']);
+        if (!empty($ids)) {
+            $action = isset($_POST['action']) ? $_POST['action'] : '';
+            $status = ($action === 'Unactive') ? 'Unactive' : 'Active';
 
-    if (in_array($action, ['Active', 'Unactive'])) {
-        $updateGadget = $_db->prepare('UPDATE brand SET brand_status = ? WHERE brand_id = ?');
-        $updateGadget->execute([$action, $id]);
+            $stmUpdateStatus = $_db->prepare('UPDATE brand SET brand_status = ? WHERE brand_id = ?');
+            foreach ($ids as $id) {
+                $stmUpdateStatus->execute([$status, $id]);
+            }
 
-        temp('info', "Brand status updated to $action.");
+            temp('info', count($ids) . " brand status(s) updated to {$status}.");
+        } else {
+            temp('error', 'Invalid brand IDs.');
+        }
     } else {
-        temp('error', 'Invalid action.');
+        temp('error', 'No brands selected.');
     }
+} else {
+    temp('error', 'Invalid request method.');
 }
 
 redirect('admin_brand.php');

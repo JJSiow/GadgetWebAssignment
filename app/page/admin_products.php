@@ -21,6 +21,7 @@ $searchParams = $_SESSION['gadget_search_params'] ?? [
     'scategory' => '',
     'sprice' => '',
     'sstock' => '',
+    'sstock_operator' => '=', // Add new operator parameter
     'sstatus' => '',
     'sort' => 'gadget_id',
     'dir' => 'asc',
@@ -37,6 +38,7 @@ if (isset($_GET['clear_search'])) {
         'scategory' => '',
         'sprice' => '',
         'sstock' => '',
+        'sstock_operator' => '=', // Reset operator
         'sstatus' => '',
         'sort' => 'gadget_id',
         'dir' => 'asc',
@@ -57,12 +59,13 @@ $page = is_post() ? 1 : (int)req('page', $searchParams['page']);
 // If it's a POST request (new search), update session parameters
 if (is_post()) {
     $searchParams = [
-        'sid' => req('sid', $searchParams['sid']), 
+        'sid' => req('sid', $searchParams['sid']),
         'sname' => req('sname', $searchParams['sname']),
-        'sbrand' => req('sbrand', $searchParams['sbrand']?? ''),
-        'scategory' => req('scategory', $searchParams['scategory']?? ''),
-        'sprice' => req('sprice', $searchParams['sprice']?? ''),
-        'sstock' => req('sstock', $searchParams['sstock']?? ''),
+        'sbrand' => req('sbrand', $searchParams['sbrand'] ?? ''),
+        'scategory' => req('scategory', $searchParams['scategory'] ?? ''),
+        'sprice' => req('sprice', $searchParams['sprice'] ?? ''),
+        'sstock' => req('sstock', $searchParams['sstock'] ?? ''),
+        'sstock_operator' => req('sstock_operator', $searchParams['sstock_operator']),
         'sstatus' => req('sstatus', $searchParams['sstatus']),
         'sort' => $sort,
         'dir' => $dir,
@@ -110,7 +113,7 @@ if ($searchParams['sbrand'] ?? '') {
     $params[] = $searchParams['sbrand'];
 }
 
-if ($searchParams['scategory'] ?? '' ) {
+if ($searchParams['scategory'] ?? '') {
     $conditions[] = "c.category_name = ?";
     $params[] = $searchParams['scategory'];
 }
@@ -120,8 +123,9 @@ if ($searchParams['sprice'] ?? '') {
     $params[] = $searchParams['sprice'];
 }
 
-if ($searchParams['sstock'] ?? '') {
-    $conditions[] = "g.gadget_stock = ?";
+if ($searchParams['sstock'] !== '' && isset($searchParams['sstock_operator'])) {
+    $operator = $_operators[$searchParams['sstock_operator']] ?? '=';
+    $conditions[] = "g.gadget_stock {$operator} ?";
     $params[] = $searchParams['sstock'];
 }
 
@@ -158,6 +162,11 @@ include '../_head.php';
 
 <button class="button addProdButton" onclick="window.location.href='add_gadget.php'">Add New Gadget</button>
 
+<form id="mark-all-form" action="delete_gadget.php" method="post">
+    <button id="submit-mark-unactive" class="btn btn-primary" data-post="delete_gadget.php?action=Unactive" style="display: none;" data-confirm='Are you sure to unactivate all selected gadget?'>Unactivate All</button>
+    <button id="submit-mark-active" class="btn btn-primary" data-post="delete_gadget.php?action=Active" style="display: none;" data-confirm='Are you sure to activate all selected gadget?'>Activate All</button>
+</form>
+
 <p>
     <?= $p->count ?> of <?= $p->item_count ?> record(s) |
     Page <?= $p->page ?> of <?= $p->page_count ?>
@@ -165,18 +174,23 @@ include '../_head.php';
 
 <table class="table">
     <tr>
+        <th></th>
         <?= table_headers2($fields, $searchParams['sort'], $searchParams['dir'], "page={$searchParams['page']}") ?>
     </tr>
 
     <form method="post">
         <tr>
+            <td><input type="checkbox" id="check-all">All</td>
             <td><?= html_search2('sid', $searchParams['sid']) ?></td>
             <td><?= html_search2('sname', $searchParams['sname']) ?></td>
-            <td><?= html_select2('sbrand', $brands_name,  'All',$searchParams['sbrand'] ?? '') ?></td>
-            <td><?= html_select2('scategory', $category_name,  'All',$searchParams['scategory'] ?? '') ?></td>
-            <td><?= html_number('sprice', $searchParams['sprice'] ?? '', ['min' => '0.01', 'max' => '10000.00', 'step' => '0.01'],'RM '); ?></td>
-            <td><?= html_number('sstock', $searchParams['sstock'] ?? '', ['min' => '0', 'max' => '1000', 'step' => '1']); ?></td>
-            <td><?= html_select2('sstatus', $_status, 'All',$searchParams['sstatus'] ) ?></td>
+            <td><?= html_select2('sbrand', $brands_name,  'All', $searchParams['sbrand'] ?? '') ?></td>
+            <td><?= html_select2('scategory', $category_name,  'All', $searchParams['scategory'] ?? '') ?></td>
+            <td><?= html_number('sprice', $searchParams['sprice'] ?? '', ['min' => '0.01', 'max' => '10000.00', 'step' => '0.01'], 'RM '); ?></td>
+            <td>
+                <?= html_select2('sstock_operator', $_operators,  '=', $searchParams['sstock_operator'] ?? '') ?>
+                <?= html_number('sstock', $searchParams['sstock'] ?? '', ['min' => '0', 'max' => '1000', 'step' => '1']); ?>
+            </td>
+            <td><?= html_select2('sstatus', $_status, 'All', $searchParams['sstatus']) ?></td>
             <td>
                 <button type="submit">Search</button>
                 <a href="?clear_search=1" class="clear-search-btn">Clear Search</a>
@@ -186,26 +200,50 @@ include '../_head.php';
 
     <?php if (empty($arr)): ?>
         <tr>
-            <td colspan="8">No gadget records found...</td>
+            <td colspan="9">No gadget records found...</td>
         </tr>
     <?php else: ?>
         <?php foreach ($arr as $gadget): ?>
+            <?php
+            $rowColor = '';
+            $stock_status = '';
+            if ($gadget->gadget_stock == 0) {
+                $rowColor = 'background-color: #ffcdd2;';
+                $stock_status = "Out Of Stock";
+            } elseif ($gadget->gadget_stock <= 10) {
+                $rowColor = 'background-color: #fff59d;';
+                $stock_status = "Low Stock";
+            } else {
+                $stock_status = "Sufficient";
+            }
+            ?>
             <tr>
-                <td><?= $gadget->gadget_id ?></td>
-                <td><?= $gadget->gadget_name ?></td>
-                <td><?= $gadget->brand_name ?></td>
-                <td><?= $gadget->category_name ?></td>
-                <td>RM <?= number_format($gadget->gadget_price, 2) ?></td>
-                <td><?= $gadget->gadget_stock ?></td>
-                <td><?= $gadget->gadget_status ?></td>
-                <td>
+                <td style="<?= $rowColor ?>">
+                    <input type="checkbox"
+                        name="id[]"
+                        value="<?= htmlspecialchars($gadget->gadget_id) ?>"
+                        class="checkbox">
+                </td>
+                <td style="<?= $rowColor ?>"><?= $gadget->gadget_id ?></td>
+                <td style="<?= $rowColor ?>"><?= $gadget->gadget_name ?></td>
+                <td style="<?= $rowColor ?>"><?= $gadget->brand_name ?></td>
+                <td style="<?= $rowColor ?>"><?= $gadget->category_name ?></td>
+                <td style="<?= $rowColor ?>">RM <?= number_format($gadget->gadget_price, 2) ?></td>
+                <td style="<?= $rowColor ?>"><?= $gadget->gadget_stock  . " (" . $stock_status . ")" ?></td>
+                <td style="<?= $rowColor ?>"><?= $gadget->gadget_status ?></td>
+                <td style="<?= $rowColor ?>">
                     <a href="view_gadget.php?id=<?= $gadget->gadget_id ?>">View</a> |
                     <a data-get="update_gadget.php?id=<?= $gadget->gadget_id ?>">Edit</a> |
-                    <?php if ($gadget->gadget_status == 'Active'): ?>
-                        <a data-post="delete_gadget.php?action=Unactive&id=<?= $gadget->gadget_id ?>" data-confirm='Are you sure you want to unactivate this gadget?'>Unactivate</a>
-                    <?php else: ?>
-                        <a data-post="delete_gadget.php?action=Active&id=<?= $gadget->gadget_id ?>" data-confirm='Are you sure you want to activate this gadget?'>Activate</a>
-                    <?php endif; ?>
+                    <form id="mark-all-form" action="delete_gadget.php" method="post">
+                        <input type="hidden" name="checkboxName" value="<?= htmlspecialchars($gadget->gadget_id) ?>">
+                        <?php if ($gadget->gadget_status == 'Active'): ?>
+                            <a id="next_unactive" data-post="delete_gadget.php?action=Unactive"
+                                data-confirm='Are you sure you want to unactivate this gadget?'>Unactivate</a>
+                        <?php else: ?>
+                            <a id="next_active" data-post="delete_gadget.php?action=Active"
+                                data-confirm='Are you sure you want to activate this gadget?'>Activate</a>
+                        <?php endif; ?>
+                    </form>
                 </td>
             </tr>
         <?php endforeach ?>
@@ -217,5 +255,5 @@ include '../_head.php';
     'dir' => $searchParams['dir']
 ])); ?>
 
-<?php
-include '../_foot.php'; ?>
+<!-- <?php
+        include '../_foot.php'; ?> -->

@@ -66,33 +66,34 @@ if (is_post()) {
 $_SESSION['category_search_params'] = $searchParams;
 
 // Build the query
-function buildCategoryQuery($searchParams) {
+function buildCategoryQuery($searchParams)
+{
     $conditions = [];
     $params = [];
-    
+
     $baseQuery = "SELECT * FROM category WHERE 1=1";
-    
+
     if ($searchParams['sid']) {
         $conditions[] = "category_id LIKE ?";
         $params[] = "%{$searchParams['sid']}%";
     }
-    
+
     if ($searchParams['sname']) {
         $conditions[] = "category_name LIKE ?";
         $params[] = "%{$searchParams['sname']}%";
     }
-    
+
     if ($searchParams['sstatus'] && $searchParams['sstatus'] !== 'All') {
         $conditions[] = "category_status = ?";
         $params[] = $searchParams['sstatus'];
     }
-    
+
     if (!empty($conditions)) {
         $baseQuery .= " AND " . implode(" AND ", $conditions);
     }
-    
+
     $baseQuery .= " ORDER BY {$searchParams['sort']} {$searchParams['dir']}";
-    
+
     return [$baseQuery, $params];
 }
 
@@ -123,6 +124,11 @@ include '../_head.php';
     <?php endif; ?>
 </form>
 
+<form id="mark-all-form" action="delete_category.php" method="post">
+    <button id="submit-mark-unactive" class="btn btn-primary" data-post="delete_category.php?action=Unactive" style="display: none;" data-confirm='Are you sure to unactivate all selected category?'>Unactivate All</button>
+    <button id="submit-mark-active" class="btn btn-primary" data-post="delete_category.php?action=Active" style="display: none;" data-confirm='Are you sure to activate all selected category?'>Activate All</button>
+</form>
+
 <p>
     <?= $p->count ?> of <?= $p->item_count ?> record(s) |
     Page <?= $p->page ?> of <?= $p->page_count ?>
@@ -130,11 +136,13 @@ include '../_head.php';
 
 <table class="table">
     <tr>
+        <th></th>
         <?= table_headers2($fields, $searchParams['sort'], $searchParams['dir'], "page={$searchParams['page']}") ?>
     </tr>
 
     <form method="post">
         <tr>
+            <td><input type="checkbox" id="check-all">All</td>
             <td><?= html_search2('sid', $searchParams['sid']) ?></td>
             <td><?= html_search2('sname', $searchParams['sname']) ?></td>
             <td><?= html_select2('sstatus', $_status, 'All', $searchParams['sstatus']) ?></td>
@@ -147,25 +155,34 @@ include '../_head.php';
 
     <?php if (empty($arr)): ?>
         <tr>
-            <td colspan="4">No category records found...</td>
+            <td colspan="5">No category records found...</td>
         </tr>
     <?php else: ?>
         <?php foreach ($arr as $category): ?>
             <tr>
+                <td>
+                    <input type="checkbox"
+                        name="id[]"
+                        value="<?= htmlspecialchars($category->category_id) ?>"
+                        class="checkbox">
+                </td>
                 <td><?= htmlspecialchars($category->category_id) ?></td>
-                <td class="edit" data-id="<?= htmlspecialchars($category->category_id) ?>" 
+                <td class="edit" data-id="<?= htmlspecialchars($category->category_id) ?>"
                     data-update-url="update_category.php">
                     <?= htmlspecialchars($category->category_name) ?>
                 </td>
                 <td><?= htmlspecialchars($category->category_status) ?></td>
                 <td>
-                    <?php if ($category->category_status == 'Active'): ?>
-                        <a data-post="delete_category.php?action=Unactive&id=<?= $category->category_id ?>" 
-                           data-confirm='Are you sure you want to unactivate this category?'>Unactivate</a>
-                    <?php else: ?>
-                        <a data-post="delete_category.php?action=Active&id=<?= $category->category_id ?>" 
-                           data-confirm='Are you sure you want to activate this category?'>Activate</a>
-                    <?php endif; ?>
+                    <form id="mark-all-form" action="delete_category.php" method="post">
+                        <input type="hidden" name="checkboxName" value="<?= htmlspecialchars($category->category_id) ?>">
+                        <?php if ($category->category_status == 'Active'): ?>
+                            <a id="next_unactive" data-post="delete_category.php?action=Unactive"
+                                data-confirm='Are you sure you want to unactivate this category?'>Unactivate</a>
+                        <?php else: ?>
+                            <a id="next_active" data-post="delete_category.php?action=Active"
+                                data-confirm='Are you sure you want to activate this category?'>Activate</a>
+                        <?php endif; ?>
+                    </form>
                 </td>
             </tr>
         <?php endforeach ?>
@@ -177,4 +194,4 @@ include '../_head.php';
     'dir' => $searchParams['dir']
 ])) ?>
 
-<?php include '../_foot.php'; ?>
+<!-- <?php include '../_foot.php'; ?> -->
