@@ -12,6 +12,12 @@ if (!empty($_SESSION["admin"])) {
 	temp('info', 'Please login');
 	redirect('adminLogin.php');
 }
+// if ($_admin == null) {
+//     temp('info', 'Please login as admin');
+//     redirect('/');
+// }
+
+auth_admin();
 
 $orderPrices = $_db->query("SELECT * FROM `order`")->fetchAll(PDO::FETCH_ASSOC);
 $totalUser = $_db->query("SELECT COUNT(member_id) AS total FROM `member` WHERE member_status = 'Active'")->fetch(PDO::FETCH_ASSOC);
@@ -142,6 +148,11 @@ include '../admin/_adminHead.php';
 	</table>
 </div>
 
+<img src="/photos/<?= $_admin->admin_profile_pic ?>">
+<p>ID : <?= $_admin->admin_id ?></p>
+<p>Name :<?= $_admin->admin_name ?></p>
+<p>Phone Number :<?= $_admin->admin_phone_no ?></p>
+<p>Email :<?= $_admin->admin_email ?></p>
 
 <?php
 // include '../_foot.php';

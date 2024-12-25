@@ -1,8 +1,8 @@
 <?php
 require '../_base.php';
 
-$id = req('admin_id');
-$id = "A02";
+$id = $_admin->admin_id;
+// $id = "A02";
 
 if (is_get()) {
     $stm = $_db->prepare('SELECT * FROM admin WHERE admin_id = ?');
@@ -78,6 +78,9 @@ if (is_post()) {
 
         $stm = $_db->prepare('UPDATE admin SET admin_name = ?, admin_phone_no = ?, admin_email = ?, admin_profile_pic = ? WHERE admin_id = ?');
         $stm->execute([$admin_name, $admin_phone_no, $admin_email, $admin_profile_pic, $id]);
+        $updated_admin = $_db->query('SELECT * FROM admin WHERE admin_id = ' . $_db->quote($id))->fetch(PDO::FETCH_OBJ);
+
+        $_SESSION['admin'] = $updated_admin;
 
         temp('info', 'Admin profile updated.');
         redirect('../index.php');

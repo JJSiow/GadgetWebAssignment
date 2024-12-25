@@ -42,7 +42,7 @@ $items_result = $stmt->get_result();
 $cart_items = [];
 while ($item = $items_result->fetch_assoc()) {
     $cart_items[] = $item;
-    $total_price += $item['gadget_price'] * $item['quantity'];  // Calculate total price for the cart
+    $total_price += $item['gadget_price'] * $item['quantity']; // Calculate total price for the cart
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
@@ -57,15 +57,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
     
     $order_id = $order_stmt->insert_id;  // Get the order ID
 
-    // Now insert into the `order_item` table and include the member_id
+    // Now insert into the `order_item` table and update gadget stock
     foreach ($cart_items as $item) {
         // Calculate the order price (total price for the item)
         $order_item_price = $item['gadget_price'] * $item['quantity'];
 
+        // Insert into `order_item` table
         $order_item_query = "INSERT INTO order_item (gadget_id, order_id, order_price, member_id) VALUES (?, ?, ?, ?)";
         $order_item_stmt = $conn->prepare($order_item_query);
         $order_item_stmt->bind_param("ssss", $item['gadget_id'], $order_id, $order_item_price, $member_id);  // All are strings (varchar)
         $order_item_stmt->execute();
+
+        // Update gadget stock in the `gadget` table
+        $update_stock_query = "UPDATE gadget SET gadget_stock = gadget_stock - ? WHERE gadget_id = ?";
+        $update_stock_stmt = $conn->prepare($update_stock_query);
+        $update_stock_stmt->bind_param("is", $item['quantity'], $item['gadget_id']); // Bind quantity and gadget_id
+        $update_stock_stmt->execute();
     }
 
     // Remove items from the cart
@@ -86,16 +93,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="/js/product.js" defer></script>  <!-- Defer loading of app.js -->
 </head>
 <body>
-    <h1>Checkout</h1>
-
     <form action="checkout.php" method="POST">
         <table>
             <thead>
                 <tr>
-                    <th>Select</th>
                     <th>Gadget</th>
                     <th>Price</th>
                     <th>Quantity</th>
@@ -105,19 +108,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
             <tbody>
                 <?php foreach ($cart_items as $item): ?>
                 <tr class="cart-row">
-                    <td>
-                        <input type="checkbox" class="item-select" checked onchange="updateTotalPrice()">
-                    </td>
-                    <td><?= htmlspecialchars($item['gadget_name']) ?></td>
-                    <td class="item-price" data-price="<?= $item['gadget_price'] ?>">RM <?= number_format($item['gadget_price'], 2) ?></td>
-                    <td><input type="number" class="item-quantity" value="<?= $item['quantity'] ?>" onchange="updateTotalPrice()"></td>
-                    <td>RM <span class="item-total"><?= number_format($item['gadget_price'] * $item['quantity'], 2) ?></span></td>
+                    <td><?= $item['gadget_name'] ?></td>
+                    <td class="item-price">RM <?= number_format($item['gadget_price'], 2) ?></td>
+                    <td><?= $item['quantity'] ?></td>
+                    <td>RM <?= number_format($item['gadget_price'] * $item['quantity'], 2) ?></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
 
-        <p>Total Price: <span id="total-price">RM 0.00</span></p>
+        <p><strong>Total Price: RM <?= number_format($total_price, 2) ?></strong></p>
 
         <label for="voucher_id">Voucher Code (optional):</label>
         <input type="text" name="voucher_id" id="voucher_id" placeholder="Enter voucher code">

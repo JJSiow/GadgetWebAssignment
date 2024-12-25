@@ -28,33 +28,23 @@ if (isset($_GET['delete_cart_id'])) {
 
     if ($stmt->execute()) {
         temp('info', 'Item removed from cart.');
-        redirect('order_cart.php');
+        header("Location: order_cart.php");
+        exit();
     } else {
         echo "Error removing item: " . $conn->error;
     }
-    exit;
+    exit();
 }
 
-// Handle AJAX quantity update
-if (isset($_POST['update_quantity'])) {
-    $cart_id = $_POST['cart_id'];
-    $quantity = $_POST['quantity'];
-
-    $updateQuery = "UPDATE order_cart SET quantity = ? WHERE cart_id = ? AND member_id = ?";
-    $stmt = $conn->prepare($updateQuery);
-    $stmt->bind_param("iii", $quantity, $cart_id, $member_id);
-
-    if ($stmt->execute()) {
-        echo "Quantity updated successfully.";
-    } else {
-        echo "Error updating quantity: " . $conn->error;
-    }
-    exit;
-}
-
-// Fetch cart items for the user
+// Fetch cart items for the user (only the first photo for each product)
 $query = "
-    SELECT oc.cart_id, oc.quantity, g.gadget_id, g.gadget_name, g.gadget_price, g.gadget_photo
+    SELECT 
+        oc.cart_id, 
+        oc.quantity, 
+        g.gadget_id, 
+        g.gadget_name, 
+        g.gadget_price, 
+        (SELECT photo_path FROM gallery ga WHERE ga.gadget_id = g.gadget_id LIMIT 1) AS photo_path
     FROM order_cart oc
     JOIN gadget g ON oc.gadget_id = g.gadget_id
     WHERE oc.member_id = ?
@@ -97,8 +87,8 @@ $result = $stmt->get_result();
                                 value="<?= $item['cart_id'] ?>">
                         </td>
                         <td>
-                            <img src="images/<?= htmlspecialchars($item['gadget_photo']) ?>" alt="<?= $item['gadget_name'] ?>" class="cart-gadget-img">
-                            <span><?= htmlspecialchars($item['gadget_name']) ?></span>
+                            <img src="/uploads/<?= $item['photo_path'] ?>" alt="<?= $item['gadget_name'] ?>" class="cart-gadget-img">
+                            <span><?= $item['gadget_name'] ?></span>
                         </td>
                         <td class="item-price" data-price="<?= $item['gadget_price'] ?>">RM
                             <?= number_format($item['gadget_price'], 2) ?>
@@ -124,17 +114,22 @@ $result = $stmt->get_result();
 
     <script>
         // Calculate total price dynamically
-        const itemRows = document.querySelectorAll('.cart-row');
-        let totalPrice = 0;
+        function calculateTotal() {
+            const itemRows = document.querySelectorAll('.cart-row');
+            let totalPrice = 0;
 
-        itemRows.forEach(row => {
-            const price = parseFloat(row.querySelector('.item-price').dataset.price);
-            const quantity = parseInt(row.querySelector('.item-quantity').value);
-            totalPrice += price * quantity;
-        });
+            itemRows.forEach(row => {
+                const price = parseFloat(row.querySelector('.item-price').dataset.price);
+                const quantity = parseInt(row.querySelector('.item-quantity').value);
+                totalPrice += price * quantity;
+            });
 
-        document.getElementById('total-price').innerText = `RM ${totalPrice.toFixed(2)}`;
-        
+            document.getElementById('total-price').innerText = `RM ${totalPrice.toFixed(2)}`;
+        }
+
+        // Initial total calculation
+        calculateTotal();
+
         // Update total price when quantity changes
         const quantityInputs = document.querySelectorAll('.item-quantity');
         quantityInputs.forEach(input => {
@@ -142,14 +137,9 @@ $result = $stmt->get_result();
                 const row = input.closest('.cart-row');
                 const price = parseFloat(row.querySelector('.item-price').dataset.price);
                 const quantity = parseInt(input.value);
-                row.querySelector('.item-total').innerText = `RM ${ (price * quantity).toFixed(2) }`;
+                row.querySelector('.item-total').innerText = `RM ${(price * quantity).toFixed(2)}`;
 
-                let totalPrice = 0;
-                document.querySelectorAll('.item-total').forEach(total => {
-                    totalPrice += parseFloat(total.innerText.replace('RM ', '').replace(',', ''));
-                });
-
-                document.getElementById('total-price').innerText = `RM ${totalPrice.toFixed(2)}`;
+                calculateTotal();
             });
         });
     </script>

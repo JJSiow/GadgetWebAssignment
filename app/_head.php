@@ -24,14 +24,9 @@
             <li><a href="/">Dashboard</a></li>
             <li><a href="../member/login.php">Login</a></li>
             <li><a href="../member/logout.php">Logout</a></li>
-            <li><a href="../admin/adminHome.php">Admin Home</a></li>
             <li><a href="../admin/adminLogin.php">Admin Login</a></li>
-            <li><a href="../admin/adminLogout.php">Admin Logout</a></li>
-            <li><a href="../admin/member_list.php">Member</a></li>
             <li><a href="/member/member_profile.php">Member Profile</a></li>
             <li><a href="/member/member_password.php">Member Password</a></li>
-            <li><a href="/admin/admin_list.php">Admin List</a></li>
-            <li><a href="/admin/admin_profile.php">Admin Profile</a></li>
             <li><a href="/page/gadget.php">Product</a></li>
             <li><a href="/page/order_cart.php">order_cart</a></li>
             <li><a href="/page/order_item.php">order_item</a></li>

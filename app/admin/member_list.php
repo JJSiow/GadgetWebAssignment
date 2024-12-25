@@ -1,6 +1,12 @@
 <?php
 require '../_base.php';
-// ----------------------------------------------------------------------------
+
+// if ($_admin == null) {
+//     temp('info', 'Please login as admin');
+//     redirect('/');
+// }
+
+auth_admin();
 
 $sort = req('sort');
 if (!key_exists($sort, $_member_attr)) {
@@ -60,17 +66,30 @@ include '../_head.php';
 
     <?php foreach ($arr as $s): ?>
     <tr>
-        <td><?= $s->member_id ?></td>
-        <td><?= $s->member_name ?></td>
-        <td><?= $s->member_phone_no ?></td>
-        <td><?= $s->member_gender ?></td>
-        <td><?= $s->member_email ?></td>
-        <td><?= $s->shipping_address ?></td>
-        <td><?= $s->member_status ?></td>
-        <td><img src="../photos/<?= $s->member_profile_pic ?>"  width="100"></td>
-        <td><button data-get="edit_member_profile_pic.php?member_id=<?= $s->member_id ?>">Edit Profle Pic</a></button></td>
-        <td><button data-post="update_member_status.php?member_id=<?= $s->member_id ?>&page=<?= $page ?>" data-confirm="Are you sure you want to change the status of this member?">Change Status</button></td>
+        <?php if ($s->member_status != 'Deleted') : ?>
+            <td><?= $s->member_id ?></td>
+            <td><?= $s->member_name ?></td>
+            <td><?= $s->member_phone_no ?></td>
+            <td><?= $s->member_gender ?></td>
+            <td><?= $s->member_email ?></td>
+            <td><?= $s->shipping_address ?></td>
+            <td><?= $s->member_status ?></td>
+            <td><img src="../photos/<?= $s->member_profile_pic ?>"  width="100"></td>
+            <td><button data-get="edit_member_profile_pic.php?member_id=<?= $s->member_id ?>">Edit Profle Pic</button></td>
+            <td><button data-post="update_member_status.php?member_id=<?= $s->member_id ?>&search_by=<?= $search_by ?>&search_value=<?=$search_value ?>&page=<?= $page ?>" data-confirm="Are you sure you want to change the status of this member?">Change Status</button></td>
 
+        <?php else : ?>
+            <td><s><?= $s->member_id ?></s></td>
+            <td><s><?= $s->member_name ?></s></td>
+            <td><s><?= $s->member_phone_no ?></s></td>
+            <td><s><?= $s->member_gender ?></s></td>
+            <td><s><?= $s->member_email ?></s></td>
+            <td><s><?= $s->shipping_address ?></s></td>
+            <td><s><?= $s->member_status ?></s></td>
+            <td><s><img src="../photos/<?= $s->member_profile_pic ?>"  width="100"></s></td>
+            <td><button disabled>Edit Profle Pic</button></td>
+            <td><button disabled>Change Status</button></td>
+        <?php endif ?>
     </tr>
     <?php endforeach ?>
 </table>
