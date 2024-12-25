@@ -2,16 +2,11 @@
 require '../_base.php';
 //-----------------------------------------------------------------------------
 
-// if ($_admin == null) {
-//     temp('info', 'Please login as admin');
-//     redirect('/');
-// }
-
 auth_admin();
 
 // ----------------------------------------------------------------------------
 $_title = 'admin Home';
-include '../admin/_adminHead.php';
+include '../admin/_admin_head.php';
 ?>
 
 <img src="/photos/<?= $_admin->admin_profile_pic ?>">

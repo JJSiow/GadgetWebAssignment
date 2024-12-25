@@ -1,11 +1,6 @@
 <?php
 require '../_base.php';
 
-// if ($_admin->is_super_admin == 'N') {
-//     temp('info', 'Unauthorized access');
-//     redirect('adminHome.php');
-// }
-
 auth_super_admin();
 
 $no_of_admin = $_db->query('SELECT COUNT(*) FROM admin')->fetchColumn();

@@ -2,10 +2,6 @@
 
 <?php
 require '../_base.php';
-// ----------------------------------------------------------------------------
-// if ($_admin != null) {
-//     redirect('adminHome.php'); 
-// }
 
 auth_admin(false);
 
@@ -60,7 +56,7 @@ $_title = 'Admin Login';
 
         <button type="submit">Login</button>
         <button type="reset">Reset</button>
-        <a href="../admin/adminForgot_password.php">Forgot password?</a>
+        <a href="../admin/admin_forgot_password.php">Forgot password?</a>
         <a href="../member/login.php">Member Login</a>
     </form>
 </div>

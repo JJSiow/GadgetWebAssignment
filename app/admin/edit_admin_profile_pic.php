@@ -1,17 +1,14 @@
 <?php
 require '../_base.php';
 
+auth_super_admin();
+
 $admin_id = req('admin_id');
 
 if (is_get()) {
     $stm = $_db->prepare('SELECT * FROM admin WHERE admin_id = ?');
     $stm->execute([$admin_id]);
     $admin = $stm->fetch();
-
-    if (!$admin) {
-        temp('info', 'Admin not found.');
-        redirect('admin_list.php');
-    }
 
     extract((array)$admin);
     $_SESSION['admin_profile_pic'] = $admin->admin_profile_pic;

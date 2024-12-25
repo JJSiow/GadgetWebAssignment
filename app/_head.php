@@ -21,14 +21,19 @@
     <nav class="user_menu_bar">
         <ul>
             <li><a href="/">Dashboard</a></li>
-            <li><a href="../member/login.php">Login</a></li>
-            <li><a href="../member/logout.php">Logout</a></li>
-            <li><a href="../admin/adminLogin.php">Admin Login</a></li>
-            <li><a href="/member/member_profile.php">Member Profile</a></li>
-            <li><a href="/member/member_password.php">Member Password</a></li>
             <li><a href="/page/gadget.php">Product</a></li>
-            <li><a href="/page/order_cart.php">order_cart</a></li>
-            <li><a href="/page/order_item.php">order_item</a></li>
+            <?php if (!$_member): ?>
+                <li><a href="../admin/admin_login.php">Admin Login</a></li>
+                <li><a href="/member/login.php">Login</a></li>
+            <?php endif ?>
+            <?php if ($_member): ?>
+                <li><a href="/member/member_profile.php">Member Profile</a></li>
+                <li><a href="/member/member_password.php">Member Password</a></li>
+                <li><a href="/page/order_cart.php">order_cart</a></li>
+                <li><a href="/page/order_item.php">order_item</a></li>
+                <li><a href="/home.php">Profile</a></li>
+                <li><a href="/member/logout.php">Logout</a></li>
+            <?php endif ?>
         </ul>
     </nav>
     <a class="logout" href="../member/register.php"><img class="logo" src="images/sda.jpg" alt="logo"></a>

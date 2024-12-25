@@ -1,7 +1,8 @@
 <?php
 require '../_base.php';
 
-// Get member ID from URL parameter
+auth_admin();
+
 $member_id = req('member_id');
 
 if (is_get()) {
@@ -9,13 +10,13 @@ if (is_get()) {
     $stm->execute([$member_id]);
     $member = $stm->fetch();
 
-    if (!$member) {
-        temp('info', 'Member not found.');
-        redirect('member_list.php');
-    }
-
     extract((array)$member);
     $_SESSION['member_profile_pic'] = $member->member_profile_pic;
+
+    if ($member->member_status == 'Deleted') {
+        temp('info', 'Member deleted.');
+        redirect('member_list.php');
+    }
 }
 
 if (is_post()) {
@@ -82,10 +83,3 @@ include '../_head.php';
         <button type="submit">Save</button>
     </section>
 </form>
-
-
-<pre>
-    <?php
-    // print_r($_SESSION);
-    // print_r($_FILES);
-    ?>
