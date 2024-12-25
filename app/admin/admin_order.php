@@ -194,7 +194,7 @@ foreach ($orders as $order) {
 }
 
 $_title = 'Order';
-include '../_head.php';
+include '../admin/_adminHead.php';
 ?>
 
 <div>
@@ -278,5 +278,3 @@ include '../_head.php';
     'sort' => $searchParams['sort'],
     'dir' => $searchParams['dir']
 ])) ?>
-
-<!-- <?php include '../_foot.php'; ?> -->

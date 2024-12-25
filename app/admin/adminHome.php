@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/css/adminHome.css">
 <?php
 require '../_base.php';
 //-----------------------------------------------------------------------------
@@ -144,7 +145,7 @@ include '../admin/_adminHead.php';
 <div class="table-container">
 	<div class="table-header">
 		<h3>Low Gadget Stock</h3>
-		<button data-get="../page/admin_products.php?stock=10&operator=<=">Show More</button>
+		<button data-get="../admin/admin_products.php?stock=10&operator=<=">Show More</button>
 	</div>
 	<table class="table">
 		<thead>
@@ -200,6 +201,3 @@ include '../admin/_adminHead.php';
 <p>Name :<?= $_admin->admin_name ?></p>
 <p>Phone Number :<?= $_admin->admin_phone_no ?></p>
 <p>Email :<?= $_admin->admin_email ?></p> -->
-
-<?php
-// include '../_foot.php';

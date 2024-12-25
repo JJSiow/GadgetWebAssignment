@@ -28,6 +28,27 @@ $searchParams = $_SESSION['gadget_search_params'] ?? [
     'page' => 1
 ];
 
+if (!isset($_SESSION['previous_stock_levels'])) {
+    $_SESSION['previous_stock_levels'] = [];
+    $stockQuery = "SELECT gadget_id, gadget_stock FROM gadget";
+    $stocks = $_db->query($stockQuery)->fetchAll();
+    foreach ($stocks as $item) {
+        $_SESSION['previous_stock_levels'][$item->gadget_id] = $item->gadget_stock;
+    }
+}
+
+// Check for new low stock items
+$currentStocks = $_db->query("SELECT gadget_id, gadget_name, gadget_stock FROM gadget WHERE gadget_status = 'Active'")->fetchAll();
+$newLowStockItems = [];
+
+foreach ($currentStocks as $item) {
+    $previousStock = $_SESSION['previous_stock_levels'][$item->gadget_id] ?? $item->gadget_stock;
+    if ($item->gadget_stock < 10 && $previousStock >= 10) {
+        $newLowStockItems[] = $item;
+    }
+    $_SESSION['previous_stock_levels'][$item->gadget_id] = $item->gadget_stock;
+}
+
 if (is_get()) {
     $stock = req('stock');
     $operator = req('operator');
@@ -187,10 +208,21 @@ $p = new SimplePager2(
 $arr = $p->result;
 
 $gadget_images = $_db->query('SELECT gallery_id, photo_path, gadget_id FROM gallery')->fetchAll();
-
 $_title = 'Gadget';
-include '../_head.php';
+include '../admin/_adminHead.php';
 ?>
+
+<?php if (!empty($newLowStockItems)): ?>
+    <div id="stock-alert" class="stock-alert" style="background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; margin: 10px 0; border-radius: 4px; position: relative;">
+        <button class="dismiss-alert" style="position: absolute; right: 10px; top: 10px; background: none; border: none; cursor: pointer; font-size: 18px;">&times;</button>
+        <strong style="color: #721c24;">Warning: New Low Stock Detected!</strong>
+        <?php foreach ($newLowStockItems as $item): ?>
+            <p style="margin: 5px 0; color: #721c24;">
+                <?= htmlspecialchars($item->gadget_name) ?> has dropped below 10 units (Current stock: <?= $item->gadget_stock ?>)
+            </p>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
 
 <button class="button addProdButton" onclick="window.location.href='add_gadget.php'">Add New Gadget</button>
 
@@ -302,6 +334,3 @@ include '../_head.php';
     'sort' => $searchParams['sort'],
     'dir' => $searchParams['dir']
 ])); ?>
-
-<!-- <?php
-        include '../_foot.php'; ?> -->

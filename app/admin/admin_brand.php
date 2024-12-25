@@ -1,41 +1,37 @@
 <?php
 require_once '../_base.php';
 
-$category_error = isset($_SESSION['category_error']) ? $_SESSION['category_error'] : null;
-unset($_SESSION['category_error']);
+$brand_error = isset($_SESSION['brand_error']) ? $_SESSION['brand_error'] : null;
+unset($_SESSION['brand_error']);
 
-// Define fields for sorting
 $fields = [
-    'category_id' => 'Category ID',
-    'category_name' => 'Category Name',
-    'category_status' => 'Category Status',
+    'brand_id' => 'Brand ID',
+    'brand_name' => 'Brand Name',
+    'brand_status' => 'Brand Status',
     'action' => 'Action'
 ];
 
-// Initialize search parameters from session or defaults
-$searchParams = $_SESSION['category_search_params'] ?? [
+$searchParams = $_SESSION['brand_search_params'] ?? [
     'sid' => '',
     'sname' => '',
     'sstatus' => '',
-    'sort' => 'category_id',
+    'sort' => 'brand_id',
     'dir' => 'asc',
     'page' => 1
 ];
 
 // Clear search if requested
 if (isset($_GET['clear_search'])) {
-    unset($_SESSION['category_search_params']);
+    unset($_SESSION['brand_search_params']);
     $searchParams = [
         'sid' => '',
         'sname' => '',
         'sstatus' => '',
-        'sort' => 'category_id',
+        'sort' => 'brand_id',
         'dir' => 'asc',
         'page' => 1
     ];
 }
-
-// Handle sorting
 $sort = req('sort');
 $sort = key_exists($sort, $fields) ? $sort : $searchParams['sort'];
 
@@ -62,8 +58,7 @@ if (is_post()) {
     $searchParams['page'] = $page;
 }
 
-// Save to session
-$_SESSION['category_search_params'] = $searchParams;
+$_SESSION['brand_search_params'] = $searchParams;
 
 // Build the query
 function buildCategoryQuery($searchParams)
@@ -71,20 +66,20 @@ function buildCategoryQuery($searchParams)
     $conditions = [];
     $params = [];
 
-    $baseQuery = "SELECT * FROM category WHERE 1=1";
+    $baseQuery = "SELECT * FROM brand WHERE 1=1";
 
     if ($searchParams['sid']) {
-        $conditions[] = "category_id LIKE ?";
+        $conditions[] = "brand_id LIKE ?";
         $params[] = "%{$searchParams['sid']}%";
     }
 
     if ($searchParams['sname']) {
-        $conditions[] = "category_name LIKE ?";
+        $conditions[] = "brand_name LIKE ?";
         $params[] = "%{$searchParams['sname']}%";
     }
 
     if ($searchParams['sstatus'] && $searchParams['sstatus'] !== 'All') {
-        $conditions[] = "category_status = ?";
+        $conditions[] = "brand_status = ?";
         $params[] = $searchParams['sstatus'];
     }
 
@@ -100,7 +95,6 @@ function buildCategoryQuery($searchParams)
 // Get the query and parameters
 [$query, $params] = buildCategoryQuery($searchParams);
 
-// Create SimplePager with the appropriate query
 require_once '../lib/SimplePager2.php';
 $p = new SimplePager2(
     $query,
@@ -112,21 +106,21 @@ $p = new SimplePager2(
 
 $arr = $p->result;
 
-$_title = 'Gadget Category';
-include '../_head.php';
+$_title = 'Gadget Brand';
+include '../admin/_adminHead.php';
 ?>
 
-<form action="add_category.php" method="post">
-    <input type="text" id="ctg_name" name="ctg_name" placeholder="Add new category" required>
+<form action="add_brand.php" method="post">
+    <input type="text" id="brd_name" name="brd_name" placeholder="Add new brand">
     <button class="button addProdButton">Add</button>
-    <?php if ($category_error): ?>
-        <p class="error"><?= htmlspecialchars($category_error) ?></p>
+    <?php if ($brand_error): ?>
+        <p class="error"><?= htmlspecialchars($brand_error) ?></p>
     <?php endif; ?>
 </form>
 
-<form id="mark-all-form" action="delete_category.php" method="post">
-    <button id="submit-mark-unactive" class="btn btn-primary" data-post="delete_category.php?action=Unactive" style="display: none;" data-confirm='Are you sure to unactivate all selected category?'>Unactivate All</button>
-    <button id="submit-mark-active" class="btn btn-primary" data-post="delete_category.php?action=Active" style="display: none;" data-confirm='Are you sure to activate all selected category?'>Activate All</button>
+<form id="mark-all-form" action="delete_brand.php" method="post">
+    <button id="submit-mark-unactive" class="btn btn-primary" data-post="delete_brand.php?action=Unactive" style="display: none;" data-confirm='Are you sure to unactivate all selected brand?'>Unactivate All</button>
+    <button id="submit-mark-active" class="btn btn-primary" data-post="delete_brand.php?action=Active" style="display: none;" data-confirm='Are you sure to activate all selected brand?'>Activate All</button>
 </form>
 
 <p>
@@ -134,10 +128,11 @@ include '../_head.php';
     Page <?= $p->page ?> of <?= $p->page_count ?>
 </p>
 
+
 <table class="table">
     <tr>
         <th></th>
-        <?= table_headers2($fields, $searchParams['sort'], $searchParams['dir'], "page={$searchParams['page']}") ?>
+        <?= table_headers2($fields, $sort, $dir, "page=$page") ?>
     </tr>
 
     <form method="post">
@@ -146,8 +141,7 @@ include '../_head.php';
             <td><?= html_search2('sid', $searchParams['sid']) ?></td>
             <td><?= html_search2('sname', $searchParams['sname']) ?></td>
             <td><?= html_select2('sstatus', $_status, 'All', $searchParams['sstatus']) ?></td>
-            <td>
-                <button type="submit">Search</button>
+            <td><button type="submit">Search</button>
                 <a href="?clear_search=1" class="clear-search-btn">Clear Search</a>
             </td>
         </tr>
@@ -155,32 +149,29 @@ include '../_head.php';
 
     <?php if (empty($arr)): ?>
         <tr>
-            <td colspan="5">No category records found...</td>
+            <td colspan="8">No brand records found...</td>
         </tr>
     <?php else: ?>
-        <?php foreach ($arr as $category): ?>
+        <?php foreach ($arr as $brand): ?>
             <tr>
                 <td>
                     <input type="checkbox"
                         name="id[]"
-                        value="<?= htmlspecialchars($category->category_id) ?>"
+                        value="<?= htmlspecialchars($brand->brand_id) ?>"
                         class="checkbox">
                 </td>
-                <td><?= htmlspecialchars($category->category_id) ?></td>
-                <td class="edit" data-id="<?= htmlspecialchars($category->category_id) ?>"
-                    data-update-url="update_category.php">
-                    <?= htmlspecialchars($category->category_name) ?>
-                </td>
-                <td><?= htmlspecialchars($category->category_status) ?></td>
+                <td><?= $brand->brand_id ?></td>
+                <td class="edit" data-id="<?= $brand->brand_id ?>" data-update-url="update_brand.php"><?= $brand->brand_name ?></td>
+                <td><?= $brand->brand_status ?></td>
                 <td>
-                    <form id="mark-all-form" action="delete_category.php" method="post">
-                        <input type="hidden" name="checkboxName" value="<?= htmlspecialchars($category->category_id) ?>">
-                        <?php if ($category->category_status == 'Active'): ?>
-                            <a id="next_unactive" data-post="delete_category.php?action=Unactive"
-                                data-confirm='Are you sure you want to unactivate this category?'>Unactivate</a>
+                    <form id="mark-all-form" action="delete_brand.php" method="post">
+                        <input type="hidden" name="checkboxName" value="<?= htmlspecialchars($brand->brand_id) ?>">
+                        <?php if ($brand->brand_status == 'Active'): ?>
+                            <a id="next_unactive" data-post="delete_brand.php?action=Unactive"
+                                data-confirm='Are you sure you want to unactivate this brand?'>Unactivate</a>
                         <?php else: ?>
-                            <a id="next_active" data-post="delete_category.php?action=Active"
-                                data-confirm='Are you sure you want to activate this category?'>Activate</a>
+                            <a id="next_active" data-post="delete_brand.php?action=Active"
+                                data-confirm='Are you sure you want to activate this brand?'>Activate</a>
                         <?php endif; ?>
                     </form>
                 </td>
@@ -193,5 +184,3 @@ include '../_head.php';
     'sort' => $searchParams['sort'],
     'dir' => $searchParams['dir']
 ])) ?>
-
-<!-- <?php include '../_foot.php'; ?> -->

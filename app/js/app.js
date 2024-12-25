@@ -236,6 +236,10 @@ $(() => {
     }
 
     initializeSlideshows();
+
+    $('.dismiss-alert').click(function() {
+        $('#stock-alert').fadeOut('fast');
+    });
 });
 
 // ============================================================================

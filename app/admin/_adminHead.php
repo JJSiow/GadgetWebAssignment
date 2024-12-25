@@ -7,13 +7,12 @@
     <title><?= $_title ?? 'Untitled' ?></title>
     <link rel="shortcut icon" href="/images/favicon.png">
     <link rel="stylesheet" href="/css/adminNav.css">
-    <link rel="stylesheet" href="/css/adminHome.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="/js/app.js"></script>
     <script src="/js/multiple_photo.js"></script>
     <script src="/js/view_gadget.js"></script>
     <script src="/js/chart.js"></script>
-    <!-- <link rel="stylesheet" href="/css/app.css"> -->
+    <link rel="stylesheet" href="/css/app.css">
 </head>
 
 <body>
@@ -25,13 +24,13 @@
         <nav class="admin_menu_bar">
             <ul>
             <li><a href="../index.php">User Login</a></li>
-            <li><a href="../admin/adminLogout.php">Admin Logout</a></li>
-            <li><a href="/page/admin_products.php">Product</a></li>
-            <li><a href="/page/admin_voucher.php">Voucher</a></li>
+            <li><a href="/admin/adminHome.php">Admin Login</a></li>
+            <li><a href="/admin/admin_products.php">Product</a></li>
+            <li><a href="/admin/admin_voucher.php">Voucher</a></li>
             <li><a href="/admin/member_list.php">Member List</a></li>
-            <li><a href="/page/admin_order.php">Order</a></li>
-            <li><a href="/page/admin_category.php">Category</a></li>
-            <li><a href="/page/admin_brand.php">Brand</a></li>
+            <li><a href="/admin/admin_order.php">Order</a></li>
+            <li><a href="/admin/admin_category.php">Category</a></li>
+            <li><a href="/admin/admin_brand.php">Brand</a></li>
             <li><a href="/admin/admin_list.php">Admin List</a></li>
             <li><a href="/admin/admin_profile.php">Admin Profile</a></li>
 

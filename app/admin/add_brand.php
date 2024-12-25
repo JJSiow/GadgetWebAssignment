@@ -19,7 +19,7 @@ if (is_post()) {
 
     if ($_err) {
         $_SESSION['brand_error'] = $_err['brd_name'];
-        redirect('/page/admin_brand.php');
+        redirect('/admin/admin_brand.php');
     } else {
         $newBrandId = auto_id('brand_id', 'brand', 'BD_');
         $brd_name = strtoupper($brd_name);
@@ -29,7 +29,7 @@ if (is_post()) {
         $stm->execute([$newBrandId, $brd_name, 'Active']);
 
         temp('info', 'Brand added successfully');
-        redirect('/page/admin_brand.php');
+        redirect('/admin/admin_brand.php');
     }
 }
 // ----------------------------------------------------------------------------

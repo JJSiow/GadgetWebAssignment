@@ -113,7 +113,7 @@ $p = new SimplePager2(
 $arr = $p->result;
 
 $_title = 'Voucher';
-include '../_head.php';
+include '../admin/_adminHead.php';
 ?>
 
 <form action="add_voucher.php" method="post">
@@ -195,5 +195,3 @@ include '../_head.php';
     'sort' => $searchParams['sort'],
     'dir' => $searchParams['dir']
 ])) ?>
-
-<?php include '../_foot.php'; ?>

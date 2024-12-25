@@ -35,6 +35,20 @@ main h1 {
     margin-top: 0;
 }
 
+/* Pager */
+nav.pager {
+    padding: 0;
+    background: transparent;
+}
+
+nav.pager a {
+    outline: 1px solid #333;
+}
+
+nav.pager a.active {
+    background: #333;
+}
+
 /* Table ------------------------------------------------------------------- */
 
 .table {
