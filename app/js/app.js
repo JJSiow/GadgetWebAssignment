@@ -207,7 +207,7 @@ $(() => {
     });
 
     // $('.add-stock-btn').on('click', function (e) {
-    //     window.location.href = '../admin/adminHome.php';
+    //     window.location.href = '../admin/_admin_head.php';
     //     localStorage.setItem('scrollToBottom', true);
     // });
 
@@ -237,7 +237,7 @@ $(() => {
 
     initializeSlideshows();
 
-    $('.dismiss-alert').click(function() {
+    $('.dismiss-alert').click(function () {
         $('#stock-alert').fadeOut('fast');
     });
 });

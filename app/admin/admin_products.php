@@ -237,7 +237,7 @@ $arr = $p->result;
 
 $gadget_images = $_db->query('SELECT gallery_id, photo_path, gadget_id FROM gallery')->fetchAll();
 $_title = 'Gadget';
-include '../admin/_adminHead.php';
+include '../admin/_admin_head.php';
 ?>
 
 <?php if (!empty($newLowStockItems)): ?>

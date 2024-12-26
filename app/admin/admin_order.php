@@ -194,7 +194,7 @@ foreach ($orders as $order) {
 }
 
 $_title = 'Order';
-include '../admin/_adminHead.php';
+include '../admin/_admin_head.php';
 ?>
 
 <div>

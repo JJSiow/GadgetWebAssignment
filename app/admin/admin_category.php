@@ -113,7 +113,7 @@ $p = new SimplePager2(
 $arr = $p->result;
 
 $_title = 'Gadget Category';
-include '../admin/_adminHead.php';
+include '../admin/_admin_head.php';
 ?>
 
 <form action="add_category.php" method="post">
