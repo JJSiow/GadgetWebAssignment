@@ -2,6 +2,11 @@
 require '../_base.php';
 $_title = 'Checkout';
 include '../_head.php';
+require __DIR__ . "/vendor/autoload.php";
+
+$stripe_secret_key = "sk_test_51QaDuGKBOa17We83oRWp6LLxA3lcYN58zhcLX6fJ4GX4CAPTn2SVxS0MC450qLiGDp42D0WTjlmphSMJ8S9UHg0U00pjWY0sqh";
+
+\Stripe\Stripe::setApiKey($stripe_secret_key);
 
 // Database connection
 $conn = new mysqli("localhost", "root", "", "gadgetwebdb");
@@ -58,83 +63,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
     $payment_method = $_POST['payment_method'];
     $final_price = floatval($_POST['final_price']); // Get the final price
 
-    // Insert into the `order` table
-    $order_query = "INSERT INTO `order` (member_id, order_date, order_status, voucher_id, total_order_price) VALUES (?, NOW(), 'PENDING', ?, ?)";
-    $order_stmt = $conn->prepare($order_query);
-    $order_stmt->bind_param("ssd", $member_id, $voucher_id, $final_price);
-    $order_stmt->execute();
 
-    $order_id = $order_stmt->insert_id; // Get the generated order ID
 
-   
-// Validate stock before processing the checkout
-foreach ($cart_items as $item) {
-    $gadget_id = $item['gadget_id'];
-    $quantity = $item['quantity'];
+    // Validate stock before processing the checkout
+    foreach ($cart_items as $item) {
+        $gadget_id = $item['gadget_id'];
+        $quantity = $item['quantity'];
 
-    // Check the available stock
-    $check_stock_query = "SELECT gadget_stock FROM gadget WHERE gadget_id = ?";
-    $check_stock_stmt = $conn->prepare($check_stock_query);
-    $check_stock_stmt->bind_param("s", $gadget_id);
-    $check_stock_stmt->execute();
-    $check_stock_result = $check_stock_stmt->get_result();
+        // Check the available stock
+        $check_stock_query = "SELECT gadget_stock FROM gadget WHERE gadget_id = ?";
+        $check_stock_stmt = $conn->prepare($check_stock_query);
+        $check_stock_stmt->bind_param("s", $gadget_id);
+        $check_stock_stmt->execute();
+        $check_stock_result = $check_stock_stmt->get_result();
 
-    if ($check_stock_result->num_rows > 0) {
-        $stock_data = $check_stock_result->fetch_assoc();
-        $available_stock = $stock_data['gadget_stock'];
+        if ($check_stock_result->num_rows > 0) {
+            $stock_data = $check_stock_result->fetch_assoc();
+            $available_stock = $stock_data['gadget_stock'];
 
-        if ($quantity > $available_stock) {
-            // Stock insufficient, temp a message and redirect back to the cart
-            temp('info', 'Insufficient stock for ' . htmlspecialchars($item['gadget_name']) . '. Available stock: ' . $available_stock . '. Quantity updated in your cart.');
+            if ($quantity > $available_stock) {
+                // Stock insufficient, temp a message and redirect back to the cart
+                temp('info', 'Insufficient stock for ' . htmlspecialchars($item['gadget_name']) . '. Available stock: ' . $available_stock . '. Quantity updated in your cart.');
+                header("Location: order_cart.php");
+                exit();
+            }
+        } else {
+            // If the gadget does not exist or stock information is missing
+            temp('info', 'Error retrieving stock information for ' . htmlspecialchars($item['gadget_name']) . '. Please try again later.');
             header("Location: order_cart.php");
             exit();
         }
-    } else {
-        // If the gadget does not exist or stock information is missing
-        temp('info', 'Error retrieving stock information for ' . htmlspecialchars($item['gadget_name']) . '. Please try again later.');
-        header("Location: order_cart.php");
+    }
+
+    $_SESSION['checkout_data'] = [
+        'member_id' => $member_id,
+        'voucher_id' => $voucher_id,
+        'payment_method' => $payment_method,
+        'final_price' => $final_price,
+        'selected_items' => $selected_items,
+        'cart_items' => $cart_items
+    ];
+
+    try {
+        $checkout_session = \Stripe\Checkout\Session::create([
+            'payment_method_types' => ['card'],
+            'mode' => 'payment',
+            'success_url' => "http://localhost:8000/page/payment_success.php",
+            'cancel_url' => "http://localhost:8000/page/payment_cancel.php",
+            'line_items' => [
+                [
+                    "quantity" => 1,
+                    "price_data" => [
+                        "currency" => 'myr',
+                        "unit_amount" => intval($final_price * 100),
+                        "product_data" => [
+                            "name" => "Order for Member ID: $member_id",
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+        header("Location: " . $checkout_session->url);
+        exit();
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
         exit();
     }
-}
-
-// Proceed with checkout if validation passes
-foreach ($cart_items as $item) {
-    $gadget_id = $item['gadget_id'];
-    $quantity = $item['quantity'];
-    $order_item_price = $item['gadget_price'] * $quantity;
-
-    // Insert into `order_item` table
-    $order_item_query = "INSERT INTO order_item (gadget_id, order_id, order_price, item_quantity, member_id) VALUES (?, ?, ?, ?, ?)";
-    $order_item_stmt = $conn->prepare($order_item_query);
-    $order_item_stmt->bind_param("sdsis", $gadget_id, $order_id, $order_item_price, $quantity, $member_id);
-    $order_item_stmt->execute();
-
-    // Update gadget stock in the `gadget` table and set status to "Unactive" if stock <= 0
-    $update_stock_query = "
-        UPDATE gadget 
-        SET gadget_stock = gadget_stock - ?, 
-            gadget_status = CASE WHEN gadget_stock - ? <= 0 THEN 'Unactive' ELSE gadget_status END
-        WHERE gadget_id = ?";
-    $update_stock_stmt = $conn->prepare($update_stock_query);
-    $update_stock_stmt->bind_param("iis", $quantity, $quantity, $gadget_id);
-    $update_stock_stmt->execute();
-}
-
-// Remove items from the cart
-$delete_query = "DELETE FROM order_cart WHERE cart_id IN (" . implode(',', array_map('intval', $selected_items)) . ")";
-$conn->query($delete_query);
-
-// Redirect to order summary page
-header("Location: order_item.php?order_id=" . $order_id);
-exit();
-
 
 }
+
+
 
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -143,6 +147,7 @@ exit();
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/js/product.js" defer></script>
 </head>
+
 <body>
     <form action="checkout.php" method="POST">
         <table>
@@ -156,12 +161,12 @@ exit();
             </thead>
             <tbody>
                 <?php foreach ($cart_items as $item): ?>
-                <tr class="cart-row">
-                    <td><?= $item['gadget_name'] ?></td>
-                    <td class="item-price">RM <?= number_format($item['gadget_price'], 2) ?></td>
-                    <td><?= $item['quantity'] ?></td>
-                    <td>RM <?= number_format($item['gadget_price'] * $item['quantity'], 2) ?></td>
-                </tr>
+                    <tr class="cart-row">
+                        <td><?= $item['gadget_name'] ?></td>
+                        <td class="item-price">RM <?= number_format($item['gadget_price'], 2) ?></td>
+                        <td><?= $item['quantity'] ?></td>
+                        <td>RM <?= number_format($item['gadget_price'] * $item['quantity'], 2) ?></td>
+                    </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
@@ -193,6 +198,7 @@ exit();
         <button type="submit" name="checkout">Confirm Checkout</button>
     </form>
 </body>
+
 </html>
 
 <?php
