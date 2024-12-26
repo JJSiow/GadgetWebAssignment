@@ -1,21 +1,15 @@
 <?php
 require '../_base.php';
 
-// Get member ID from URL parameter
-$id = $_member->member_id;
-// $id = "M00002";
+auth_member();
+
+$member_id = $_member->member_id;
+// $member_id = "M00002";
 
 if (is_get()) {
-    $member_id = req('member_id');
-
     $stm = $_db->prepare('SELECT * FROM member WHERE member_id = ?');
-    $stm->execute([$id]);
+    $stm->execute([$member_id]);
     $member = $stm->fetch();
-
-    if (!$member) {
-        temp('info', 'Please login as member.');
-        redirect('../index.php');
-    }
 
     extract((array)$member);
 }
@@ -26,7 +20,7 @@ if (is_post()) {
     $member_confirm_password = req('member_confirm_password');
 
     $stm = $_db->prepare('SELECT member_password FROM member WHERE member_id = ?');
-    $stm->execute([$id]);
+    $stm->execute([$member_id]);
     $member = $stm->fetch();
 
     if (!$member) {
@@ -67,7 +61,7 @@ if (is_post()) {
 
     if (count($_err) == 0) {
         $stm = $_db->prepare('UPDATE member SET member_password = SHA1(?) WHERE member_id = ?');
-        $stm->execute([$member_new_password, $id]);
+        $stm->execute([$member_new_password, $member_id]);
 
         temp('info', 'Member password updated.');
         redirect('../index.php');
@@ -81,7 +75,7 @@ include '../_head.php';
 
 <form method="post" class="form">
     <label for="member_id">Member ID</label>
-    <b><?= $id ?></b>
+    <b><?= $member_id ?></b>
     <?= err('member_id') ?>
 
     <label for="member_current_password">Current Password</label>

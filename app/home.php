@@ -2,11 +2,6 @@
 require '_base.php';
 //-----------------------------------------------------------------------------
 
-// if ($_member == null) {
-//     temp('info', 'Please login as member');
-//     redirect('/');
-// }
-
 auth_member();
 
 // ----------------------------------------------------------------------------
@@ -22,6 +17,8 @@ include '_head.php';
 <p>Email :<?= $_member->member_email ?></p>
 <p>Address :<?= $_member->shipping_address ?></p>
 
+<button><a href="/member/member_profile.php">Edit Profile</a></button>
+<button><a href="/member/member_password.php">Change Password</a></button>
 
 <?php
 include '_foot.php';

@@ -1,35 +1,22 @@
 <?php
 require '../_base.php';
 
-// if ($_member == null) {
-//     temp('info', 'Please login as member');
-//     redirect('/');
-// }
-
 auth_member();
 
 // Get member ID from URL parameter
-$id = $_member->member_id;
-// $id = "M00001";
+$member_id = $_member->member_id;
+// $member_id = "M00001";
 
 if (is_get()) {
-    $member_id = req('member_id');
-
     $stm = $_db->prepare('SELECT * FROM member WHERE member_id = ?');
-    $stm->execute([$id]);
+    $stm->execute([$member_id]);
     $member = $stm->fetch();
-
-    if (!$member) {
-        temp('info', 'Member not found.');
-        redirect('../index.php');
-    }
 
     extract((array)$member);
     $_SESSION['member_profile_pic'] = $member->member_profile_pic;
 }
 
 if (is_post()) {
-    $member_id = req('member_id');
     $member_name = req('member_name');
     $member_phone_no = req('member_phone_no');
     $member_gender = req('member_gender');
@@ -38,7 +25,7 @@ if (is_post()) {
     $photo = get_file('member_profile_pic');
     $member_profile_pic = $_SESSION['member_profile_pic'];
 
-    $member = $_db->query('SELECT * FROM member WHERE member_id = ' . $_db->quote($id))->fetch(PDO::FETCH_OBJ);
+    $member = $_db->query('SELECT * FROM member WHERE member_id = ' . $_db->quote($member_id))->fetch(PDO::FETCH_OBJ);
 
     // Validate name
     if ($member_name == '') {
@@ -108,15 +95,15 @@ if (is_post()) {
         }
 
         $stm = $_db->prepare('UPDATE member SET member_name = ?, member_phone_no = ?, member_gender = ?, member_email = ?, shipping_address = ?, member_profile_pic = ? WHERE member_id = ?');
-        $stm->execute([$member_name, $member_phone_no, $member_gender, $member_email, $shipping_address, $member_profile_pic, $id]);
+        $stm->execute([$member_name, $member_phone_no, $member_gender, $member_email, $shipping_address, $member_profile_pic, $member_id]);
 
         // Refresh session data with updated member information
         $stm = $_db->prepare('SELECT * FROM member WHERE member_id = ?');
-        $stm->execute([$id]);
+        $stm->execute([$member_id]);
         $updated_member = $stm->fetch(PDO::FETCH_OBJ);
 
         $_SESSION['member'] = $updated_member;
-        // $_member = $updated_member; // Update the $_member variable if it's used elsewhere
+        // $_member = $updated_member;
 
         temp('info', 'Member information updated.');
         redirect('../index.php');
@@ -134,7 +121,7 @@ include '../_head.php';
 
 <form method="post" class="form" enctype="multipart/form-data">
     <label for="member_id">Member ID</label>
-    <b><?= $id ?></b>
+    <b><?= $member_id ?></b>
     <?= err('member_id') ?>
 
     <label for="member_name">Name</label>
@@ -167,13 +154,6 @@ include '../_head.php';
 
     <section>
         <button type="submit">Save</button>
-        <button type="button" data-post="delete_member_account.php?member_id=<?= $id ?>" data-confirm="Are you sure you want to delete your account permanently?">Delete Account</button>
+        <button type="button" data-post="delete_member_account.php?member_id=<?= $member_id ?>" data-confirm="Are you sure you want to delete your account permanently?">Delete Account</button>
     </section>
 </form>
-
-
-<pre>
-    <?php
-    // print_r($_SESSION);
-    // print_r($_FILES);
-    ?>

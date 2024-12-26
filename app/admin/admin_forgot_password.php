@@ -79,7 +79,7 @@ if (is_post()) {
     <section>
         <button>Submit</button>
     </section>
-    <a href="../admin/adminLogin.php">Back to Login</a>
+    <a href="../admin/admin_login.php">Back to Login</a>
 </form>
 </div>
 
