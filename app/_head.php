@@ -15,6 +15,7 @@
     <script src="/js/admin.js"></script>
     <script src="/js/multiple_photo.js"></script>
     <script src="/js/view_gadget.js"></script>
+    <script src="/js/checkbox.js"></script>
 </head>
 
 <body>

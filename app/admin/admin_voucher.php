@@ -66,7 +66,7 @@ if (is_post()) {
 $_SESSION['voucher_search_params'] = $searchParams;
 
 // Build the query
-function buildCategoryQuery($searchParams)
+function buildVoucherQuery($searchParams)
 {
     $conditions = [];
     $params = [];
@@ -98,7 +98,7 @@ function buildCategoryQuery($searchParams)
 }
 
 // Get the query and parameters
-[$query, $params] = buildCategoryQuery($searchParams);
+[$query, $params] = buildVoucherQuery($searchParams);
 
 // Create SimplePager with the appropriate query
 require_once '../lib/SimplePager2.php';
@@ -113,7 +113,7 @@ $p = new SimplePager2(
 $arr = $p->result;
 
 $_title = 'Voucher';
-include '../_head.php';
+include '../admin/_adminHead.php';
 ?>
 
 <form action="add_voucher.php" method="post">
@@ -126,6 +126,11 @@ include '../_head.php';
     <?php endif; ?>
 </form>
 
+<form id="mark-all-form" action="delete_voucher.php" method="post">
+    <button id="submit-mark-unactive" class="btn btn-primary" data-post="delete_voucher.php?action=Unactive" style="display: none;" data-confirm='Are you sure to unactivate all selected voucher?'>Unactivate All</button>
+    <button id="submit-mark-active" class="btn btn-primary" data-post="delete_voucher.php?action=Active" style="display: none;" data-confirm='Are you sure to activate all selected voucher?'>Activate All</button>
+</form>
+
 <p>
     <?= $p->count ?> of <?= $p->item_count ?> record(s) |
     Page <?= $p->page ?> of <?= $p->page_count ?>
@@ -133,11 +138,13 @@ include '../_head.php';
 
 <table class="table">
     <tr>
+        <th></th>
         <?= table_headers2($fields, $searchParams['sort'], $searchParams['dir'], "page={$searchParams['page']}") ?>
     </tr>
 
     <form method="post">
         <tr>
+            <td><input type="checkbox" id="check-all">All</td>
             <td><?= html_search2('sid', $searchParams['sid']) ?></td>
             <td><?= html_number('samount', $searchParams['samount'] ?? '', ['min' => '0.01', 'max' => '10000.00', 'step' => '0.01'], 'RM ') ?></td>
             <td><?= html_select2('sstatus', $_status, 'All', $searchParams['sstatus']) ?></td>
@@ -150,11 +157,17 @@ include '../_head.php';
 
     <?php if (empty($arr)): ?>
         <tr>
-            <td colspan="4">No voucher records found...</td>
+            <td colspan="5">No voucher records found...</td>
         </tr>
     <?php else: ?>
         <?php foreach ($arr as $voucher): ?>
             <tr>
+                <td>
+                    <input type="checkbox"
+                        name="id[]"
+                        value="<?= htmlspecialchars($voucher->voucher_id) ?>"
+                        class="checkbox">
+                </td>
                 <td><?= htmlspecialchars($voucher->voucher_id) ?></td>
                 <td class="edit2" data-id="<?= htmlspecialchars($voucher->voucher_id) ?>"
                     data-update-url="update_voucher.php">
@@ -162,13 +175,16 @@ include '../_head.php';
                 </td>
                 <td><?= htmlspecialchars($voucher->voucher_status) ?></td>
                 <td>
-                    <?php if ($voucher->voucher_status == 'Active'): ?>
-                        <a data-post="delete_voucher.php?action=Unactive&id=<?= $voucher->voucher_id ?>"
-                            data-confirm='Are you sure you want to unactivate this voucher?'>Unactivate</a>
-                    <?php else: ?>
-                        <a data-post="delete_voucher.php?action=Active&id=<?= $voucher->voucher_id ?>"
-                            data-confirm='Are you sure you want to activate this voucher?'>Activate</a>
-                    <?php endif; ?>
+                    <form id="mark-all-form" action="delete_voucher.php" method="post">
+                        <input type="hidden" name="checkboxName" value="<?= htmlspecialchars($voucher->voucher_id) ?>">
+                        <?php if ($voucher->voucher_status == 'Active'): ?>
+                            <a id="next_unactive" data-post="delete_voucher.php?action=Unactive"
+                                data-confirm='Are you sure you want to unactivate this voucher?'>Unactivate</a>
+                        <?php else: ?>
+                            <a id="next_active" data-post="delete_voucher.php?action=Active"
+                                data-confirm='Are you sure you want to activate this voucher?'>Activate</a>
+                        <?php endif; ?>
+                    </form>
                 </td>
             </tr>
         <?php endforeach ?>
@@ -179,5 +195,3 @@ include '../_head.php';
     'sort' => $searchParams['sort'],
     'dir' => $searchParams['dir']
 ])) ?>
-
-<?php include '../_foot.php'; ?>

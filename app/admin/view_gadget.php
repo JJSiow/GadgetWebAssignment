@@ -79,5 +79,5 @@ $stock = htmlspecialchars($s->gadget_stock);
 
 
 <?php
-include '../page/admin_products.php';
+include '../admin/admin_products.php';
 ?>
