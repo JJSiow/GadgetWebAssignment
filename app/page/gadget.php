@@ -264,5 +264,6 @@ if (!$result) {
 
 <?php
 // Close the database connection
+include '../_foot.php';
 $conn->close();
 ?>
