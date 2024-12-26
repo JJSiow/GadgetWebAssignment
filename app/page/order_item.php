@@ -1,6 +1,9 @@
 <?php
 require '../_base.php';
+$_title = 'My Orders';
 include '../_head.php';
+
+// Database connection
 $conn = new mysqli("localhost", "root", "", "gadgetwebdb");
 
 if ($conn->connect_error) {
@@ -10,38 +13,24 @@ if ($conn->connect_error) {
 auth_member();
 $member_id = $_member->member_id;
 
-// Fetch all orders and their items for the member
+// Query to fetch all order items for the logged-in member (without quantity)
 $order_query = "
-    SELECT 
-        o.order_id, 
-        o.order_date, 
-        o.order_status, 
-        o.total_order_price, 
-        oi.gadget_id, 
-        g.gadget_name, 
-        g.gadget_price, 
-        oi.item_quantity, 
-        oi.order_price
-    FROM `order` o
-    JOIN order_item oi ON o.order_id = oi.order_id
+    SELECT oi.order_item_id, oi.gadget_id, g.gadget_name, oi.order_price, o.order_id, o.order_date, o.order_status
+    FROM order_item oi
     JOIN gadget g ON oi.gadget_id = g.gadget_id
-    WHERE o.member_id = ?
+    JOIN `order` o ON oi.order_id = o.order_id
+    WHERE oi.member_id = ?
     ORDER BY o.order_date DESC
 ";
 
 $stmt = $conn->prepare($order_query);
-$stmt->bind_param("s", $member_id);
+$stmt->bind_param("s", $member_id); // Bind member_id as a string
 $stmt->execute();
 $order_result = $stmt->get_result();
 
-$orders = [];
-while ($row = $order_result->fetch_assoc()) {
-    $orders[$row['order_id']]['order_info'] = [
-        'order_date' => $row['order_date'],
-        'order_status' => $row['order_status'],
-        'total_order_price' => $row['total_order_price'], // Fetch final price
-    ];
-    $orders[$row['order_id']]['items'][] = $row;
+$order_items = [];
+while ($item = $order_result->fetch_assoc()) {
+    $order_items[] = $item;
 }
 ?>
 
@@ -52,47 +41,35 @@ while ($row = $order_result->fetch_assoc()) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Orders</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="/js/product.js" defer></script>
 </head>
 <body>
-    <h1>My Orders</h1>
+    <h1>My Order Items</h1>
 
-    <?php if (count($orders) > 0): ?>
-        <?php foreach ($orders as $order_id => $order): ?>
-            <h3>Order ID: <?= $order_id ?></h3>
-            <p>Date: <?= $order['order_info']['order_date'] ?></p>
-            <p>Status: <span id="status-<?= $order_id ?>"><?= $order['order_info']['order_status'] ?></span></p>
-            <p><strong>Final Price:</strong> RM <?= number_format($order['order_info']['total_order_price'], 2) ?></p> <!-- Display final price -->
-            <table>
-                <thead>
+    <?php if (count($order_items) > 0): ?>
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Gadget</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                    <th>Order Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($order_items as $item): ?>
                     <tr>
-                        <th>Gadget</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
+                        <td><?= htmlspecialchars($item['order_id']) ?></td>
+                        <td><?= htmlspecialchars($item['gadget_name']) ?></td>
+                        <td>RM <?= number_format($item['order_price'], 2) ?></td>
+                        <td>RM <?= number_format($item['order_price'], 2) ?></td>
+                        <td><?= htmlspecialchars($item['order_date']) ?></td>
+                        <td><?= htmlspecialchars($item['order_status']) ?></td>
                     </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($order['items'] as $item): ?>
-                        <tr>
-                            <td><?= $item['gadget_name'] ?></td>
-                            <td>RM <?= number_format($item['gadget_price'], 2) ?></td>
-                            <td><?= $item['item_quantity'] ?></td>
-                            <td>RM <?= number_format($item['order_price'], 2) ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-            <div>
-                <?php if ($order['order_info']['order_status'] === 'PENDING'): ?>
-                    <button class="cancel-order" data-order-id="<?= $order_id ?>">Cancel Order</button>
-                <?php elseif ($order['order_info']['order_status'] === 'DELIVERED'): ?>
-                    <button class="mark-received" data-order-id="<?= $order_id ?>">Mark as Received</button>
-                <?php endif; ?>
-            </div>
-            <hr>
-        <?php endforeach; ?>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     <?php else: ?>
         <p>You have no orders yet.</p>
     <?php endif; ?>
@@ -103,5 +80,6 @@ while ($row = $order_result->fetch_assoc()) {
 </html>
 
 <?php
+include '../_foot.php';
 $conn->close();
 ?>
