@@ -3,6 +3,11 @@
 require '../_base.php';
 //-----------------------------------------------------------------------------
 
+// if ($_admin == null) {
+//     temp('info', 'Please login as admin');
+//     redirect('/');
+// }
+
 auth_admin();
 
 $orderPrices = $_db->query("SELECT * FROM `order`")->fetchAll(PDO::FETCH_ASSOC);
@@ -61,7 +66,7 @@ if (is_post()) {
 }
 // ----------------------------------------------------------------------------
 $_title = 'admin Home';
-include '../admin/_admin_head.php';
+include '../admin/_adminHead.php';
 ?>
 
 

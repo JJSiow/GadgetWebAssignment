@@ -454,14 +454,14 @@ function logout($url = '/login.php')
     redirect($url);
 }
 
-function adminlogin($admin, $url = '../admin/admin_home.php')
+function adminlogin($admin, $url = '../admin/adminHome.php')
 {
     $_SESSION['admin'] = $admin;
     redirect($url);
 }
 
 // Logout user
-function adminlogout($url = '../admin/admin_login.php')
+function adminlogout($url = '../admin/adminLogin.php')
 {
     unset($_SESSION['admin']);
     redirect($url);
@@ -478,7 +478,7 @@ function auth_member($requireLogin = true) {
     } 
     else {
         if ($_member) {
-            redirect('/home.php');
+            redirect('../home.php');
         }
     }
 }
@@ -492,7 +492,7 @@ function auth_admin($requireLogin = true) {
         }
     } else {
         if ($_admin) {
-            redirect('/admin/admin_home.php');
+            redirect('../admin/adminHome.php');
         }
     }
 }
@@ -501,7 +501,7 @@ function auth_super_admin() {
     global $_admin;
     if ($_admin == null || $_admin->is_super_admin == 'N') {
         temp('info', 'Please login as super admin');
-        redirect('/admin/admin_home.php');
+        redirect('../admin/adminHome.php');
     }
 }
 

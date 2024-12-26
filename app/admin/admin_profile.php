@@ -1,28 +1,32 @@
 <?php
 require '../_base.php';
 
-auth_admin();
-
-$admin_id = $_admin->admin_id;
-// $admin_id = "A02";
+$id = $_admin->admin_id;
+// $id = "A02";
 
 if (is_get()) {
     $stm = $_db->prepare('SELECT * FROM admin WHERE admin_id = ?');
-    $stm->execute([$admin_id]);
+    $stm->execute([$id]);
     $admin = $stm->fetch();
+
+    if (!$admin) {
+        temp('info', 'Admin not found.');
+        redirect('admin_list.php');
+    }
 
     extract((array)$admin);
     $_SESSION['admin_profile_pic'] = $admin->admin_profile_pic;
 }
 
 if (is_post()) {
+    $admin_id = req('admin_id');
     $admin_name = req('admin_name');
     $admin_phone_no = req('admin_phone_no');
     $admin_email = req('admin_email');
     $photo = get_file('admin_profile_pic');
     $admin_profile_pic = $_SESSION['admin_profile_pic'];
 
-    $admin = $_db->query('SELECT * FROM admin WHERE admin_id = ' . $_db->quote($admin_id))->fetch(PDO::FETCH_OBJ);
+    $admin = $_db->query('SELECT * FROM admin WHERE admin_id = ' . $_db->quote($id))->fetch(PDO::FETCH_OBJ);
 
     // Validate name
     if ($admin_name == '') {
@@ -73,13 +77,13 @@ if (is_post()) {
         }
 
         $stm = $_db->prepare('UPDATE admin SET admin_name = ?, admin_phone_no = ?, admin_email = ?, admin_profile_pic = ? WHERE admin_id = ?');
-        $stm->execute([$admin_name, $admin_phone_no, $admin_email, $admin_profile_pic, $admin_id]);
-        $updated_admin = $_db->query('SELECT * FROM admin WHERE admin_id = ' . $_db->quote($admin_id))->fetch(PDO::FETCH_OBJ);
+        $stm->execute([$admin_name, $admin_phone_no, $admin_email, $admin_profile_pic, $id]);
+        $updated_admin = $_db->query('SELECT * FROM admin WHERE admin_id = ' . $_db->quote($id))->fetch(PDO::FETCH_OBJ);
 
         $_SESSION['admin'] = $updated_admin;
 
         temp('info', 'Admin profile updated.');
-        redirect('/admin/admin_home.php');
+        redirect('../index.php');
     }
     else {
         temp('info', 'Please check the error(s).');

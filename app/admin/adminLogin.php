@@ -2,6 +2,10 @@
 
 <?php
 require '../_base.php';
+// ----------------------------------------------------------------------------
+// if ($_admin != null) {
+//     redirect('adminHome.php'); 
+// }
 
 auth_admin(false);
 

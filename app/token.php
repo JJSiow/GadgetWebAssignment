@@ -64,7 +64,7 @@ var_dump($role);
             $stm->execute([$password, $id, $id]);
     
             temp('info', 'Record updated');
-            redirect('../admin/admin_login.php');
+            redirect('../admin/adminLogin.php');
         }
 
     } 

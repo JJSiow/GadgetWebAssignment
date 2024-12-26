@@ -27,8 +27,8 @@
         <a href="/page/gadget.php"><img src="/images/logo2.png" class="logo"></a>
             <ul>
                 <li><a href="/admin/adminHome.php">Admin Home</a></li>
-                <li><a href="/admin/admin_login.php">Admin Login</a></li>
-                <li><a href="/admin/admin_logout.php">Admin Logout</a></li>
+                <li><a href="/admin/adminLogin.php">Admin Login</a></li>
+                <li><a href="/admin/adminLogout.php">Admin Logout</a></li>
                 <li><a href="/admin/member_list.php">Member</a></li>
                 <li><a href="/admin/admin_list.php">Admin List</a></li>
                 <li><a href="/admin/admin_profile.php">Admin Profile</a></li>
