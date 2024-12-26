@@ -22,6 +22,7 @@ if (is_post()) {
     // Redirect back to the member list with the current page number
     temp('info', 'Account deleted');
 
+    logout();
     redirect('../index.php');
 }
 

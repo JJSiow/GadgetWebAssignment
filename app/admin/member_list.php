@@ -1,11 +1,6 @@
 <?php
 require '../_base.php';
 
-// if ($_admin == null) {
-//     temp('info', 'Please login as admin');
-//     redirect('/');
-// }
-
 auth_admin();
 
 $sort = req('sort');
@@ -75,7 +70,13 @@ include '../_head.php';
             <td><?= $s->shipping_address ?></td>
             <td><?= $s->member_status ?></td>
             <td><img src="../photos/<?= $s->member_profile_pic ?>"  width="100"></td>
-            <td><button data-get="edit_member_profile_pic.php?member_id=<?= $s->member_id ?>">Edit Profle Pic</button></td>
+            <!-- <td><button data-post="edit_member_profile_pic.php?member_id=<?= $s->member_id ?>">Edit Profle Pic</button></td> -->
+            <td>
+                <form method="post" action="edit_member_profile_pic.php">
+                    <input type="hidden" name="member_id" value="<?= $s->member_id ?>">
+                    <button type="submit">Edit Profle Pic</button>
+                </form>
+            </td>
             <td><button data-post="update_member_status.php?member_id=<?= $s->member_id ?>&search_by=<?= $search_by ?>&search_value=<?=$search_value ?>&page=<?= $page ?>" data-confirm="Are you sure you want to change the status of this member?">Change Status</button></td>
 
         <?php else : ?>

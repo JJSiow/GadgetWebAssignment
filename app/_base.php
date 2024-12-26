@@ -320,6 +320,10 @@ function table_headers($fields, $sort = '', $dir = '', $href = '')
 function table_headers2($fields, $sort, $dir, $href = '')
 {
     foreach ($fields as $k => $v) {
+        // Check if the column name contains the word "status" (case-insensitive)
+        $isStatusColumn = stripos($k, 'status') !== false ? ' data-status-column="true"' : '';
+
+        // If the column is 'action', just print it as is
         if ($k === 'action') {
             echo "<th>$v</th>";
         } else {
@@ -331,7 +335,8 @@ function table_headers2($fields, $sort, $dir, $href = '')
                 $c = $dir;
             }
 
-            echo "<th><a href='?sort=$k&dir=$d&$href' class='$c'>$v</a></th>";
+            // Output the table header with the dynamic data-status-column attribute for any column with "status" in its name
+            echo "<th$isStatusColumn><a href='?sort=$k&dir=$d&$href' class='$c'>$v</a></th>";
         }
     }
 }
@@ -449,14 +454,14 @@ function logout($url = '/login.php')
     redirect($url);
 }
 
-function adminlogin($admin, $url = '../admin/adminHome.php')
+function adminlogin($admin, $url = '../admin/admin_home.php')
 {
     $_SESSION['admin'] = $admin;
     redirect($url);
 }
 
 // Logout user
-function adminlogout($url = '../admin/adminLogin.php')
+function adminlogout($url = '../admin/admin_login.php')
 {
     unset($_SESSION['admin']);
     redirect($url);
@@ -473,7 +478,7 @@ function auth_member($requireLogin = true) {
     } 
     else {
         if ($_member) {
-            redirect('../home.php');
+            redirect('/home.php');
         }
     }
 }
@@ -487,7 +492,7 @@ function auth_admin($requireLogin = true) {
         }
     } else {
         if ($_admin) {
-            redirect('../admin/adminHome.php');
+            redirect('/admin/admin_home.php');
         }
     }
 }
@@ -496,7 +501,7 @@ function auth_super_admin() {
     global $_admin;
     if ($_admin == null || $_admin->is_super_admin == 'N') {
         temp('info', 'Please login as super admin');
-        redirect('../admin/adminHome.php');
+        redirect('/admin/admin_home.php');
     }
 }
 
@@ -562,4 +567,11 @@ $_admin_attr = [
 $_genders = [
     'F' => 'Female',
     'M' => 'Male',
+];
+
+$_operators = [
+    '<' => '<',
+    '<=' => '<=',
+    '>' => '>',
+    '>=' => '>='
 ];

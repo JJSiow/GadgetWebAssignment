@@ -21,6 +21,19 @@ if (empty($selected_items)) {
     exit();
 }
 
+auth_member();
+$member_id = $_member->member_id;
+
+// Fetch member details
+$member_query = "SELECT member_name, member_email FROM member WHERE member_id = ?";
+$member_stmt = $conn->prepare($member_query);
+$member_stmt->bind_param("s", $member_id);
+$member_stmt->execute();
+$member_result = $member_stmt->get_result();
+$member = $member_result->fetch_assoc();
+$member_name = $member['member_name'];
+$member_email = $member['member_email'];
+
 // Fetch selected items from the cart
 $items_query = "
     SELECT oc.cart_id, oc.quantity, g.gadget_id, g.gadget_name, g.gadget_price
@@ -53,31 +66,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
 
     $order_id = $order_stmt->insert_id; // Get the generated order ID
 
-    // Insert items into the `order_item` table and update gadget stock
-    foreach ($cart_items as $item) {
-        $order_item_price = $item['gadget_price'] * $item['quantity'];
+   
+// Validate stock before processing the checkout
+foreach ($cart_items as $item) {
+    $gadget_id = $item['gadget_id'];
+    $quantity = $item['quantity'];
 
-        // Insert into `order_item` table
-        $order_item_query = "INSERT INTO order_item (gadget_id, order_id, order_price, member_id) VALUES (?, ?, ?, ?)";
-        $order_item_stmt = $conn->prepare($order_item_query);
-        $order_item_stmt->bind_param("sdss", $item['gadget_id'], $order_id, $order_item_price, $member_id);
-        $order_item_stmt->execute();
+    // Check the available stock
+    $check_stock_query = "SELECT gadget_stock FROM gadget WHERE gadget_id = ?";
+    $check_stock_stmt = $conn->prepare($check_stock_query);
+    $check_stock_stmt->bind_param("s", $gadget_id);
+    $check_stock_stmt->execute();
+    $check_stock_result = $check_stock_stmt->get_result();
 
-        // Update gadget stock in the `gadget` table
-        $update_stock_query = "UPDATE gadget SET gadget_stock = gadget_stock - ? WHERE gadget_id = ?";
-        $update_stock_stmt = $conn->prepare($update_stock_query);
-        $update_stock_stmt->bind_param("is", $item['quantity'], $item['gadget_id']);
-        $update_stock_stmt->execute();
+    if ($check_stock_result->num_rows > 0) {
+        $stock_data = $check_stock_result->fetch_assoc();
+        $available_stock = $stock_data['gadget_stock'];
+
+        if ($quantity > $available_stock) {
+            // Stock insufficient, temp a message and redirect back to the cart
+            temp('info', 'Insufficient stock for ' . htmlspecialchars($item['gadget_name']) . '. Available stock: ' . $available_stock . '. Quantity updated in your cart.');
+            header("Location: order_cart.php");
+            exit();
+        }
+    } else {
+        // If the gadget does not exist or stock information is missing
+        temp('info', 'Error retrieving stock information for ' . htmlspecialchars($item['gadget_name']) . '. Please try again later.');
+        header("Location: order_cart.php");
+        exit();
     }
-
-    // Remove items from the cart
-    $delete_query = "DELETE FROM order_cart WHERE cart_id IN (" . implode(',', array_map('intval', $selected_items)) . ")";
-    $conn->query($delete_query);
-
-    // Redirect to order summary page
-    header("Location: order_item.php?order_id=" . $order_id);
-    exit();
 }
+
+// Proceed with checkout if validation passes
+foreach ($cart_items as $item) {
+    $gadget_id = $item['gadget_id'];
+    $quantity = $item['quantity'];
+    $order_item_price = $item['gadget_price'] * $quantity;
+
+    // Insert into `order_item` table
+    $order_item_query = "INSERT INTO order_item (gadget_id, order_id, order_price, item_quantity, member_id) VALUES (?, ?, ?, ?, ?)";
+    $order_item_stmt = $conn->prepare($order_item_query);
+    $order_item_stmt->bind_param("sdsis", $gadget_id, $order_id, $order_item_price, $quantity, $member_id);
+    $order_item_stmt->execute();
+
+    // Update gadget stock in the `gadget` table and set status to "Unactive" if stock <= 0
+    $update_stock_query = "
+        UPDATE gadget 
+        SET gadget_stock = gadget_stock - ?, 
+            gadget_status = CASE WHEN gadget_stock - ? <= 0 THEN 'Unactive' ELSE gadget_status END
+        WHERE gadget_id = ?";
+    $update_stock_stmt = $conn->prepare($update_stock_query);
+    $update_stock_stmt->bind_param("iis", $quantity, $quantity, $gadget_id);
+    $update_stock_stmt->execute();
+}
+
+// Remove items from the cart
+$delete_query = "DELETE FROM order_cart WHERE cart_id IN (" . implode(',', array_map('intval', $selected_items)) . ")";
+$conn->query($delete_query);
+
+// Redirect to order summary page
+header("Location: order_item.php?order_id=" . $order_id);
+exit();
+
+
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -118,6 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
         <label for="voucher_id">Voucher Code (optional):</label>
         <input type="text" name="voucher_id" id="voucher_id" placeholder="Enter voucher code">
         <button type="button" id="apply-voucher-btn">Apply Voucher</button>
+        <p><strong>Member Email:</strong> <?= $member_email ?></p>
 
         <p id="voucher-message"></p>
 

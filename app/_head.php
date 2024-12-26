@@ -15,6 +15,7 @@
     <script src="/js/admin.js"></script>
     <script src="/js/multiple_photo.js"></script>
     <script src="/js/view_gadget.js"></script>
+    <script src="/js/checkbox.js"></script>
 </head>
 
 <body>
@@ -25,9 +26,9 @@
         <nav>
         <a href="/page/gadget.php"><img src="/images/logo2.png" class="logo"></a>
             <ul>
-                <li><a href="/admin/adminHome.php">Admin Home</a></li>
-                <li><a href="/admin/adminLogin.php">Admin Login</a></li>
-                <li><a href="/admin/adminLogout.php">Admin Logout</a></li>
+                <li><a href="/admin/_admin_head.php">Admin Home</a></li>
+                <li><a href="/admin/admin_login.php">Admin Login</a></li>
+                <li><a href="/admin/admin_logout.php">Admin Logout</a></li>
                 <li><a href="/admin/member_list.php">Member</a></li>
                 <li><a href="/admin/admin_list.php">Admin List</a></li>
                 <li><a href="/admin/admin_profile.php">Admin Profile</a></li>

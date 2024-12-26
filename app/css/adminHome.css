@@ -1,0 +1,277 @@
+/* body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+} */
+
+/* General Styles for Charts Box */
+.charts-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin: 20px auto;
+    max-width: 1000px;
+}
+
+.chart-box {
+    width: 100%;
+    max-width: 500px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px auto;
+    border: 1px solid #e0e0e0;
+}
+
+.chart-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Chart Content Styling */
+.chart-box-content {
+    background: linear-gradient(180deg, #f9f9f9, #fff);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Bar Chart Styling */
+.bar-chart {
+    width: 100%;
+    max-width: 450px;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 350px;
+    border: 2px solid #ddd;
+    background: linear-gradient(180deg, #f9f9f9, #fff);
+    padding: 15px;
+    margin: 20px auto;
+    position: relative;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.bar {
+    width: 60px;
+    background-color: #4CAF50;
+    text-align: center;
+    color: white;
+    border-radius: 5px 5px 0 0;
+    position: relative;
+    transition: transform 0.3s, background-color 0.3s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.bar:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+.bar span {
+    display: block;
+    position: absolute;
+    top: -25px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    white-space: nowrap;
+}
+
+.bar-label {
+    font-weight: bold;
+    margin-top: 10px; /* Space between the bar and label */
+    font-size: 14px;
+    color: #181916;
+    position: absolute;
+    bottom: -20px; /* Position it below the bar */
+    left: 50%;
+    transform: translateX(-50%); /* Center the label horizontally */
+}
+
+/* Pie Chart Styling */
+.pie-chart {
+    width: 275px;
+    height: 275px;
+    background: conic-gradient(#4CAF50 0% 30%, #FF9800 30% 70%, #2196F3 70% 100%);
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    border: 2px solid #ddd;
+}
+
+/* Pie Chart Labels */
+.pie-chart-labels {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.legend {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #555;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    margin-right: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.electronics { background-color: #4CAF50; }
+.clothing { background-color: #FF9800; }
+.groceries { background-color: #2196F3; }
+.tv{background-color: #f3f021;}
+
+/* Dashboard Containers */
+.dashboard-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    width: 90%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.dashboard-box {
+    background: linear-gradient(180deg, #f0f9ff, #fff);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #e0e0e0;
+}
+
+.dashboard-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.dashboard-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+/* Table Styles */
+.table-container {
+    margin: 40px auto; /* Centers the container horizontally with a top margin */
+    width: 100%;
+    max-width: 1000px;
+    background: linear-gradient(180deg, #fff, #f9f9f9);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    display: block; /* Ensures the container is treated as a block element */
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.table-header .show-more {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.table-header .show-more:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #333;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #4CAF50;
+    color: white;
+    text-transform: uppercase;
+}
+
+td {
+    background-color: #fff;
+}
+
+tr:nth-child(even) td {
+    background-color: #f9f9f9;
+}
+
+tr:hover td {
+    background-color: #f1f1f1;
+}
+
+
+
+.out-of-stock {
+    background-color: #ffcdd2;
+}
+.low-stock {
+    background-color: #fff59d;
+}
+.add-stock-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.add-stock-input {
+    width: 80px;
+    padding: 5px;
+}
+.add-stock-btn {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.stock-status {
+    font-weight: bold;
+}

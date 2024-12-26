@@ -147,5 +147,33 @@ $(document).ready(function () {
     });
 });
 
+// ============================================================================
+// Cancel Order
+// ============================================================================
+
+$(document).on('click', '.cancel-order', function() {
+    const orderId = $(this).data('order-id');
+    if (confirm('Are you sure you want to cancel this order?')) {
+        $.post('update_order_status.php', { order_id: orderId, status: 'CANCELLED' }, function(response) {
+            if (response.status === 'success') {
+                $('#status-' + orderId).text('CANCELLED');
+                alert(response.message); // Display the return payment message
+            } else {
+                alert(response.message || 'Failed to cancel the order.');
+            }
+        }, 'json');
+    }
+});
 
 
+$(document).on('click', '.mark-received', function() {
+    const orderId = $(this).data('order-id');
+    $.post('update_order_status.php', { order_id: orderId, status: 'RECEIVED' }, function(response) {
+        if (response.status === 'success') {
+            $('#status-' + orderId).text('RECEIVED');
+            alert('Order has been marked as received.');
+        } else {
+            alert(response.message || 'Failed to update the order status.');
+        }
+    }, 'json');
+});

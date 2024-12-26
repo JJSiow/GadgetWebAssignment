@@ -127,7 +127,7 @@ if (is_post()) {
         }
 
         temp('info', "Gadget ID : $gid updated successfuly");
-        redirect('/page/admin_products.php');
+        redirect('/admin/admin_products.php');
     }
 
     if (isset($_POST['action']) && $_POST['action'] === 'delete_image') {
@@ -227,10 +227,10 @@ if (is_post()) {
 
             <section>
                 <button id="resetModalBtn" type="button">Reset</button>
-                <button data-confirm="Are you sure to modify this gadget info ?">Update</button>
+                <button id="updateBtn" data-confirm="Are you sure to modify this gadget info ?">Update</button>
             </section>
         </div>
     </form>
 </div>
 <?php
-include '../page/admin_products.php'; ?>
+include '../admin/admin_products.php'; ?>
