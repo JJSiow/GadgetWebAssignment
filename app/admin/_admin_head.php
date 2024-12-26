@@ -31,11 +31,10 @@
             <li><a href="/admin/admin_order.php">Order</a></li>
             <li><a href="/admin/admin_category.php">Category</a></li>
             <li><a href="/admin/admin_brand.php">Brand</a></li>
-            <!-- <?php if ($_admin->is_super_admin == 'Y'): ?>
+            <?php if ($_admin->is_super_admin == 'Y'): ?>
             <li><a href="/admin/admin_list.php">Admin List</a></li>
             <?php endif ?>
-            <li><a href="/admin/admin_profile.php">Admin Profile</a></li> -->
-
+            <li><a href="/admin/admin_profile.php">Admin Profile</a></li>
             </ul>
         </nav>
         <a class="logout" href="../admin/admin_logout.php"><button>Logout</button></a>

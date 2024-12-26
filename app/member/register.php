@@ -55,10 +55,10 @@ if (is_post()) {
         $_err['member_email'] = 'Email already exists';
     }
 
-    // // Validate shipping address
-    // if ($shipping_address == '') {
-    //     $_err['shipping_address'] = 'Required';
-    // }
+    // Validate shipping address
+    if ($shipping_address == '') {
+        $_err['shipping_address'] = 'Required';
+    }
 
     // Validate password
     if ($member_password == '') {
@@ -103,7 +103,7 @@ if (is_post()) {
         $stm = $_db->prepare('INSERT INTO member
                                   (member_id, member_name, member_gender,member_phone_no,member_email,shipping_address,member_password,member_profile_pic,member_status)
                                   VALUES(?, ?, ?, ?, ?, ?, ?,?,?)');
-        $stm->execute([$member_id, $member_name, $member_gender, $member_phone_no, $member_email, $member_address, $member_EncrptPassword, 'default_user.jpg', 'Inactive']);
+        $stm->execute([$member_id, $member_name, $member_gender, $member_phone_no, $member_email, $shipping_address, $member_EncrptPassword, 'default_user.jpg', 'Inactive']);
 
         // TODO: (2) Generate token id
         $id = sha1(uniqid() . rand());

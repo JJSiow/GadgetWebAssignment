@@ -103,5 +103,6 @@ while ($row = $order_result->fetch_assoc()) {
 </html>
 
 <?php
+include '../_foot.php';
 $conn->close();
 ?>
