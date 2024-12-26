@@ -19,7 +19,7 @@ if (is_post()) {
 
     if ($_err) {
         $_SESSION['category_error'] = $_err['ctg_name'];
-        redirect('/admin/admin_category.php');
+        redirect('/page/admin_category.php');
     }else {
         $newCategoryId = auto_id('category_id', 'category', 'CA_');
         $ctg_name = strtoupper($ctg_name);
@@ -29,7 +29,7 @@ if (is_post()) {
         $stm->execute([$newCategoryId, $ctg_name, 'Active']);
 
         temp('info', 'Category added successfully');
-        redirect('/admin/admin_category.php');
+        redirect('/page/admin_category.php');
     }
 }
 // ----------------------------------------------------------------------------

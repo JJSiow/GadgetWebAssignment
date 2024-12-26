@@ -320,10 +320,6 @@ function table_headers($fields, $sort = '', $dir = '', $href = '')
 function table_headers2($fields, $sort, $dir, $href = '')
 {
     foreach ($fields as $k => $v) {
-        // Check if the column name contains the word "status" (case-insensitive)
-        $isStatusColumn = stripos($k, 'status') !== false ? ' data-status-column="true"' : '';
-
-        // If the column is 'action', just print it as is
         if ($k === 'action') {
             echo "<th>$v</th>";
         } else {
@@ -335,8 +331,7 @@ function table_headers2($fields, $sort, $dir, $href = '')
                 $c = $dir;
             }
 
-            // Output the table header with the dynamic data-status-column attribute for any column with "status" in its name
-            echo "<th$isStatusColumn><a href='?sort=$k&dir=$d&$href' class='$c'>$v</a></th>";
+            echo "<th><a href='?sort=$k&dir=$d&$href' class='$c'>$v</a></th>";
         }
     }
 }
@@ -567,11 +562,4 @@ $_admin_attr = [
 $_genders = [
     'F' => 'Female',
     'M' => 'Male',
-];
-
-$_operators = [
-    '<' => '<',
-    '<=' => '<=',
-    '>' => '>',
-    '>=' => '>='
 ];

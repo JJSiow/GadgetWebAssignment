@@ -76,10 +76,10 @@ $(() => {
         }
         return hash;
     }
-
+    
     function isDuplicateImage(newDataUrl) {
         const newHash = calculateImageHash(newDataUrl);
-
+    
         // Check for duplicates in previewImages
         return previewImages.some(existing => {
             // Use stored hash if available, otherwise calculate and store it
@@ -205,74 +205,39 @@ $(() => {
         }
     });
 
-    let imagesToDelete = []; // Array to store images to be deleted
-
-    // Handle the Delete button click
     $('#deletePhotos').on('click', function () {
         if (previewImages.length > 0) {
             const currentImage = previewImages[currentIndex];
 
             if (currentImage.isExisting) {
-                imagesToDelete.push(currentImage);
-
-                previewImages.splice(currentIndex, 1);
-                if (currentImage.id === null) {
-                    imageFiles.splice(currentIndex, 1);
-                }
-
-                if (currentIndex >= previewImages.length) {
-                    currentIndex = Math.max(0, previewImages.length - 1);
-                }
-                console.log('Preview Images:', previewImages);
-                console.log('Image Files:', imageFiles);
-                console.log('Current Index:', currentIndex);
-                updateFileInput();
-                updatePreview();
-            } else {
-                previewImages.splice(currentIndex, 1);
-
-                if (!currentImage.isExisting) {
-                    let imageFileIndex = 0;
-                    for (let i = 0; i < currentIndex; i++) {
-                        if (!previewImages[i].isExisting) {
-                            imageFileIndex++;
-                        }
-                    }
-
-                    imageFiles.splice(imageFileIndex, 1);
-                }
-
-                if (currentIndex >= previewImages.length) {
-                    currentIndex = Math.max(0, previewImages.length - 1);
-                }
-
-                console.log('Preview Images:', previewImages);
-                console.log('Image Files:', imageFiles);
-                console.log('Current Index:', currentIndex);
-                updateFileInput();
-                updatePreview();
-            }
-        }
-    });
-
-    // Handle the Update button click
-    $('#updateBtn').on('click', function () {
-        // Perform the delete operation for the images in imagesToDelete array
-        if (imagesToDelete.length > 0) {
-            imagesToDelete.forEach(function (image) {
+                // Handle existing images
                 $.ajax({
                     url: window.location.href,
                     type: 'POST',
                     data: {
                         action: 'delete_image',
-                        gallery_id: image.id,
-                        photo_path: image.path.split('/').pop()
+                        gallery_id: currentImage.id,
+                        photo_path: currentImage.path.split('/').pop()
                     },
                     success: function (response) {
                         try {
                             const result = JSON.parse(response);
                             if (result.success) {
-                                console.log('Image deleted successfully:', image.path);
+                                // Remove image from arrays
+                                previewImages.splice(currentIndex, 1);
+                                if (currentImage.id === null) {
+                                    // Only adjust imageFiles for new uploads
+                                    imageFiles.splice(currentIndex, 1);
+                                }
+                                // Update currentIndex
+                                if (currentIndex >= previewImages.length) {
+                                    currentIndex = Math.max(0, previewImages.length - 1);
+                                }
+                                console.log('Preview Images:', previewImages);
+                                console.log('Image Files:', imageFiles);
+                                console.log('Current Index:', currentIndex);
+                                updateFileInput();
+                                updatePreview();
                             } else {
                                 alert('Error deleting image: ' + result.error);
                             }
@@ -285,9 +250,33 @@ $(() => {
                         alert('Error connecting to server');
                     }
                 });
-            });
+            } else {
+                previewImages.splice(currentIndex, 1);
+        
+                if (!currentImage.isExisting) {
+                    let imageFileIndex = 0;
+                    for (let i = 0; i < currentIndex; i++) {
+                        if (!previewImages[i].isExisting) {
+                            imageFileIndex++;
+                        }
+                    }
+                
+                    imageFiles.splice(imageFileIndex, 1);
+                }
+        
+                if (currentIndex >= previewImages.length) {
+                    currentIndex = Math.max(0, previewImages.length - 1);
+                }
+        
+                console.log('Preview Images:', previewImages);
+                console.log('Image Files:', imageFiles);
+                console.log('Current Index:', currentIndex);
+                updateFileInput();
+                updatePreview();
+            }
         }
     });
+
 
     // Navigation handlers
     $('#nextPhoto').on('click', function () {

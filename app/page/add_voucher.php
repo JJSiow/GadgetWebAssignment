@@ -19,7 +19,7 @@ if (is_post()) {
 
     if ($_err) {
         $_SESSION['voucher_error'] = $_err['voc_amount'];
-        redirect('/admin/admin_voucher.php');
+        redirect('/page/admin_voucher.php');
     }else {
         $newVoucherId = auto_id('voucher_id', 'voucher', 'VOC_');
         $stm = $_db->prepare('INSERT INTO voucher
@@ -28,7 +28,7 @@ if (is_post()) {
         $stm->execute([$newVoucherId, $voc_amount, 'Active']);
 
         temp('info', 'Voucher added successfully');
-        redirect('/admin/admin_voucher.php');
+        redirect('/page/admin_voucher.php');
     }
 }
 // ----------------------------------------------------------------------------

@@ -70,11 +70,11 @@ $(() => {
         console.log(currentText);
         if (isEditableNumber) {
             currentText = currentText.startsWith('RM ')
-                ? parseFloat(currentText.replace('RM ', '').replace(/,/g, '').trim())
-                : parseFloat(currentText.replace(/,/g, '').trim());
+                ? parseFloat(currentText.replace('RM ', '').replace(/,/g, '').trim()) 
+                : parseFloat(currentText.replace(/,/g, '').trim()); 
 
             console.log(currentText);
-            if (isNaN(currentText)) currentText = 0;
+            if (isNaN(currentText)) currentText = 0; 
         }
 
         var inputContainer = $('<div>', {
@@ -204,41 +204,6 @@ $(() => {
                 cancelButton.click();
             }
         });
-    });
-
-    // $('.add-stock-btn').on('click', function (e) {
-    //     window.location.href = '../admin/adminHome.php';
-    //     localStorage.setItem('scrollToBottom', true);
-    // });
-
-    // $(document).ready(function () {
-    //     if (localStorage.getItem('scrollToBottom')) {
-    //         $('html, body').animate({ scrollTop: $(document).height() }, 'slow');
-    //         localStorage.removeItem('scrollToBottom');
-    //     }
-    // });
-
-    function initializeSlideshows() {
-        $('.slideshow-container').each(function () {
-            const $slideshow = $(this);
-            const $images = $slideshow.find('.gadget-image');
-
-            if ($images.length <= 1) return; // Skip if only one or no image
-
-            let currentIndex = 0;
-
-            setInterval(function () {
-                $images.eq(currentIndex).removeClass('active');
-                currentIndex = (currentIndex + 1) % $images.length;
-                $images.eq(currentIndex).addClass('active');
-            }, 3500);
-        });
-    }
-
-    initializeSlideshows();
-
-    $('.dismiss-alert').click(function() {
-        $('#stock-alert').fadeOut('fast');
     });
 });
 

@@ -97,7 +97,7 @@ if (is_post()) {
         $_db->commit();
 
         temp('info', 'Gadget added successfuly');
-        redirect('/admin/admin_products.php');
+        redirect('/page/admin_products.php');
     }
 }
 
@@ -166,4 +166,4 @@ if (is_post()) {
     </form>
 </div>
 <?php
-include '../admin/admin_products.php'; ?>
+include '../page/admin_products.php'; ?>
