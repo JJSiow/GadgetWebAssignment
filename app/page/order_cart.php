@@ -70,7 +70,7 @@ $query = "
     WHERE oc.member_id = ?
 ";
 $stmt = $conn->prepare($query);
-$stmt->bind_param("i", $member_id);
+$stmt->bind_param("s", $member_id);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
