@@ -73,10 +73,12 @@ var_dump($role);
 // ----------------------------------------------------------------------------
 
 $_title = 'User | Reset Password';
-include '_head.php';
+// include '_head.php';
 ?>
-
+<div class="token-container">
 <form method="post" class="form">
+<h1>Reset Password</h1>
+<p>Please enter you new password</p>
     <label for="password">Password</label>
     <?= html_password('password', 'maxlength="100"') ?>
     <?= err('password') ?>
@@ -90,6 +92,6 @@ include '_head.php';
         <button type="reset">Reset</button>
     </section>
 </form>
-
+</div>
 <?php
-include '_foot.php';
+// include '_foot.php';

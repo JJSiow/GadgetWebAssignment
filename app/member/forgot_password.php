@@ -67,17 +67,36 @@ if (is_post()) {
 $_title = 'User | Reset Password';
 include '../_head.php';
 ?>
+<!DOCTYPE html>
+<html lang="en">
 
-<form method="post" class="form">
-    <label for="email">Email</label>
-    <?= html_text('email', 'maxlength="100"') ?>
-    <?= err('email') ?>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/loginReg.css">
+</head>
 
-    <section>
-        <button>Submit</button>
-        <button type="reset">Reset</button>
-    </section>
-</form>
+<body>
+    <div class="forgot-ps-container">
+        <div class="forgot-ps-form">
+            <form method="post" class="form">
+                
+            <h1>Forgot <span style="color:rgb(0, 109, 0);">Password</span></h1>
+            <p>You will receive en <span style="color:rgb(0, 109, 0);">email</span> to change your password</p>
+                <label for="email">Email</label>
+                <?= html_text('email', 'maxlength="100"') ?>
+                <?= err('email') ?>
+
+                <section>
+                    <button>Submit</button>
+                    <button type="reset">Reset</button>
+                </section>
+                <a href="/login.php">Login</a>
+            </form>
+        </div>
+    </div>
+</body>
+
 
 <?php
 include '../_foot.php';

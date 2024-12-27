@@ -3,7 +3,7 @@
 *{
 	margin:0;
 	padding:0;
-	box-sizing: border-box;
+	/* box-sizing: border-box; */
 }
 
 
@@ -23,7 +23,7 @@
 }
 
 .footer-col{
-    width: 25%;
+    width: 20%;
     padding: 0 15px;
  }
 
@@ -114,9 +114,7 @@
 }
 }
 
-.map-container{
-    
-}
+
 
 
 
