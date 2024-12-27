@@ -29,7 +29,7 @@ include '../_head.php';
   <div class="container">
     <h1>Address Book</h1>
 
-    <div class="btn-primary"><a href="gmap.php">Add Address</a></div>
+    <a href="gmap.php"><div class="btn-primary">Add Address</div></a>
 
     <div class="address-list">
       <?php foreach ($addresses as $index => $address): ?>
