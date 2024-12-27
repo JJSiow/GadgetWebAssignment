@@ -139,61 +139,72 @@ exit();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/css/checkout.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/js/product.js" defer></script>
 </head>
 <body>
-    <form action="checkout.php" method="POST">
-        <table>
-            <thead>
-                <tr>
-                    <th>Gadget</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($cart_items as $item): ?>
-                <tr class="cart-row">
-                    <td><?= $item['gadget_name'] ?></td>
-                    <td class="item-price">RM <?= number_format($item['gadget_price'], 2) ?></td>
-                    <td><?= $item['quantity'] ?></td>
-                    <td>RM <?= number_format($item['gadget_price'] * $item['quantity'], 2) ?></td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+    <div class="checkout-container">
+        <h1 class="checkout-title">Checkout</h1>
 
-        <p><strong>Total Price: RM <span id="total-price"><?= number_format($total_price, 2) ?></span></strong></p>
+        <div class="checkout-content">
+            <!-- Left: Order Summary -->
+            <div class="order-summary">
+                <h2>Order Summary</h2>
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Gadget</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($cart_items as $item): ?>
+                        <tr>
+                            <td><?= $item['gadget_name'] ?></td>
+                            <td>RM <?= number_format($item['gadget_price'], 2) ?></td>
+                            <td><?= $item['quantity'] ?></td>
+                            <td>RM <?= number_format($item['gadget_price'] * $item['quantity'], 2) ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <p><strong>Total Price: RM <span id="total-price"><?= number_format($total_price, 2) ?></span></strong></p>
+            </div>
 
-        <label for="voucher_id">Voucher Code (optional):</label>
-        <input type="text" name="voucher_id" id="voucher_id" placeholder="Enter voucher code">
-        <button type="button" id="apply-voucher-btn">Apply Voucher</button>
-        <p><strong>Member Email:</strong> <?= $member_email ?></p>
+            <!-- Right: Payment Details -->
+            <div class="payment-details">
+                <h2>Payment Details</h2>
+                <form action="checkout.php" method="POST">
+                    <label for="voucher_id">Voucher Code (optional):</label>
+                    <input type="text" name="voucher_id" id="voucher_id" placeholder="Enter voucher code">
+                    <button type="button" id="apply-voucher-btn" class="btn">Apply Voucher</button>
+                    <p id="voucher-message"></p>
 
-        <p id="voucher-message"></p>
+                    <p><strong>Member Email:</strong> <?= $member_email ?></p>
+                    <p><strong>Final Price: RM <span id="final-price"><?= number_format($total_price, 2) ?></span></strong></p>
 
-        <p><strong>Final Price: RM <span id="final-price"><?= number_format($total_price, 2) ?></span></strong></p>
+                    <label>Payment Method:</label>
+                    <div class="payment-options">
+                        <input type="radio" name="payment_method" value="TnG" required> TnG
+                        <input type="radio" name="payment_method" value="Online Banking" required> Online Banking
+                    </div>
 
-        <br><br>
+                    <?php foreach ($selected_items as $selected_item): ?>
+                        <input type="hidden" name="selected_items[]" value="<?= $selected_item ?>">
+                    <?php endforeach; ?>
+                    <input type="hidden" name="final_price" id="hidden-final-price" value="<?= $total_price ?>">
 
-        <label>Payment Method:</label><br>
-        <input type="radio" name="payment_method" value="TnG" required> TnG<br>
-        <input type="radio" name="payment_method" value="Online Banking" required> Online Banking<br>
-
-        <?php foreach ($selected_items as $selected_item): ?>
-            <input type="hidden" name="selected_items[]" value="<?= $selected_item ?>">
-        <?php endforeach; ?>
-
-        <!-- Hidden field for final price -->
-        <input type="hidden" name="final_price" id="hidden-final-price" value="<?= $total_price ?>">
-
-        <button type="submit" name="checkout">Confirm Checkout</button>
-    </form>
+                    <button type="submit" name="checkout" class="btn btn-primary">Confirm Checkout</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
+
 
 <?php
 include '../_foot.php';

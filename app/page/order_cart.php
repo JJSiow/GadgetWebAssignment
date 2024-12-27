@@ -82,7 +82,7 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Cart</title>
-    <link rel="stylesheet" href="app.css">
+    <link rel="stylesheet" href="/css/order_cart.css">
     <script src="/js/product.js" defer></script>
 </head>
 
@@ -92,7 +92,8 @@ $result = $stmt->get_result();
             <thead>
                 <tr>
                     <th>Select</th>
-                    <th>Gadget</th>
+                    <th>Image</th>
+                    <th>Gadget Name</th>
                     <th>Price</th>
                     <th>Quantity</th>
                     <th>Total</th>
@@ -107,8 +108,10 @@ $result = $stmt->get_result();
                                 value="<?= $item['cart_id'] ?>">
                         </td>
                         <td>
-                            <img src="/uploads/<?= $item['photo_path'] ?>" alt="<?= $item['gadget_name'] ?>" class="cart-gadget-img">
-                            <span><?= $item['gadget_name'] ?></span>
+                            <img src="/images/<?= $item['photo_path'] ?>" alt="<?= $item['gadget_name'] ?>" class="cart-gadget-img" style="width: 100px; height: auto;">
+                        </td>
+                        <td>
+                            <?= $item['gadget_name'] ?>
                         </td>
                         <td class="item-price" data-price="<?= $item['gadget_price'] ?>">RM
                             <?= number_format($item['gadget_price'], 2) ?>

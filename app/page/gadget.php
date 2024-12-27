@@ -152,6 +152,8 @@ $result = $stmt->get_result();
 if (!$result) {
     die("Error fetching gadgets: " . $conn->error);
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -244,7 +246,7 @@ if (!$result) {
                         <!-- Add to Cart Form -->
                         <form action="gadget.php" method="POST">
                             <input type="hidden" name="gadget_id" value="<?= $gadget['gadget_id'] ?>">
-                            <input type="number" name="quantity" value="1" min="1" max="<?= $gadget['gadget_stock'] ?>"
+                            <input type="number" name="quantity" class="quantity-input" value="1" min="1" max="<?= $gadget['gadget_stock'] ?>"
                                 required>
                             <button type="submit" name="add_to_cart" class="add-to-cart-btn">Add to Cart</button>
                         </form>
