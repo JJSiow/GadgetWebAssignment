@@ -350,7 +350,7 @@ function err($key)
 {
     global $_err;
     if ($_err[$key] ?? false) {
-        echo "<span class='err'>$_err[$key]</span>";
+        echo "<span class='err'>$_err[$key]</span><br>";
     } else {
         echo '<span></span>';
     }

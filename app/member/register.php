@@ -7,7 +7,6 @@ if (is_post()) {
     $member_name       = req('member_name');
     $member_gender     = req('member_gender');
     $member_password     = req('member_password');
-    $shipping_address     = req('shipping_address');
     $member_email     = req('member_email');
     $member_phone_no     = req('member_phone_no');
     $member_passwordconfirm     = req('member_passwordconfirm');
@@ -22,52 +21,38 @@ if (is_post()) {
     // Validate phone number
     if ($member_phone_no == '') {
         $_err['member_phone_no'] = 'Required';
-    }
-    else if (strlen($member_phone_no) > 11 || strlen($member_phone_no) < 10) {
+    } else if (strlen($member_phone_no) > 11 || strlen($member_phone_no) < 10) {
         $_err['member_phone_no'] = 'Should be 10-11 digits';
-    }
-    else if (!ctype_digit($member_phone_no)) {
+    } else if (!ctype_digit($member_phone_no)) {
         $_err['member_phone_no'] = 'Invalid phone number';
-    }
-    else if (is_exists($member_phone_no, 'member', 'member_phone_no')) {
+    } else if (is_exists($member_phone_no, 'member', 'member_phone_no')) {
         $_err['member_phone_no'] = 'Phone number already exists';
     }
 
     // Validate gender
     if ($member_gender == '') {
         $_err['member_gender'] = 'Required';
-    }
-    else if (!array_key_exists($member_gender, $_genders)) {
+    } else if (!array_key_exists($member_gender, $_genders)) {
         $_err['member_gender'] = 'Invalid value';
     }
 
     // Validate email
     if ($member_email == '') {
         $_err['member_email'] = 'Required';
-    }
-    else if (strlen($member_email) > 100) {
+    } else if (strlen($member_email) > 100) {
         $_err['member_email'] = 'Maximum length 100';
-    }
-    else if (!filter_var($member_email, FILTER_VALIDATE_EMAIL)) {
+    } else if (!filter_var($member_email, FILTER_VALIDATE_EMAIL)) {
         $_err['member_email'] = 'Invalid email format';
-    }
-    else if (is_exists($member_email, 'member', 'member_email')) {
+    } else if (is_exists($member_email, 'member', 'member_email')) {
         $_err['member_email'] = 'Email already exists';
-    }
-
-    // Validate shipping address
-    if ($shipping_address == '') {
-        $_err['shipping_address'] = 'Required';
     }
 
     // Validate password
     if ($member_password == '') {
         $_err['member_password'] = 'Required';
-    }
-    else if (strlen($member_password) > 100) {
+    } else if (strlen($member_password) > 100) {
         $_err['member_password'] = 'Maximum length 100';
-    }
-    else if (strlen($member_password) < 8) {
+    } else if (strlen($member_password) < 8) {
         $_err['member_password'] = 'Minimum length 8';
     }
 
@@ -81,29 +66,29 @@ if (is_post()) {
         $_err['member_passwordconfirm'] = 'Not Match';
     }
 
-    if($_POST['g-recaptcha-response'] == ""){
+    if ($_POST['g-recaptcha-response'] == "") {
         $_err['g-recaptcha-response'] = 'google recaptcha does not response';
-    }else{
+    } else {
 
-    $secret = '6Lc4AqUqAAAAAD3xemwtZ433ZDXxMIak1Eds0r9U';
-    $verifyResponse = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . $secret . '&response=' . $_POST['g-recaptcha-response']);
-    $responseData = json_decode($verifyResponse);
-    if (!$responseData->success) {
-        $_err['g-recaptcha-response'] = 'robot validation failed';
+        $secret = '6Lc4AqUqAAAAAD3xemwtZ433ZDXxMIak1Eds0r9U';
+        $verifyResponse = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . $secret . '&response=' . $_POST['g-recaptcha-response']);
+        $responseData = json_decode($verifyResponse);
+        if (!$responseData->success) {
+            $_err['g-recaptcha-response'] = 'robot validation failed';
+        }
     }
-}
 
     // Output
 
     // TODO
     if (!$_err) {
-            $no_of_member = $_db->query('SELECT COUNT(*) FROM member')->fetchColumn();
-            $member_id = sprintf('M%05d', $no_of_member + 1);
+        $no_of_member = $_db->query('SELECT COUNT(*) FROM member')->fetchColumn();
+        $member_id = sprintf('M%05d', $no_of_member + 1);
         $member_EncrptPassword = sha1($member_password);
         $stm = $_db->prepare('INSERT INTO member
-                                  (member_id, member_name, member_gender,member_phone_no,member_email,shipping_address,member_password,member_profile_pic,member_status)
-                                  VALUES(?, ?, ?, ?, ?, ?, ?,?,?)');
-        $stm->execute([$member_id, $member_name, $member_gender, $member_phone_no, $member_email, $shipping_address, $member_EncrptPassword, 'default_user.jpg', 'Inactive']);
+                                  (member_id, member_name, member_gender,member_phone_no,member_email,member_password,member_profile_pic,member_status)
+                                  VALUES(?, ?, ?, ?, ?, ?, ?,?)');
+        $stm->execute([$member_id, $member_name, $member_gender, $member_phone_no, $member_email, $member_EncrptPassword, 'default_user.jpg', 'Inactive']);
 
         // TODO: (2) Generate token id
         $id = sha1(uniqid() . rand());
@@ -115,7 +100,7 @@ if (is_post()) {
             INSERT INTO token (id, expire, user_id,token_type)
             VALUES (?, ADDTIME(NOW(), "00:05"), ?,?);
         ');
-        $stm->execute([$member_id,'Activate', $id, $member_id,'Activate']);
+        $stm->execute([$member_id, 'Activate', $id, $member_id, 'Activate']);
 
         // TODO: (4) Generate token url
         $url = base("account_verify.php?id=$id");
@@ -150,52 +135,67 @@ include '../_head.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <link rel="stylesheet" href="/css/loginReg.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 </head>
 
-<form method="post" class="form">
+<body>
+    <div class="register-container">
+        
+
+        <div class="register-form">
+            <form method="post" class="form">
+            <h1><span style="color: #ac28ff;">Create</span> an Account!</h1>
+            <p><span style="color: #ac28ff;">Sign Up</span> to continue</p>
+
+                <label for="member_name">Name</label>
+                <?= html_text('member_name', 'maxlength="100"') ?>
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <?= err('member_name') ?>
+
+                <label for="member_phone_no">Phone Number</label>
+                <?= html_text('member_phone_no', 'maxlength="11"') ?>
+                <?= err('member_phone_no') ?>
+
+                <div class="radio-group">
+                <label>Gender</label>
+                <?= html_radios('member_gender', $_genders) ?>
+                <?= err('member_gender') ?>
+                </div>
+                
+                <label for="member_email">Email</label>
+                <?= html_text('member_email', 'maxlength="40"') ?>
+                <?= err('member_email') ?>
+
+                <label for="member_password">Password</label>
+                <?= html_password('member_password', 'maxlength="100"') ?>
+                <?= err('member_password') ?>
+
+                <label for="member_passwordconfirm">Confirm Password</label>
+                <?= html_password('member_passwordconfirm', 'maxlength="100"') ?>
+                <?= err('member_passwordconfirm') ?>
+
+                <div class="g-recaptcha" data-sitekey="6Lc4AqUqAAAAAJXaWZC7V2bFfeasBlRlqdwOZLBq"></div>
+                <?= err('g-recaptcha-response') ?>
+
+                <section>
+                    <button>Register</button>
+                    <button type="reset">Reset</button>
+                </section>
+                <a href="/login.php">Login</a>
+            </form>
+        </div>
+        <div class="login-image">
+            <img src="/images/registerPage3.png" alt="Register Illustration">
+        </div>
+    </div>
+</body>
 
 
-    <label for="member_name">Name</label>
-    <?= html_text('member_name', 'maxlength="100"') ?>
-    <?= err('member_name') ?>
-
-    <label for="member_phone_no">Phone Number</label>
-    <?= html_text('member_phone_no', 'maxlength="11"') ?>
-    <?= err('member_phone_no') ?>
-
-    <label>Gender</label>
-    <?= html_radios('member_gender', $_genders) ?>
-    <?= err('member_gender') ?>
-
-    <label for="member_email">Email</label>
-    <?= html_text('member_email', 'maxlength="40"') ?>
-    <?= err('member_email') ?>
-
-    <label for="shipping_address">Shipping Address</label>
-    <?= html_text('shipping_address', 'maxlength="100"') ?>
-    <?= err('shipping_address') ?>
-
-    <label for="member_password">Password</label>
-    <?= html_password('member_password', 'maxlength="100"') ?>
-    <?= err('member_password') ?>
-
-    <label for="member_passwordconfirm">Confirm Password</label>
-    <?= html_password('member_passwordconfirm', 'maxlength="100"') ?>
-    <?= err('member_passwordconfirm') ?>
-
-    <div class="g-recaptcha" data-sitekey="6Lc4AqUqAAAAAJXaWZC7V2bFfeasBlRlqdwOZLBq"></div>
-    <?= err('g-recaptcha-response') ?>
-
-    <section>
-        <button>Submit</button>
-        <button type="reset">Reset</button>
-    </section>
-</form>
-
-<a href="/login.php">Login</a>
 <?php
 include '../_foot.php';
