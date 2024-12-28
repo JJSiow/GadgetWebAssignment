@@ -46,30 +46,22 @@ if (is_post()) {
                 $member_EncryptedPassword = sha1($member_password);
         
                 if ($member_EncryptedPassword === $member->member_password) {
-                    if ($member->member_status == 'Disabled') {
-                        $_err['member_email'] = 'Account is blocked.';
-                    } else if ($member->member_status == 'Deleted') {
-                        $_err['member_email'] = 'Account has been deleted.';
-                    } else if ($member->member_status == 'Inactive') {
-                        $_err['member_email'] = 'Account is inactive.';
+                    // Login successful
+                    temp('info', 'Login successful');
+                    $_SESSION['member'] = $member;
+    
+                    // Reset login attempts on successful login
+                    $_db->prepare('UPDATE member SET login_attempt = 0 WHERE member_id = ?')->execute([$member->member_id]);
+    
+                    if ($remember_me) {
+                        cookies_setting($member->member_id);
                     } else {
-                        // Login successful
-                        temp('info', 'Login successful');
-                        $_SESSION['member'] = $member;
-        
-                        // Reset login attempts on successful login
-                        $_db->prepare('UPDATE member SET login_attempt = 0 WHERE member_id = ?')->execute([$member->member_id]);
-        
-                        if ($remember_me) {
-                            cookies_setting($member->member_id);
-                        } else {
-                            unCookies_setting();
-                        }
-        
-                        // Redirect to gadget page
-                        redirect('../page/gadget.php');
-                        login($member);
+                        unCookies_setting();
                     }
+    
+                    // Redirect to gadget page
+                    redirect('../page/gadget.php');
+                    login($member);
                 } else {
                     $_err['member_password'] = 'Incorrect password';
 
