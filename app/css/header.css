@@ -15,7 +15,8 @@ body{
 }
 
 .logo{
-    width: 120px;
+    width: 150px;
+    height: 55px;
     cursor: pointer;
 }
 
@@ -44,9 +45,20 @@ nav ul li{
     text-decoration: none;
 }
 
+.menu nav ul li a.gadget-a{
+    color: #007bff;
+    background: none;
+    text-decoration: none;
+    font-weight: 600;
+}
+
 .menu nav ul li a:hover{
     font-weight: 600;
     
+}
+
+.menu nav ul li a.gadget-a:hover{
+    font-weight: 800;
 }
 
 .menu a {

@@ -89,29 +89,24 @@ if (is_post()) {
 <head>
     <title>Address Create</title>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACghnaJhcfHdkqZuD1Pp9dOb6dh7KyMS8"></script>
+    <link rel="stylesheet" href="/css/address.css">
 </head>
 
 <body>
 
-    <div id="map" style="height: 500px; width: 100%;"></div>
-
-    <div id="output">
-        <p>Result will display here</p>
-    </div>
-
-
-    <form method="post" class="form">
+<div id="map" style="height: 350px; width: 100%;"></div>
+  <p>You can drag the map marker or enter the addresss name to select your shipping address.</p>
+  <div class="address-add-container">
+    <div class="address-add-form">
+      <form method="post" class="form">
+      <h1><span style="color: #007bff;">Modify </span>Shipping Address</h1>
         <label for="address">Address</label>
         <?= html_text('address_detail', 'placeholder="Enter Address"'); ?>
-        <button id="search" type="button">Search Address</button>
+        <button id="search" type="button" class="btn-search-add">Search Address</button><br>
         <?= err('address') ?>
 
-        <label for="address_latitude">latitude</label>
-        <?= html_text('address_latitude', 'placeholder="Latitude"'); ?>
-        <?= err('address_latitude') ?>
-        <label for="address_longitude">longitude</label>
-        <?= html_text('address_longitude', 'placeholder="Longitude"'); ?>
-        <?= err('address_longitude') ?>
+        <?= html_text('address_latitude', 'placeholder="Latitude" hidden'); ?>
+        <?= html_text('address_longitude', 'placeholder="Longitude" hidden'); ?>
 
         <label for="label">Label</label>
         <?= html_text('address_label', 'placeholder="Enter label"'); ?>
@@ -131,11 +126,13 @@ if (is_post()) {
         <?= err('address_instruction') ?>
 
         <section>
-            <button>Submit</button>
-            <button type="reset">Reset</button>
-            <a href="address_book.php">return</a>
+          <button>Submit</button>
+          <button type="reset">Reset</button>
         </section>
-    </form>
+        <a href="address_book.php">Return to address book </a>
+      </form>
+    </div>
+  </div>
 
 
 

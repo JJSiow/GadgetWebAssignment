@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $_title ?? 'Untitled' ?></title>
     <link rel="shortcut icon" href="/images/favicon.png">
-    <link rel="stylesheet" href="/css/app.css"> 
-    <link rel="stylesheet" href="/css/admin.css">
+    <!-- <link rel="stylesheet" href="/css/app.css"> 
+    <link rel="stylesheet" href="/css/admin.css"> -->
     <link rel="stylesheet" href="/css/header.css">
     <!-- <link rel="stylesheet" href="/css/sidebar.css"> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -21,28 +21,29 @@
 <body>
     <!-- Flash message -->
     <div id="info"><?= temp('info') ?></div>
-    
+
     <div class="menu">
         <nav>
-        <a href="/page/gadget.php"><img src="/images/logo2.png" class="logo"></a>
+            <a href="/page/gadget.php"><img src="/images/logo2.png" class="logo"></a>
             <ul>
-                <li><a href="/admin/admin_home.php">Admin Home</a></li>
-                <li><a href="/admin/admin_login.php">Admin Login</a></li>
-                <li><a href="/admin/admin_logout.php">Admin Logout</a></li>
-                <li><a href="/admin/member_list.php">Member</a></li>
-                <li><a href="/admin/admin_list.php">Admin List</a></li>
-                <li><a href="/admin/admin_profile.php">Admin Profile</a></li>
-                <li><a href="/page/gadget.php">Product</a></li>
+                <li><a href="/page/gadget.php" class="gadget-a">GADGET</a></li>
+                <li><a href="/page/gadget.php?search=&category=PHONE">PHONE</a></li>
+                <li><a href="/page/gadget.php?search=&category=LAPTOP">LAPTOP</a></li>
+                <li><a href="/page/gadget.php?search=&category=TABLET">TABLET</a></li>
+                <li><a href="/page/gadget.php?search=&category=MOUSE">MOUSE</a></li>
+                <li><a href="/page/gadget.php?search=&category=KEYBOARD">KEYBOARD</a></li>
+                <li><a href="/page/gadget.php?search=&category=SPEAKER">SPEAKER</a></li>
+
             </ul>
             <?php if ($_member): ?>
-                <img src="/photos/<?= $_member->member_profile_pic?>" class="user_pic" onclick="tonggleMenu()">
+                <img src="/photos/<?= $_member->member_profile_pic ?>" class="user_pic" onclick="tonggleMenu()">
                 <a href="/page/order_cart.php"><img src="/images/cart.jpg" class="user_pic" onclick=""></a>
                 <div class="sub_menu_profile" id="subMenu">
                     <div class="sub_menu">
                         <div class="user_info">
 
-                        <img src="/photos/<?= $_member->member_profile_pic ?>">
-                        <h3><?= $_member->member_name ?></h3>
+                            <img src="/photos/<?= $_member->member_profile_pic ?>">
+                            <h3><?= $_member->member_name ?></h3>
                         </div>
                         <hr>
 
@@ -68,13 +69,13 @@
 
                         <a href="/logout.php" class="sub_menu_link">
                             <p>Logout</p>
-                            <span>></span> 
+                            <span>></span>
                         </a>
                     </div>
                 </div>
-                <?php else: ?>
-                    <img src="/images/default_user.jpg" class="user_pic" onclick="tonggleMenu()">
-                <a href="/login.php" ><img src="/images/cart.jpg" class="user_pic" onclick="returnLogin()"></a>
+            <?php else: ?>
+                <img src="/images/default_user.jpg" class="user_pic" onclick="tonggleMenu()">
+                <a href="/login.php"><img src="/images/cart.jpg" class="user_pic" onclick="returnLogin()"></a>
                 <div class="sub_menu_profile" id="subMenu">
                     <div class="sub_menu">
                         <div class="user_info">
@@ -96,7 +97,7 @@
                     </div>
                 </div>
 
-                    <?php endif ?> 
+            <?php endif ?>
         </nav>
 
     </div>
@@ -108,7 +109,7 @@
             subMenu.classList.toggle("open-menu");
         }
 
-        function returnLogin(){
+        function returnLogin() {
             temp('info', 'You need to login');
         }
     </script>
