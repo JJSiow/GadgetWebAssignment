@@ -62,11 +62,12 @@ include '../admin/_admin_head.php';
 
     <?php foreach ($arr as $s): ?>
     <tr>
+        <?php foreach ($_member_attr as $field => $label) : ?>
+            <td class="status-<?= strtolower($s->member_status) ?>"><?= $s->$field ?></td>
+        <?php endforeach ?>
+        <td class="status-<?= strtolower($s->member_status) ?>"><img src="../photos/<?= $s->member_profile_pic ?>"  width="100"></td>
+        
         <?php if ($s->member_status == 'Active' || $s->member_status == 'Disabled') : ?>
-            <?php foreach ($_member_attr as $field => $label) : ?>
-                <td class="status-<?= strtolower($s->member_status) ?>"><?= $s->$field ?></td>
-            <?php endforeach ?>
-            <td class="status-<?= strtolower($s->member_status) ?>"><img src="../photos/<?= $s->member_profile_pic ?>"  width="100"></td>
             <td class="status-<?= strtolower($s->member_status) ?>">
                 <button data-post="update_member_status.php?member_id=<?= $s->member_id ?>&search_by=<?= $search_by ?>&search_value=<?=$search_value ?>&page=<?= $page ?>" data-confirm="Are you sure you want to change the status of this member?">Change Status</button>
             </td>
@@ -78,10 +79,6 @@ include '../admin/_admin_head.php';
             </td>
 
         <?php else : ?>
-            <?php foreach ($_member_attr as $field => $label) : ?>
-                <td class="status-<?= strtolower($s->member_status) ?>"><?= $s->$field ?></td>
-            <?php endforeach ?>
-            <td class="status-<?= strtolower($s->member_status) ?>"><img src="../photos/<?= $s->member_profile_pic ?>"  width="100"></td>
             <td class="status-<?= strtolower($s->member_status) ?>"><button disabled class="disabled">Change Status</button></td>
             <td class="status-<?= strtolower($s->member_status) ?>"><button disabled class="disabled">Edit Profle Pic</button></td>
         <?php endif ?>

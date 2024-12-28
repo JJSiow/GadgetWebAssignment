@@ -450,28 +450,27 @@ nav.pager a.active {
 }
 
 .profile {
-    display: grid;
-    grid: auto / auto auto auto;
-    gap: 5px;
-    place-content: start;
-    place-items: center start;
+    max-width: 600px;
+    margin: 0 auto;
     padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 5px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Roboto', sans-serif;
 }
 
-.profile>label:not(:has(*)) {
-    place-self: stretch;
-    background: #ccc;
-    font-weight: bold;
-    padding: 5px;
+.profile h1 {
+    font-size: 2rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile label {
     display: block;
+    font-weight: bold;
     margin-bottom: 5px;
     color: #333;
-}
-
-.profile>section {
-    grid-column: 1 / -1;
 }
 
 .profile input[type="text"],
@@ -479,29 +478,67 @@ nav.pager a.active {
 .profile input[type="password"],
 .profile input[type="file"] {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     margin-bottom: 15px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 5px;
     box-sizing: border-box;
 }
 
+.profile .upload {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.profile .upload img {
+    max-width: 100px;
+    margin-top: 10px;
+}
+
+.profile button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
 .profile button[type="submit"] {
-    background-color: #28a745;
+    background-color: #007bff;
     color: #fff;
 }
 
 .profile button[type="submit"]:hover {
-    background-color: #218838;
+    background-color: #0056b3;
 }
 
-.profile button[type="reset"] {
+.profile button[type="button"] {
     background-color: #dc3545;
     color: #fff;
 }
 
-.profile button[type="reset"]:hover {
+.profile button[type="button"]:hover {
     background-color: #c82333;
+}
+
+.profile .gender {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.profile .gender label {
+    margin-right: 10px;
+    font-weight: normal;
+}
+
+.profile .gender input {
+    margin-right: 5px;
 }
 
 /* Photo Upload ------------------------------------------------------------ */
@@ -540,4 +577,18 @@ label.upload img {
 .preview {
     max-width: 100px;
     margin-top: 10px;
+}
+
+.logo{
+    width: 150px;
+    height: 55px;
+    cursor: pointer;
+}
+
+.user_pic{
+    width: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-left: 10px;
+    background: #fff;
 }

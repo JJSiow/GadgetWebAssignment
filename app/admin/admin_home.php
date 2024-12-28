@@ -60,7 +60,7 @@ if (is_post()) {
 	}
 }
 // ----------------------------------------------------------------------------
-$_title = 'admin Home';
+$_title = 'Admin Home';
 include '../admin/_admin_head.php';
 ?>
 

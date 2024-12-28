@@ -6,9 +6,6 @@ include '../_head.php';
 
 // ----------------------------------------------------------------------------
 
-auth_member();
-$member_id = $_member->member_id; 
-
 // Database connection
 $conn = new mysqli("localhost", "root", "", "gadgetwebdb");
 
@@ -18,6 +15,9 @@ if ($conn->connect_error) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    auth_member();
+    $member_id = $_member->member_id; 
+
     $gadget_id = $_POST['gadget_id'];
     $quantity = $_POST['quantity'];
 
