@@ -7,7 +7,7 @@
     <title><?= $_title ?? 'Untitled' ?></title>
     <link rel="shortcut icon" href="/images/favicon.png">
     <link rel="stylesheet" href="/css/adminNav.css">
-    <link rel="stylesheet" href="/css/adminHome.css">
+    <!-- <link rel="stylesheet" href="/css/adminHome.css"> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="/js/app.js"></script>
     <script src="/js/multiple_photo.js"></script>

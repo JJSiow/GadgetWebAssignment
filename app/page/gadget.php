@@ -252,7 +252,7 @@ if (!$result) {
                     </a>
                     <div class="product-info">
                         <h3 class="product-name"><?= $gadget['gadget_name'] ?></h3>
-                        <p class="product-description"><?= substr($gadget['gadget_description'], 0, 100) ?>...</p>
+                        <!-- <p class="product-description"><?= substr($gadget['gadget_description'], 0, 100) ?>...</p> -->
                         <p class="product-price">RM <?= $gadget['gadget_price'] ?></p>
                         <p class="product-category"><?= $gadget['category_name'] ?></p>
                         <p class="product-brand"><?= $gadget['brand_name'] ?></p>

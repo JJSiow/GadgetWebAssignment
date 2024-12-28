@@ -64,18 +64,18 @@ $(() => {
                     color: "#E7823A",
                     name: "New Customers",
                     type: "column",
-                    xValueFormatString: "MMM YYYY",
+                    xValueFormatString: "D MMM YYYY",
                     dataPoints: data.new_customers.map(function (item) {
-                        return { x: new Date(item.month), y: item.new_customers };
+                        return { x: new Date(item.date), y: item.new_customers };
                     })
                 }],
                 "Returning Customers": [{
                     color: "#546BC1",
                     name: "Returning Customers",
                     type: "column",
-                    xValueFormatString: "MMM YYYY",
+                    xValueFormatString: "D MMM YYYY",
                     dataPoints: data.returning_customers.map(function (item) {
-                        return { x: new Date(item.month), y: item.returning_customers };
+                        return { x: new Date(item.date), y: item.returning_customers };
                     })
                 }]
             };

@@ -59,8 +59,8 @@ if (is_post()) {
 
     if (empty($gname)) {
         $_err['gname'] = 'Gadget Name is required';
-    } elseif (strlen($gname) > 25) {
-        $_err['gname'] = 'Maximum length for Gadget Name is 25 characters';
+    } elseif (strlen($gname) > 100) {
+        $_err['gname'] = 'Maximum length for Gadget Name is 100 characters';
     }
 
     if (empty($gcategory)) {
@@ -119,11 +119,11 @@ if (is_post()) {
             gadget_price = ?, 
             category_id = (SELECT category_id FROM category WHERE category_name = ? AND category_status = "Active"), 
             gadget_description = ?, 
-            brand_id = (SELECT brand_id FROM brand WHERE brand_name = ? AND brand_status = "Active"), 
+            brand_id = (SELECT brand_id FROM brand WHERE branAD_00002d_name = ? AND brand_status = "Active"), 
             gadget_stock = ?
         WHERE gadget_id = ?');
 
-        $stm->execute(['AD_00002', $gname, $gprice, $gcategory, $gdescribe, $gbrand, $gstock, $gid]);
+        $stm->execute(['A01', $gname, $gprice, $gcategory, $gdescribe, $gbrand, $gstock, $gid]);
 
         $stm = $_db->prepare('INSERT INTO gallery (gallery_id, photo_path, gadget_id) VALUES (?, ?, ?)');
         foreach ($photos as $path) {

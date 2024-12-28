@@ -68,8 +68,8 @@ if (is_post()) {
     // Validate form inputs
     if (empty($gname)) {
         $_err['gname'] = 'Gadget Name is required';
-    } elseif (strlen($gname) > 25) {
-        $_err['gname'] = 'Maximum length for Gadget Name is 25 characters';
+    } elseif (strlen($gname) > 100) {
+        $_err['gname'] = 'Maximum length for Gadget Name is 100 characters';
     } elseif ($count > 0) {
         $_err['gname'] = 'Gadget with this name already exists';
     }
@@ -189,7 +189,7 @@ if (is_post()) {
                 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)');
             $stm->execute([
                 $newGadgetId,
-                'AD_00002', // You might want to make this dynamic
+                'A01', // You might want to make this dynamic
                 strtoupper($gname),
                 $gprice,
                 $categoryId,
