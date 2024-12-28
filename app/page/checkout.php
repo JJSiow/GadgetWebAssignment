@@ -65,8 +65,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
     $shipping_address_id = isset($_POST['shipping_address']) ? $_POST['shipping_address'] : null;
 
     if (!$shipping_address_id) {
-        temp('info', 'Please select a shipping address.');
-        header("Location: checkout.php");
+        // Check if the member has any saved addresses
+        $check_address_query = "SELECT COUNT(*) AS address_count FROM address WHERE member_id = ?";
+        $check_address_stmt = $conn->prepare($check_address_query);
+        $check_address_stmt->bind_param("s", $member_id);
+        $check_address_stmt->execute();
+        $check_address_result = $check_address_stmt->get_result();
+        $address_data = $check_address_result->fetch_assoc();
+    
+        if ($address_data['address_count'] == 0) {
+            // No addresses found, prompt user to add an address
+            temp('info', 'No shipping address found. Please add an address to proceed.');
+            header("Location: /member/gmap.php"); // Redirect to the add address page
+        } else {
+            // Address exists, prompt user to select an address
+            temp('info', 'Please select a shipping address.');
+            header("Location: checkout.php");
+        }
         exit();
     }
 

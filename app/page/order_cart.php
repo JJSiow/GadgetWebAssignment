@@ -89,7 +89,7 @@ $result = $stmt->get_result();
 <body>
     <form action="checkout.php" method="POST">
         <table>
-            <thead>
+            <thead class="checkout-table">
                 <tr>
                     <th>Select</th>
                     <th>Image</th>
