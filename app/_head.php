@@ -26,7 +26,7 @@
         <nav>
             <a href="/page/gadget.php"><img src="/images/logo2.png" class="logo"></a>
             <ul>
-                <li><a href="/page/gadget.php"><span style="color : #007bff">GADGET</span></a></li>
+                <li><a href="/page/gadget.php" class="gadget-a">GADGET</a></li>
                 <li><a href="/page/gadget.php?search=&category=PHONE">PHONE</a></li>
                 <li><a href="/page/gadget.php?search=&category=LAPTOP">LAPTOP</a></li>
                 <li><a href="/page/gadget.php?search=&category=TABLET">TABLET</a></li>
