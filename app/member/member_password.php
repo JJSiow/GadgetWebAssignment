@@ -32,30 +32,25 @@ if (is_post()) {
     // Validate current password
     if ($member_current_password == '') {
         $_err['member_current_password'] = 'Required';
-    }
-    else if (sha1($member_current_password) != $member_password) {
+    } else if (sha1($member_current_password) != $member_password) {
         $_err['member_current_password'] = 'Incorrect password';
     }
 
     // Validate new password
     if ($member_new_password == '') {
         $_err['member_new_password'] = 'Required';
-    }
-    else if (strlen($member_new_password) > 100) {
+    } else if (strlen($member_new_password) > 100) {
         $_err['member_new_password'] = 'Maximum length 100';
-    }
-    else if (strlen($member_new_password) < 8) {
+    } else if (strlen($member_new_password) < 8) {
         $_err['member_new_password'] = 'Minimum length 8';
-    }
-    else if ($member_new_password == $member_current_password) {
+    } else if ($member_new_password == $member_current_password) {
         $_err['member_new_password'] = 'New password must be different';
     }
 
     // Validate confirm password
     if ($member_confirm_password == '') {
         $_err['member_confirm_password'] = 'Required';
-    }
-    else if ($member_new_password != $member_confirm_password) {
+    } else if ($member_new_password != $member_confirm_password) {
         $_err['member_confirm_password'] = 'Password does not match';
     }
 
@@ -70,28 +65,41 @@ if (is_post()) {
 
 $_title = 'Member | Update Member Password';
 include '../_head.php';
-
 ?>
 
-<form method="post" class="form">
-    <label for="member_id">Member ID</label>
-    <b><?= $member_id ?></b>
-    <?= err('member_id') ?>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/member_profile.css">
+</head>
 
-    <label for="member_current_password">Current Password</label>
-    <?= html_password('member_current_password', 'maxlength="100"') ?>
-    <?= err('member_current_password') ?>
-    
-    <label for="member_new_password">New Password</label>
-    <?= html_password('member_new_password', 'maxlength="100"') ?>
-    <?= err('member_new_password') ?>
 
-    <label for="member_confirm_password">Confirm Password</label>
-    <?= html_password('member_confirm_password', 'maxlength="100"') ?>
-    <?= err('member_confirm_password') ?>
+<body>
+    <div class="reset-ps-container">
+        <div class="reset-ps-form">
+            <form method="post" class="form">
+            <h1><span style="color: #007bff;">Reset </span>Password</h1>
 
-    <section>
-        <button type="submit">Save</button>
-    </section>
-</form>
+                <label for="member_current_password">Current Password</label>
+                <?= html_password('member_current_password', 'maxlength="100"') ?>
+                <?= err('member_current_password') ?>
 
+                <label for="member_new_password">New Password</label>
+                <?= html_password('member_new_password', 'maxlength="100"') ?>
+                <?= err('member_new_password') ?>
+
+                <label for="member_confirm_password">Confirm Password</label>
+                <?= html_password('member_confirm_password', 'maxlength="100"') ?>
+                <?= err('member_confirm_password') ?>
+
+                <section>
+                    <button type="submit">Save</button>
+                </section>
+            </form>
+        </div>
+    </div>
+</body>
+
+<?php
+include '../_foot.php';
+?>

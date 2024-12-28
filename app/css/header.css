@@ -12,10 +12,12 @@ body{
     justify-content: space-between;
     position: relative;
     z-index: 999;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .logo{
-    width: 120px;
+    width: 150px;
+    height: 55px;
     cursor: pointer;
 }
 
@@ -44,9 +46,20 @@ nav ul li{
     text-decoration: none;
 }
 
+.menu nav ul li a.gadget-a{
+    color: #007bff;
+    background: none;
+    text-decoration: none;
+    font-weight: 600;
+}
+
 .menu nav ul li a:hover{
     font-weight: 600;
     
+}
+
+.menu nav ul li a.gadget-a:hover{
+    font-weight: 800;
 }
 
 .menu a {
@@ -68,12 +81,14 @@ nav ul li{
 
 .sub_menu_profile.open-menu{
     max-height: 400px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .sub_menu{
     background: #f8f4f4;  ;
     padding: 20px;
     margin: 0px;
+    
 }
 
 .user_info{
@@ -166,3 +181,5 @@ nav ul li{
         opacity: 0;
     }
 }
+
+

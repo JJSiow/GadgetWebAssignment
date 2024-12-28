@@ -1,0 +1,159 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.orders-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.page-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+/* Order Card */
+.order-card {
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fafafa;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.order-header {
+    margin-bottom: 15px;
+}
+
+.order-header h3 {
+    margin: 0 0 10px;
+    font-size: 20px;
+    color: #333;
+}
+
+.order-header p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.order-header .status {
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 5px;
+}
+
+.status.pending {
+    color: #fff;
+    background-color: #f39c12;
+}
+
+.status.delivered {
+    color: #fff;
+    background-color: #27ae60;
+}
+
+.status.received {
+    color: #fff;
+    background-color: #2980b9;
+}
+
+/* Order Table */
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+.order-table th, .order-table td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.order-table th {
+    background-color: #f2f2f2;
+    color: #555;
+}
+
+.order-table td {
+    color: #333;
+}
+
+.order-actions {
+    text-align: right;
+}
+
+.btn {
+    display: inline-block;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.cancel-order {
+    background-color: #e74c3c;
+}
+
+.cancel-order:hover {
+    background-color: #c0392b;
+}
+
+.mark-received {
+    background-color: #27ae60;
+}
+
+.mark-received:hover {
+    background-color: #219150;
+}
+
+.back-to-cart {
+    display: block;
+    text-align: center;
+    margin: 20px auto;
+    background-color: #555;
+    color: #fff;
+}
+
+.no-orders {
+    text-align: center;
+    font-size: 16px;
+    color: #666;
+    margin: 20px 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .orders-container {
+        padding: 10px;
+    }
+
+    .order-card {
+        padding: 15px;
+    }
+}

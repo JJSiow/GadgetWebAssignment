@@ -16,13 +16,13 @@ $(() => {
     $('.err:first').prev().find(':input:first').focus();
     
     // Confirmation message
-    $('[data-confirm]').on('click', e => {
-        const text = e.target.dataset.confirm || 'Are you sure?';
-        if (!confirm(text)) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-        }
-    });
+    // $('[data-confirm]').on('click', e => {
+    //     const text = e.target.dataset.confirm || 'Are you sure?';
+    //     if (!confirm(text)) {
+    //         e.preventDefault();
+    //         e.stopImmediatePropagation();
+    //     }
+    // });
 
     // Initiate GET request
     $('[data-get]').on('click', e => {

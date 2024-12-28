@@ -56,9 +56,7 @@ function geocodePosition(pos) {
         if (status === "OK" && responses.length > 0) {
             var fullAddress = responses[0].formatted_address;
             updateMarkerAddress(fullAddress);
-            document.getElementById("output").textContent = "Address: " + fullAddress;
         } else {
-            document.getElementById("output").textContent = "Geocode failed: " + status;
         }
     });
 }
@@ -74,9 +72,7 @@ function geocodeAddress() {
             marker.setPosition(location);
             updateMarkerPosition(location);
             updateMarkerAddress(results[0].formatted_address);
-            document.getElementById("output").textContent = "Address: " + results[0].formatted_address;
         } else {
-            document.getElementById("output").textContent = "Geocode failed: " + status;
         }
     });
 }

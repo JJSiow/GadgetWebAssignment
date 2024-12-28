@@ -1,14 +1,86 @@
-/* General Styles */
+/* Base Styles */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
+    font-family: 'Roboto', sans-serif;
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    background-color: #f2f2f2; /* Light grey background */
+    color: #333; /* Dark grey text */
+    line-height: 1.6;
 }
 
 h1 {
     text-align: center;
+    margin: 20px 0;
+    font-size: 2rem;
+    color: #333; /* Dark grey */
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Container */
+.store-container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background: #fff; /* White background */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    padding: 20px;
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+}
+
+.sidebar h4 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
     color: #333;
+    border-bottom: 2px solid #666; /* Grey underline */
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+.filter-form input[type="text"] {
+    width: 90%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+    background-color: #f9f9f9; /* Light grey */
+    color: #333;
+}
+
+.filter-form input[type="radio"] {
+    margin-right: 10px;
+}
+
+.filter-form .search-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff; /* Medium grey */
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.filter-form .search-btn:hover {
+    background-color: #333; /* Dark grey */
+}
+
+.view-btn{
+    margin-bottom: 10px;
 }
 
 /* Product Grid */
@@ -16,193 +88,155 @@ h1 {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
-    justify-content: center;
-    margin-top: 20px;
+    flex: 1;
 }
 
 /* Product Card */
 .product-card {
-    background-color: #fff;
+    background: #fff; /* White */
     border-radius: 10px;
-    overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease-in-out;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    max-height: 80vh; /* Restrict height */
+    overflow: hidden;
 }
 
 .product-card:hover {
-    transform: translateY(-10px);
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Product Image */
 .product-image {
     width: 100%;
     height: 200px;
     object-fit: cover;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #ddd; /* Light grey border */
 }
 
-/* Product Info */
 .product-info {
     padding: 15px;
+    text-align: center;
 }
 
 .product-name {
-    font-size: 18px;
+    font-size: 1.1rem;
     font-weight: bold;
     margin: 0;
-    color: #333;
+    color: #333; /* Dark grey */
 }
 
 .product-description {
-    font-size: 14px;
-    color: #777;
+    font-size: 0.9rem;
+    color: #555; /* Medium grey */
     margin: 10px 0;
 }
 
 .product-price {
-    font-size: 16px;
-    color: #666;
+    font-size: 1.2rem;
+    color: #444; /* Dark grey */
     font-weight: bold;
+    margin: 10px 0;
 }
 
 .product-category,
-.product-brand {
-    font-size: 12px;
-    color: #666;
-    margin-top: 5px;
-}
-
+.product-brand,
 .product-stock {
-    font-size: 14px;
-    color: #444;
-    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #666; /* Grey */
+    margin: 5px 0;
 }
 
 /* Buttons */
-button {
-    background-color: #666;
+button, .add-to-cart-btn {
+    background-color: #007bff; /* Grey */
     color: white;
     border: none;
     padding: 10px;
-    width: 100%;
-    cursor: pointer;
     border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
     margin-top: 10px;
-    font-size: 14px;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
 }
 
-button:hover {
-    background-color: #666;
+button:hover, .add-to-cart-btn:hover {
+    background-color: #007bff; /* Dark grey */
+}
+
+/* Quantity Wrapper */
+.quantity-wrapper {
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.quantity-input {
+    width: 60px;
+    text-align: center;
+    padding: 8px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ddd; /* Light grey border */
+    background-color: #f9f9f9; /* Light grey */
+    color: #333;
+    display: inline-block; /* Ensure it respects text alignment */
+    margin: 0 auto; /* Additional centering if needed */
+}
+
+.quantity-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    background: #e0e0e0; /* Light grey */
+    border: 1px solid #ddd; /* Light grey */
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.quantity-btn:hover {
+    background: #007bff; /* Grey */
+    color: white;
 }
 
 /* Responsive Styles */
 @media (max-width: 768px) {
+    .store-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
     .product-grid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
 }
 
 @media (max-width: 480px) {
-    .product-card {
-        margin: 0 10px;
-    }
-
     .product-info {
         padding: 10px;
     }
 
-    .product-name {
-        font-size: 16px;
-    }
-
-    .product-price {
-        font-size: 14px;
-    }
-}
-
-/* Wrapper for the quantity input and buttons */
-.quantity-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;  /* Add space between input and buttons */
-}
-
-/* Style for the input field */
-.quantity-input {
-    width: 60px;  /* Slightly larger input for better usability */
-    text-align: center;
-    padding: 8px 12px;
-    font-size: 18px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    background-color: #fff;
-    transition: border-color 0.3s ease;
-}
-
-/* Input field focus effect */
-.quantity-input:focus {
-    outline: none;
-    border-color: #007BFF; /* Blue border when focused */
-}
-
-/* Style for the minus and plus buttons */
-.quantity-btn {
-    width: 36px;  /* Slightly larger button */
-    height: 36px;
-    font-size: 20px;
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    border-radius: 50%;  /* Circular buttons */
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-/* Hover effect for the buttons */
-.quantity-btn:hover {
-    background-color: #007BFF;
-    color: #fff;  /* Button turns blue and text white */
-    transform: scale(1.1);  /* Slightly enlarge button */
-}
-
-/* Active state for buttons (when clicked) */
-.quantity-btn:active {
-    transform: scale(0.95);  /* Shrink button when clicked */
-}
-
-/* Remove button border and styling for the number input field */
-.quantity-input::-webkit-outer-spin-button,
-.quantity-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-.quantity-input[type="number"] {
-    -moz-appearance: textfield;
-}
-
-/* Prevent input field from overflowing */
-.quantity-input {
-    max-width: 60px;
-}
-
-/* Mobile-friendly adjustments */
-@media (max-width: 600px) {
-    .quantity-wrapper {
-        gap: 4px;  /* Reduce space between input and buttons */
-    }
     .quantity-input {
         width: 50px;
     }
+
     .quantity-btn {
-        width: 32px;
-        height: 32px;
-        font-size: 18px;
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
     }
 }
+

@@ -11,7 +11,7 @@ if (isset($_GET['gadget_id'])) {
     exit();
 }
 
-auth_member();
+// auth_member();
 
 $conn = new mysqli("localhost", "root", "", "gadgetwebdb");
 
@@ -42,43 +42,60 @@ if ($result->num_rows === 0) {
     header("Location: gadget.php");
     exit();
 }
+$gallery = $_db->prepare('SELECT * FROM gallery WHERE gadget_id = ?');
+$gallery->execute([$gadget_id]);
+$s2 = $gallery->fetchAll(PDO::FETCH_ASSOC);
 
 $gadget = $result->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details - <?= $gadget['gadget_name'] ?></title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/css/gadget_details.css">
 </head>
-
 <body>
-    <div class="product-details">
+    <div class="product-details-container">
+        <!-- Left: Gallery -->
+        <div class="gallery-photos-container">
+            <button type="button" class="prev-btn">&#10094;</button>
+            <div class="gallery-photos">
+                <?php foreach ($s2 as $index => $photo) { ?>
+                    <img src="../images/<?= htmlspecialchars($photo['photo_path']) ?>"
+                         alt="Gadget Photo"
+                         class="gadget-photo <?= $index === 0 ? 'active' : 'hidden' ?>"
+                         data-index="<?= $index ?>">
+                <?php } ?>
+            </div>
+            <button type="button" class="next-btn">&#10095;</button>
+        </div>
+
+        <!-- Right: Product Details -->
         <div class="product-info">
-            
-            <img src="/images/<?= $gadget['photo_path'] ?>" alt="<?= $gadget['gadget_name'] ?>" class="product-image">
             <h2 class="product-name"><?= $gadget['gadget_name'] ?></h2>
-            <p class="product-description"><?= $gadget['gadget_description'] ?></p>
+            <p class="product-description"><strong>Description: </strong><?= $gadget['gadget_description'] ?></p>
             <p class="product-price">RM <?= number_format($gadget['gadget_price'], 2) ?></p>
-            <p class="product-category">Category: <?= $gadget['category_name'] ?></p>
-            <p class="product-brand">Brand: <?= $gadget['brand_name'] ?></p>
+            <p class="product-category"><strong>Category:</strong> <?= $gadget['category_name'] ?></p>
+            <p class="product-brand"><strong>Brand:</strong> <?= $gadget['brand_name'] ?></p>
             <p class="product-stock"><?= $gadget['gadget_stock'] ?> in stock</p>
 
-            <form action="gadget.php" method="POST">
+            <form action="gadget.php" method="POST" class="add-to-cart-form">
                 <input type="hidden" name="gadget_id" value="<?= $gadget['gadget_id'] ?>">
-                <input type="number" name="quantity" value="1" min="1" max="<?= $gadget['gadget_stock'] ?>" required>
+                <div class="quantity-wrapper">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="<?= $gadget['gadget_stock'] ?>" required>
+                </div>
                 <button type="submit" name="add_to_cart" class="add-to-cart-btn">Add to Cart</button>
             </form>
+            <a href="gadget.php" class="back-to-products">Back to Products</a>
         </div>
     </div>
-    <a href="gadget.php" class="back-to-products">Back to Products</a>
 </body>
-
 </html>
+
 
 <?php
 $conn->close();

@@ -104,6 +104,32 @@ $(() => {
         });
     });
 
+const selectAllCheckbox = document.getElementById("select-all");
+const itemCheckboxes = document.querySelectorAll(".item-select");
+
+// Function to update "Select All" checkbox status
+const updateSelectAllStatus = () => {
+    const allChecked = [...itemCheckboxes].every(checkbox => checkbox.checked);
+    const someChecked = [...itemCheckboxes].some(checkbox => checkbox.checked);
+
+    selectAllCheckbox.checked = allChecked;
+    selectAllCheckbox.indeterminate = !allChecked && someChecked;
+};
+
+// Event listener for "Select All" checkbox
+selectAllCheckbox.addEventListener("change", () => {
+    const isChecked = selectAllCheckbox.checked;
+    itemCheckboxes.forEach(checkbox => {
+        checkbox.checked = isChecked;
+    });
+    updateTotalPrice();
+});
+
+
+
+// Initialize "Select All" checkbox status on page load
+updateSelectAllStatus();
+
     document.querySelector("form").addEventListener("submit", (e) => {
         const checkedItems = document.querySelectorAll(".item-select:checked");
         
@@ -157,13 +183,15 @@ $(document).on('click', '.cancel-order', function() {
         $.post('update_order_status.php', { order_id: orderId, status: 'CANCELLED' }, function(response) {
             if (response.status === 'success') {
                 $('#status-' + orderId).text('CANCELLED');
+                $(`button[data-order-id="${orderId}"]`).remove(); // Remove the Cancel button
                 alert(response.message); // Display the return payment message
             } else {
                 alert(response.message || 'Failed to cancel the order.');
             }
-        }, 'json');
+        }, 'json'); 
     }
 });
+
 
 
 $(document).on('click', '.mark-received', function() {
@@ -177,3 +205,4 @@ $(document).on('click', '.mark-received', function() {
         }
     }, 'json');
 });
+
