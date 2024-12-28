@@ -94,8 +94,8 @@ if (is_post()) {
             $member_profile_pic = save_photo($photo, '../photos');
         }
 
-        $stm = $_db->prepare('UPDATE member SET member_name = ?, member_phone_no = ?, member_gender = ?, member_email = ?, shipping_address = ?, member_profile_pic = ? WHERE member_id = ?');
-        $stm->execute([$member_name, $member_phone_no, $member_gender, $member_email, $shipping_address, $member_profile_pic, $member_id]);
+        $stm = $_db->prepare('UPDATE member SET member_name = ?, member_phone_no = ?, member_gender = ?, member_email = ?, member_profile_pic = ? WHERE member_id = ?');
+        $stm->execute([$member_name, $member_phone_no, $member_gender, $member_email, $member_profile_pic, $member_id]);
 
         // Refresh session data with updated member information
         $stm = $_db->prepare('SELECT * FROM member WHERE member_id = ?');
@@ -139,10 +139,6 @@ include '../_head.php';
     <label for="member_email">Email</label>
     <?= html_text('member_email', 'maxlength="100"') ?>
     <?= err('member_email') ?>
-
-    <label for="shipping_address">Shipping Address</label>
-    <?= html_text('shipping_address', 'width=500px') ?>
-    <?= err('shipping_address') ?>
 
     <label for="member_profile_pic">Profile Picture</label>
     <div class="drop-zone upload" tabindex="0">

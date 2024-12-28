@@ -81,9 +81,6 @@ if (is_post()) {
             $_err['admin_profile_pic'] = 'Maximum 8MB';
         }
     }
-    // else {
-    //     $_err['admin_profile_pic'] = 'Required';
-    // }
 
     if (count($_err) == 0) {
         $admin_id = sprintf('A%02d', $no_of_admin + 1);
@@ -104,10 +101,10 @@ if (is_post()) {
 
 // ----------------------------------------------------------------------------
 $_title = 'Admin | Create New Admin';
-include '../_head.php';
+include '../admin/_admin_head.php';
 ?>
 
-<form method="post" class="form" enctype="multipart/form-data">
+<form method="post" class="profile" enctype="multipart/form-data">
     <label for="admin_name">Name</label>
     <?= html_text('admin_name', 'maxlength="100"') ?>
     <?= err('admin_name') ?>

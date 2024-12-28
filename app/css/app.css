@@ -392,3 +392,152 @@ td:hover {
     background-color: #f0f8ff;
     transition: background-color 0.3s ease;
 }
+
+/* JJ */
+.status-active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-disabled {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status-deleted {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-inactive {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+button.disabled {
+    cursor: not-allowed;
+    background-color: #696969;
+}
+
+nav.pager {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+nav.pager a {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 0 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+nav.pager a:hover {
+    background-color: #e9e9e9;
+    color: #000;
+}
+
+nav.pager a.active {
+    background-color: #333;
+    color: #fff;
+    border-color: #333;
+}
+
+.profile {
+    display: grid;
+    grid: auto / auto auto auto;
+    gap: 5px;
+    place-content: start;
+    place-items: center start;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.profile>label:not(:has(*)) {
+    place-self: stretch;
+    background: #ccc;
+    font-weight: bold;
+    padding: 5px;
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.profile>section {
+    grid-column: 1 / -1;
+}
+
+.profile input[type="text"],
+.profile input[type="email"],
+.profile input[type="password"],
+.profile input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.profile button[type="submit"] {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.profile button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+.profile button[type="reset"] {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.profile button[type="reset"]:hover {
+    background-color: #c82333;
+}
+
+/* Photo Upload ------------------------------------------------------------ */
+
+label.upload img {
+    display: block;
+    border: 1px solid #333;
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.upload {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.upload input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.upload.dragover {
+    border-color: #000;
+}
+
+.preview {
+    max-width: 100px;
+    margin-top: 10px;
+}

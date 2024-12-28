@@ -12,6 +12,7 @@
     <script src="/js/multiple_photo.js"></script>
     <script src="/js/view_gadget.js"></script>
     <script src="/js/chart.js"></script>
+    <script src="/js/admin.js"></script>
     <link rel="stylesheet" href="/css/app.css">
 </head>
 

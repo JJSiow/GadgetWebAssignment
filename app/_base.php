@@ -550,9 +550,7 @@ $_member_attr = [
     'member_phone_no' => 'Phone No',
     'member_gender' => 'Gender',
     'member_email' => 'Email',
-    'shipping_address' => 'Shipping Address',
-    'member_status' => 'Status',
-    'member_profile_pic' => 'Profile Pic',
+    'member_status' => 'Status'
 ];
 
 $_admin_attr = [
@@ -560,7 +558,6 @@ $_admin_attr = [
     'admin_name' => 'Name',
     'admin_phone_no' => 'Phone No',
     'admin_email' => 'Email',
-    'admin_profile_pic' => 'Profile Pic',
     'admin_status' => 'Status',
 ];
 

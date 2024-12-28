@@ -87,10 +87,10 @@ if (is_post()) {
 }
 
 $_title = 'Admin | Edit Admin Profile';
-include '../_head.php';
+include '../admin/_admin_head.php';
 ?>
 
-<form method="post" class="form" enctype="multipart/form-data">
+<form method="post" class="profile" enctype="multipart/form-data">
     <label for="admin_id">Admin ID</label>
     <b><?= $admin_id ?></b>
     <?= err('admin_id') ?>

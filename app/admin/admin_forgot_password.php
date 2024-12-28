@@ -61,8 +61,8 @@ if (is_post()) {
         ";
         $m->send();
 
-        temp('info', $u->admin_id, $id,'Email sent');
-        redirect('/');
+        temp('info', 'Email sent');
+        redirect('admin_login.php');
     }
 }
 
@@ -82,6 +82,3 @@ if (is_post()) {
     <a href="../admin/admin_login.php">Back to Login</a>
 </form>
 </div>
-
-<?php
-include '../_foot.php';

@@ -19,34 +19,12 @@ if (is_post()) {
     }
 }
 
-// if (is_post()) {
-//     $photo = get_file('member_profile_pic');
-//     $member_profile_pic = $_SESSION['member_profile_pic'];
-
-//     if (count($_err) == 0) {
-//         if ($photo) {
-//             unlink("../photos/$member_profile_pic");
-//             $member_profile_pic = save_photo($photo, '../photos');
-//         }
-
-//         $stm = $_db->prepare('UPDATE member SET member_profile_pic = ? WHERE member_id = ?');
-//         $stm->execute([$member_profile_pic, $member_id]);
-
-//         temp('info', 'Member profile picture updated.');
-//         redirect('member_list.php');
-//     }
-//     else {
-//         temp('info', 'Please check the error(s).');
-//     }
-
-// }
-
 // ----------------------------------------------------------------------------
 $_title = 'Admin | Edit Member Profile Picture';
-include '../_head.php';
+include '../admin/_admin_head.php';
 ?>
 
-<form method="post" class="form" enctype="multipart/form-data" action="update_member_profile_pic.php">
+<form method="post" class="profile" enctype="multipart/form-data" action="update_member_profile_pic.php">
     <label for="member_id">Member ID</label>
     <b><?= $member_id ?></b>
     <input type="hidden" name="member_id" value="<?= $member_id ?>">
@@ -67,10 +45,6 @@ include '../_head.php';
     <label for="member_email">Email</label>
     <?= html_text('member_email', 'maxlength="100" disabled') ?>
     <?= err('member_email') ?>
-
-    <label for="shipping_address">Shipping Address</label>
-    <?= html_text('shipping_address', 'width=500px disabled') ?>
-    <?= err('shipping_address') ?>
 
     <label for="member_profile_pic">Profile Picture</label>
     <div class="drop-zone upload" tabindex="0">

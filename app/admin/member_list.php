@@ -39,7 +39,7 @@ $query_string = http_build_query($query_params);
 
 // ----------------------------------------------------------------------------
 $_title = 'Member | List of Members';
-include '../_head.php';
+include '../admin/_admin_head.php';
 ?>
 
 <form method="get" action="member_list.php">
@@ -48,7 +48,7 @@ include '../_head.php';
     <button type="submit">Search</button>
     <button type="button" onclick="window.location.href='member_list.php'">Reset</button>
 </form>
-
+<br>
 <p>
     <?= $p->count ?> of <?= $p->item_count ?> record(s) |
     Page <?= $p->page ?> of <?= $p->page_count ?>
@@ -57,39 +57,33 @@ include '../_head.php';
 <table class="table">
     <tr>
         <?php table_headers($_member_attr, $sort, $dir, "$query_string&page=$page") ?>
+        <th>Profile Pic</th>
     </tr>
 
     <?php foreach ($arr as $s): ?>
     <tr>
-        <?php if ($s->member_status != 'Deleted') : ?>
-            <td><?= $s->member_id ?></td>
-            <td><?= $s->member_name ?></td>
-            <td><?= $s->member_phone_no ?></td>
-            <td><?= $s->member_gender ?></td>
-            <td><?= $s->member_email ?></td>
-            <td><?= $s->shipping_address ?></td>
-            <td><?= $s->member_status ?></td>
-            <td><img src="../photos/<?= $s->member_profile_pic ?>"  width="100"></td>
-            <!-- <td><button data-post="edit_member_profile_pic.php?member_id=<?= $s->member_id ?>">Edit Profle Pic</button></td> -->
-            <td>
+        <?php if ($s->member_status == 'Active' || $s->member_status == 'Disabled') : ?>
+            <?php foreach ($_member_attr as $field => $label) : ?>
+                <td class="status-<?= strtolower($s->member_status) ?>"><?= $s->$field ?></td>
+            <?php endforeach ?>
+            <td class="status-<?= strtolower($s->member_status) ?>"><img src="../photos/<?= $s->member_profile_pic ?>"  width="100"></td>
+            <td class="status-<?= strtolower($s->member_status) ?>">
+                <button data-post="update_member_status.php?member_id=<?= $s->member_id ?>&search_by=<?= $search_by ?>&search_value=<?=$search_value ?>&page=<?= $page ?>" data-confirm="Are you sure you want to change the status of this member?">Change Status</button>
+            </td>
+            <td class="status-<?= strtolower($s->member_status) ?>">
                 <form method="post" action="edit_member_profile_pic.php">
                     <input type="hidden" name="member_id" value="<?= $s->member_id ?>">
                     <button type="submit">Edit Profle Pic</button>
                 </form>
             </td>
-            <td><button data-post="update_member_status.php?member_id=<?= $s->member_id ?>&search_by=<?= $search_by ?>&search_value=<?=$search_value ?>&page=<?= $page ?>" data-confirm="Are you sure you want to change the status of this member?">Change Status</button></td>
 
         <?php else : ?>
-            <td><s><?= $s->member_id ?></s></td>
-            <td><s><?= $s->member_name ?></s></td>
-            <td><s><?= $s->member_phone_no ?></s></td>
-            <td><s><?= $s->member_gender ?></s></td>
-            <td><s><?= $s->member_email ?></s></td>
-            <td><s><?= $s->shipping_address ?></s></td>
-            <td><s><?= $s->member_status ?></s></td>
-            <td><s><img src="../photos/<?= $s->member_profile_pic ?>"  width="100"></s></td>
-            <td><button disabled>Edit Profle Pic</button></td>
-            <td><button disabled>Change Status</button></td>
+            <?php foreach ($_member_attr as $field => $label) : ?>
+                <td class="status-<?= strtolower($s->member_status) ?>"><?= $s->$field ?></td>
+            <?php endforeach ?>
+            <td class="status-<?= strtolower($s->member_status) ?>"><img src="../photos/<?= $s->member_profile_pic ?>"  width="100"></td>
+            <td class="status-<?= strtolower($s->member_status) ?>"><button disabled class="disabled">Change Status</button></td>
+            <td class="status-<?= strtolower($s->member_status) ?>"><button disabled class="disabled">Edit Profle Pic</button></td>
         <?php endif ?>
     </tr>
     <?php endforeach ?>
