@@ -7,12 +7,14 @@
     <title><?= $_title ?? 'Untitled' ?></title>
     <link rel="shortcut icon" href="/images/favicon.png">
     <link rel="stylesheet" href="/css/adminNav.css">
+    <link rel="stylesheet" href="/css/adminHome.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="/js/app.js"></script>
     <script src="/js/multiple_photo.js"></script>
     <script src="/js/view_gadget.js"></script>
+    <script src="/js/checkbox.js"></script>
     <script src="/js/chart.js"></script>
-    <link rel="stylesheet" href="/css/app.css">
+    <!-- <link rel="stylesheet" href="/css/app.css"> -->
 </head>
 
 <body>

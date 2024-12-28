@@ -1,40 +1,146 @@
 $(() => {
-    document.querySelectorAll('.bar').forEach(bar => {
-        bar.addEventListener('mouseenter', function () {
-            const info = this.getAttribute('data-info');
-            const tooltip = document.createElement('div');
-            tooltip.className = 'tooltip';
-            tooltip.textContent = info;
-            tooltip.style.position = 'absolute';
-            tooltip.style.background = '#333';
-            tooltip.style.color = '#fff';
-            tooltip.style.padding = '5px';
-            tooltip.style.borderRadius = '5px';
-            tooltip.style.top = `${this.offsetTop + 310}px`;
-            tooltip.style.left = `${this.offsetLeft + 180}px`;
-            document.body.appendChild(tooltip);
+    if (typeof CanvasJS === "undefined") {
+        console.error("CanvasJS is not loaded.");
+        return;
+    }
 
-            bar.addEventListener('mouseleave', () => {
-                document.body.removeChild(tooltip);
-            });
-        });
+    $.ajax({
+        url: 'fetch_chart_data.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function (dataPoints) {
+            var options = {
+                animationEnabled: true,
+                title: {
+                    text: "Top 5 Best-Selling Gadgets"
+                },
+                axisY: {
+                    title: "Percentage of Total Sales",
+                    suffix: "%"
+                },
+                axisX: {
+                    title: "Gadgets"
+                },
+                data: [{
+                    type: "column",
+                    yValueFormatString: "#,##0.00#",
+                    toolTipContent: "<b>{label}</b><br>Percentage: {y}%<br>Quantity Sold: {quantitySold}",
+                    dataPoints: dataPoints
+                }]
+            };
+            $("#barChartContainer").CanvasJSChart(options);
+        },
+        error: function (xhr, status, error) {
+            console.error("Error fetching data:", error);
+        }
     });
 
     // Pie Chart Labels
-    const pieChart = document.getElementById('pie-chart');
-    const labels = [
-        { percentage: '20%', label: 'Electronics', color: '#4CAF50', x: '35%', y: '10%' },
-        { percentage: '30%', label: 'Clothing', color: '#FF9800', x: '80%', y: '50%' },
-        { percentage: '20%', label: 'Groceries', color: '#2196F3', x: '35%', y: '85%' },
-        { percentage: '30%', label: 'Tv', color: '#2196F3', x: '35%', y: '85%' },
-    ];
-    labels.forEach(label => {
-        const span = document.createElement('span');
-        span.textContent = `${label.label} (${label.percentage})`;
-        span.style.position = 'absolute';
-        span.style.color = label.color;
-        span.style.left = label.x;
-        span.style.top = label.y;
-        pieChart.appendChild(span);
+    $.ajax({
+        url: 'fetch_customer_data.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            var totalCustomers = data.summary.new_customers + data.summary.returning_customers;
+
+            var visitorsData = {
+                "New vs Returning Customers": [{
+                    click: visitorsChartDrilldownHandler,
+                    cursor: "pointer",
+                    explodeOnClick: false,
+                    innerRadius: "75%",
+                    legendMarkerType: "square",
+                    name: "New vs Returning Customers",
+                    radius: "100%",
+                    showInLegend: true,
+                    startAngle: 90,
+                    type: "doughnut",
+                    dataPoints: [
+                        { y: data.summary.new_customers, name: "New Customers", color: "#E7823A" },
+                        { y: data.summary.returning_customers, name: "Returning Customers", color: "#546BC1" }
+                    ]
+                }],
+                "New Customers": [{
+                    color: "#E7823A",
+                    name: "New Customers",
+                    type: "column",
+                    xValueFormatString: "MMM YYYY",
+                    dataPoints: data.new_customers.map(function (item) {
+                        return { x: new Date(item.month), y: item.new_customers };
+                    })
+                }],
+                "Returning Customers": [{
+                    color: "#546BC1",
+                    name: "Returning Customers",
+                    type: "column",
+                    xValueFormatString: "MMM YYYY",
+                    dataPoints: data.returning_customers.map(function (item) {
+                        return { x: new Date(item.month), y: item.returning_customers };
+                    })
+                }]
+            };
+
+            var newVSReturningVisitorsOptions = {
+                animationEnabled: true,
+                theme: "light2",
+                title: {
+                    text: "New VS Returning Customers"
+                },
+                subtitles: [{
+                    text: "Click on Any Segment to Drilldown",
+                    backgroundColor: "#2eacd1",
+                    fontSize: 16,
+                    fontColor: "white",
+                    padding: 5
+                }],
+                legend: {
+                    fontFamily: "calibri",
+                    fontSize: 14,
+                    itemTextFormatter: function (e) {
+                        return e.dataPoint.name + ": " + Math.round(e.dataPoint.y / totalCustomers * 100) + "%";
+                    }
+                },
+                data: visitorsData["New vs Returning Customers"]
+            };
+
+            var visitorsDrilldownedChartOptions = {
+                animationEnabled: true,
+                theme: "light2",
+                axisX: {
+                    labelFontColor: "#717171",
+                    lineColor: "#a2a2a2",
+                    tickColor: "#a2a2a2"
+                },
+                axisY: {
+                    gridThickness: 0,
+                    includeZero: false,
+                    labelFontColor: "#717171",
+                    lineColor: "#a2a2a2",
+                    tickColor: "#a2a2a2",
+                    lineThickness: 1
+                },
+                data: []
+            };
+
+            $("#doughnutChartContainer").CanvasJSChart(newVSReturningVisitorsOptions);
+
+            function visitorsChartDrilldownHandler(e) {
+                e.chart.options = visitorsDrilldownedChartOptions;
+                e.chart.options.data = visitorsData[e.dataPoint.name];
+                e.chart.options.title = { text: e.dataPoint.name }
+                e.chart.render();
+                $("#backButton").toggleClass("invisible");
+            }
+
+            $("#backButton").click(function () {
+                $(this).toggleClass("invisible");
+                newVSReturningVisitorsOptions.data = visitorsData["New vs Returning Customers"];
+                $("#doughnutChartContainer").CanvasJSChart(newVSReturningVisitorsOptions);
+            });
+        },
+        error: function (err) {
+            console.error("Error fetching data:", err);
+        }
     });
 });
+

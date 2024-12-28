@@ -9,7 +9,7 @@ $fields = [
     'gadget_name_price' => 'Gadget Purchased',
     'quantity' => 'Qty',
     'total_order_price' => 'Subtotal',
-    'action' => 'Action',
+    'action' => 'Status',
 ];
 
 // Initialize search parameters from session or defaults
@@ -72,7 +72,7 @@ $_SESSION['order_search_params'] = $searchParams;
 
 function buildOrderQuery($searchParams)
 {
-    $conditions = ["o.order_status = 'pending'"];
+    $conditions = ["o.order_status = 'cancelled'"];
     $params = [];
 
     // Use subquery to get correct count
@@ -150,25 +150,6 @@ $p = new SimplePager2(
 
 $orders = $p->result;
 
-if (is_post() && isset($_POST['checkboxName'])) {
-    $orderIds = explode(',', req('checkboxName', ''));
-
-    if (!empty($orderIds)) {
-        $placeholders = implode(',', array_fill(0, count($orderIds), '?'));
-        $stm = $_db->prepare("UPDATE `order` SET order_status = 'delivered' WHERE order_id IN ($placeholders)");
-
-        if ($stm->execute($orderIds)) {
-            temp('info', "Orders updated successfully.");
-            header('Location: ' . $_SERVER['PHP_SELF']);
-            exit;
-        } else {
-            temp('error', "Failed to update orders.");
-        }
-    } else {
-        temp('error', "No orders selected for update.");
-    }
-}
-
 // Process the results
 $processedOrders = [];
 foreach ($orders as $order) {
@@ -201,19 +182,13 @@ include '../admin/_admin_head.php';
 <div class="container">
     <div class="order_header">
         <h1 class="title">Order Management</h1>
-
-        <form id="mark-all-form" method="post">
-            <button id="submit-mark-all" class="btn btn-primary" style="display: none;">
-                Mark All Delivered
-            </button>
-        </form>
     </div>
 
     <div class="status-buttons">
-        <button data-get="admin_order.php" class="active">Pending</button>
+        <button data-get="admin_order.php">Pending</button>
         <button data-get="admin_delivered.php">Delivered</button>
         <button data-get="admin_received.php">Received</button>
-        <button data-get="admin_cancelled.php">Cancelled</button>
+        <button data-get="admin_cancelled.php" class="active">Cancelled</button>
 
         <p class="page-info">
             <?= $p->count ?> of <?= $p->item_count ?> record(s) |
@@ -225,14 +200,12 @@ include '../admin/_admin_head.php';
         <table class="table">
             <thead>
                 <tr>
-                    <th class="checkbox-column"></th>
                     <?= table_headers2($fields, $searchParams['sort'], $searchParams['dir'], "page={$searchParams['page']}") ?>
                 </tr>
             </thead>
             <tbody>
                 <tr class="search-row">
                     <form method="post">
-                        <td><label class="checkbox-wrapper"><input type="checkbox" id="check-all"><span>All</span></label></td>
                         <td><?= html_search2('soid', $searchParams['soid']) ?></td>
                         <td><?= html_search2('smid', $searchParams['smid']) ?></td>
                         <td><?= html_search2('sgadget', $searchParams['sgadget']) ?></td>
@@ -255,7 +228,7 @@ include '../admin/_admin_head.php';
 
                 <?php if (empty($processedOrders)): ?>
                     <tr>
-                        <td colspan="7" class="no-records">No pending orders found...</td>
+                        <td colspan="7" class="no-records">No cancelled orders found...</td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($processedOrders as $order): ?>
@@ -264,11 +237,6 @@ include '../admin/_admin_head.php';
                         $firstGadget = $order['gadget_details'][0];
                         ?>
                         <tr class="order-row">
-                            <td rowspan="<?= $gadgetCount ?>" class="checkbox-column">
-                                <label class="checkbox-wrapper">
-                                    <input type="checkbox" name="id[]" value="<?= htmlspecialchars($order['order_id']) ?>" class="checkbox">
-                                </label>
-                            </td>
                             <td rowspan="<?= $gadgetCount ?>" class="order-id"><?= htmlspecialchars($order['order_id']) ?></td>
                             <td rowspan="<?= $gadgetCount ?>" class="member-id"><?= htmlspecialchars($order['member_id']) ?></td>
                             <td class="gadget-details">
@@ -278,12 +246,7 @@ include '../admin/_admin_head.php';
                             <td class="quantity"><?= htmlspecialchars($firstGadget['item_quantity']) ?></td>
                             <td rowspan="<?= $gadgetCount ?>" class="total-price">RM <?= number_format($order['total_order_price'], 2) ?></td>
                             <td rowspan="<?= $gadgetCount ?>" class="action-column">
-                                <form method="POST" class="action-form">
-                                    <input type="hidden" name="checkboxName" value="<?= htmlspecialchars($order['order_id']) ?>">
-                                    <button type="submit" class="btn btn-deliver" data-confirm="Are you sure this order is delivered?">
-                                        Mark as Delivered
-                                    </button>
-                                </form>
+                                <span class="status-badge status-<?= htmlspecialchars($order['order_status']) ?>"><?= htmlspecialchars($order['order_status']) ?></span>
                             </td>
                         </tr>
                         <?php foreach (array_slice($order['gadget_details'], 1) as $gadget): ?>

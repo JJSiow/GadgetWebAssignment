@@ -1,19 +1,60 @@
 // ============================================================================
 // General Functions
 $(() => {
-    // When the close element is clicked, hide the modal
-    $('.close').on("click", function () {
-        $(".form-container").fadeOut().css("display", "none");
-        window.location.href = "admin_products.php";
-    });
+    // $('#openModal').on('click', function () {
+    //     // Store current scroll position
+    //     const scrollPosition = window.scrollY;
 
-    // When the user clicks outside the modal, hide it
-    $(window).on("click", function (event) {
-        if ($(event.target).is($(".form-container"))) {
-            $(".form-container").fadeOut().css("display", "none");
+    //     $('.form-container').fadeIn();
+    //     $('body').addClass('modal-open');
+
+    //     // Add these styles to body when modal opens
+    //     $('body').css({
+    //         'top': -scrollPosition + 'px',
+    //         'position': 'fixed',
+    //         'width': '100%',
+    //         'overflow': 'hidden'
+    //     });
+    // });
+
+    // When closing the modal
+    $('.close, .form-container').on('click', function (e) {
+        // if ($(e.target).is('.close') || $(e.target).is('.form-container')) {
+        //     const scrollPosition = Math.abs(parseInt($('body').css('top')));
+
+        //     $('.form-container').fadeOut();
+        //     $('body').removeClass('modal-open');
+
+        //     // Reset body styles and scroll position
+        //     $('body').css({
+        //         'position': '',
+        //         'width': '',
+        //         'top': '',
+        //         'overflow': ''
+        //     });
+
+        //     // Restore scroll position
+        //     window.scrollTo(0, scrollPosition);
+        //     $("#modal").addClass("hidden");
+        //     $("body").removeClass('stopScroll');
+
+        // Handle cleanup and redirect
+        if ($(e.target).is('.close') || $(e.target).is('.form-container')) {
             window.location.href = "admin_products.php";
+            $.ajax({
+                url: '../admin/add_gadget.php',
+                type: 'POST',
+                data: { action: 'clear_photos' },
+                success: function (response) {
+                    console.log('Session cleared and files deleted successfully.');
+                },
+                error: function () {
+                    console.error('Error occurred while clearing the session and deleting files.');
+                }
+            });
         }
     });
+    // });
 
     // Photo preview
     $('label.upload').find('input[type=file]').on('change', e => {
@@ -42,8 +83,8 @@ $(() => {
         $('#gcategory').val('');
         $('#gbrand').val('');
         $('#gdescribe').val('');
-        $('#gprice').val('0.00');
-        $('#gstock').val('0');
+        $('#gprice').val('');
+        $('#gstock').val('');
 
         $('#input_file').val('');
 
@@ -206,17 +247,17 @@ $(() => {
         });
     });
 
-    // $('.add-stock-btn').on('click', function (e) {
-    //     window.location.href = '../admin/_admin_head.php';
-    //     localStorage.setItem('scrollToBottom', true);
-    // });
+    $('.add-stock-btn').on('click', function (e) {
+        window.location.href = '../admin/_admin_head.php';
+        localStorage.setItem('scrollToBottom', true);
+    });
 
-    // $(document).ready(function () {
-    //     if (localStorage.getItem('scrollToBottom')) {
-    //         $('html, body').animate({ scrollTop: $(document).height() }, 'slow');
-    //         localStorage.removeItem('scrollToBottom');
-    //     }
-    // });
+    $(document).ready(function () {
+        if (localStorage.getItem('scrollToBottom')) {
+            $('html, body').animate({ scrollTop: $(document).height() }, 'slow');
+            localStorage.removeItem('scrollToBottom');
+        }
+    });
 
     function initializeSlideshows() {
         $('.slideshow-container').each(function () {

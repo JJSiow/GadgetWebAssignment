@@ -13,6 +13,8 @@ if (is_post()) {
         $_err['ctg_name'] = 'Category Name is required';
     } elseif (strlen($ctg_name) > 15) {
         $_err['ctg_name'] = 'Maximum length for category name is 15 characters';
+    } elseif (is_numeric($ctg_name)) { 
+        $_err['ctg_name'] = 'Category Name cannot be a number';
     } elseif ($count > 0) {
         $_err['ctg_name'] = 'Category with this name already exists';
     }

@@ -1,0 +1,342 @@
+/* Modal Background */
+.gadgetInfo {
+    margin: 20px auto;
+    width: 600px;
+    height: auto;
+    max-height: calc(100vh - 40px);
+    overflow-y: scroll;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    color: #333;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Hide the scrollbar */
+.gadgetInfo::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+.gadgetInfo::-webkit-scrollbar-thumb {
+    background-color: transparent;
+}
+
+.gadgetInfo::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+/* Modal container to ensure alignment */
+.form-container {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+body[style*="position: fixed"] {
+    padding-right: 17px; /* Prevents content shift when scrollbar disappears */
+}
+
+@keyframes fadeIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Close Button */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 40px;
+    font-weight: bold;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: #333;
+}
+
+/* Image Carousel */
+.image-carousel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.carousel-btn {
+    padding: 10px 15px;
+    background: #007bff;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.carousel-btn:hover {
+    background: #0056b3;
+}
+
+.image-preview-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border: 5px solid #e0e0e0;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.control-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.control-btn {
+    padding: 8px 15px;
+    font-size: 14px;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+.add-btn {
+    background-color: #28a745;
+}
+
+.add-btn:hover {
+    background-color: #218838;
+}
+
+.image-counter {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+    z-index: 1;
+}
+
+*/ .image-preview-container:hover {
+    border-color: #007bff;
+}
+
+#defaultPreview {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: opacity 0.15s ease-in-out;
+}
+
+.carousel-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    padding: 5px 15px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.carousel-btn:hover {
+    background-color: #0056b3;
+}
+
+.error-container {
+    text-align: center;
+    margin-top: 10px;
+    /* Adds spacing between the image and error message */
+    color: #d9534f;
+    /* Red color for error messages */
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Form Fields */
+.input-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    align-items: start;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.input-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    /* Space between label, input, and error */
+}
+
+.input-field label {
+    font-weight: bold;
+    color: #333;
+}
+
+.input-field input,
+.input-field select,
+.input-field textarea {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input-field input:focus,
+.input-field select:focus,
+.input-field textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.input-field textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Description spans both columns */
+.input-field.full-width {
+    grid-column: span 2;
+}
+
+/* Centered Gadget Stock */
+.centered-field {
+    grid-column: span 2;
+    /* Takes up one full row */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center horizontally */
+    justify-content: center;
+    /* Center vertically */
+    text-align: center;
+}
+
+/* Error messages */
+span.err {
+    font-size: 12px;
+    color: #d9534f;
+    font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .input-container {
+        grid-template-columns: 1fr;
+        /* Single column for smaller screens */
+    }
+
+    .input-field.full-width {
+        grid-column: span 1;
+    }
+}
+
+/* Buttons */
+.button-container {
+    display: flex;
+    justify-content: center;
+    /* Centers the buttons horizontally */
+    gap: 15px;
+    /* Adds space between the buttons */
+    margin-top: 20px;
+    /* Adds some spacing above the button section */
+}
+
+.button-container button {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+button#resetModalBtn {
+    background-color: #ff4d4f;
+    color: white;
+}
+
+button#resetModalBtn:hover {
+    background-color: #d9363e;
+}
+
+button[type="submit"] {
+    background-color: #4caf50;
+    color: white;
+}
+
+button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .gadgetInfo {
+        width: 90%;
+    }
+
+    .image-carousel {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .carousel-btn {
+        padding: 5px;
+        font-size: 12px;
+    }
+
+    .image-preview-container {
+        width: 100px;
+        height: 100px;
+    }
+}

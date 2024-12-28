@@ -184,7 +184,7 @@ $(() => {
         $('body').append($newInput);
         $newInput.click();
     });
-
+    
     // Handle delete current photo
     $('#deletePhoto').on('click', function () {
         if (previewImages.length > 0) {
@@ -211,47 +211,70 @@ $(() => {
     $('#deletePhotos').on('click', function () {
         if (previewImages.length > 0) {
             const currentImage = previewImages[currentIndex];
-
+    
+            // Handle deletion for existing images
             if (currentImage.isExisting) {
                 imagesToDelete.push(currentImage);
-
-                previewImages.splice(currentIndex, 1);
-                if (currentImage.id === null) {
-                    imageFiles.splice(currentIndex, 1);
-                }
-
-                if (currentIndex >= previewImages.length) {
-                    currentIndex = Math.max(0, previewImages.length - 1);
-                }
-                console.log('Preview Images:', previewImages);
-                console.log('Image Files:', imageFiles);
-                console.log('Current Index:', currentIndex);
-                updateFileInput();
-                updatePreview();
-            } else {
-                previewImages.splice(currentIndex, 1);
-
-                if (!currentImage.isExisting) {
-                    let imageFileIndex = 0;
-                    for (let i = 0; i < currentIndex; i++) {
-                        if (!previewImages[i].isExisting) {
-                            imageFileIndex++;
-                        }
-                    }
-
-                    imageFiles.splice(imageFileIndex, 1);
-                }
-
-                if (currentIndex >= previewImages.length) {
-                    currentIndex = Math.max(0, previewImages.length - 1);
-                }
-
-                console.log('Preview Images:', previewImages);
-                console.log('Image Files:', imageFiles);
-                console.log('Current Index:', currentIndex);
-                updateFileInput();
-                updatePreview();
             }
+    
+            // Remove image from preview and file inputs
+            previewImages.splice(currentIndex, 1);
+    
+            if (!currentImage.isExisting) {
+                let imageFileIndex = 0;
+                for (let i = 0; i < currentIndex; i++) {
+                    if (!previewImages[i].isExisting) {
+                        imageFileIndex++;
+                    }
+                }
+                imageFiles.splice(imageFileIndex, 1);
+            }
+    
+            // Adjust the current index after deletion
+            currentIndex = Math.max(0, Math.min(currentIndex, previewImages.length - 1));
+    
+            // Debugging logs
+            console.log('Preview Images:', previewImages);
+            console.log('Image Files:', imageFiles);
+            console.log('Current Index:', currentIndex);
+    
+            // Update file input and preview
+            updateFileInput();
+            updatePreview();
+        }
+    });
+    
+    $('#addBtn').on('click', function () {
+        // Perform the delete operation for images in imagesToDelete array
+        if (imagesToDelete.length > 0) {
+            const imagesToDeleteCopy = [...imagesToDelete]; // Copy to prevent modification during iteration
+            imagesToDelete = []; // Clear immediately to avoid duplicates in future requests
+    
+            imagesToDeleteCopy.forEach(function (image) {
+                console.log('Deleting image:', image.path); // Debugging
+                $.ajax({
+                    url: '../admin/add_gadget.php', // Your PHP script to handle image deletion
+                    type: 'POST',
+                    data: {
+                        filePath: image.path // Send the image path to the server
+                    },
+                    success: function (response) {
+                        try {
+                            const result = JSON.parse(response);
+                            if (result.success) {
+                                console.log('Image deleted successfully:', image.path);
+                            } else {
+                                console.error('Failed to delete image:', result.error);
+                            }
+                        } catch (e) {
+                            console.error('Invalid JSON response:', response);
+                        }
+                    },
+                    error: function () {
+                        alert('Error connecting to server');
+                    }
+                });
+            });
         }
     });
 
@@ -261,7 +284,7 @@ $(() => {
         if (imagesToDelete.length > 0) {
             imagesToDelete.forEach(function (image) {
                 $.ajax({
-                    url: window.location.href,
+                    url: "../admin/update_gadget.php",
                     type: 'POST',
                     data: {
                         action: 'delete_image',
@@ -269,17 +292,7 @@ $(() => {
                         photo_path: image.path.split('/').pop()
                     },
                     success: function (response) {
-                        try {
-                            const result = JSON.parse(response);
-                            if (result.success) {
-                                console.log('Image deleted successfully:', image.path);
-                            } else {
-                                alert('Error deleting image: ' + result.error);
-                            }
-                        } catch (e) {
-                            console.error('Error parsing response:', e);
-                            alert('Error processing server response');
-                        }
+                        console.log('Image deleted successfully:', image.path);
                     },
                     error: function () {
                         alert('Error connecting to server');

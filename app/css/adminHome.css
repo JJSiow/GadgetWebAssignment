@@ -18,6 +18,7 @@
 }
 
 .chart-box {
+    position: relative;
     width: 100%;
     max-width: 500px;
     background-color: #fff;
@@ -28,119 +29,23 @@
     border: 1px solid #e0e0e0;
 }
 
-.chart-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-/* Chart Content Styling */
-.chart-box-content {
-    background: linear-gradient(180deg, #f9f9f9, #fff);
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Bar Chart Styling */
-.bar-chart {
-    width: 100%;
-    max-width: 450px;
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-end;
-    height: 350px;
-    border: 2px solid #ddd;
-    background: linear-gradient(180deg, #f9f9f9, #fff);
-    padding: 15px;
-    margin: 20px auto;
-    position: relative;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.bar {
-    width: 60px;
-    background-color: #4CAF50;
-    text-align: center;
+/* chart ui */
+#backButton {
+    position: absolute;
+    border-radius: 4px;
+    padding: 8px;
+    border: none;
+    font-size: 16px;
+    background-color: #2eacd1;
     color: white;
-    border-radius: 5px 5px 0 0;
-    position: relative;
-    transition: transform 0.3s, background-color 0.3s;
+    position: absolute;
+    top: 10px;
+    right: 10px;
     cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
 }
-
-.bar:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
+.invisible {
+    display: none;
 }
-
-.bar span {
-    display: block;
-    position: absolute;
-    top: -25px;
-    font-size: 14px;
-    font-weight: bold;
-    color: #333;
-    white-space: nowrap;
-}
-
-.bar-label {
-    font-weight: bold;
-    margin-top: 10px; /* Space between the bar and label */
-    font-size: 14px;
-    color: #181916;
-    position: absolute;
-    bottom: -20px; /* Position it below the bar */
-    left: 50%;
-    transform: translateX(-50%); /* Center the label horizontally */
-}
-
-/* Pie Chart Styling */
-.pie-chart {
-    width: 275px;
-    height: 275px;
-    background: conic-gradient(#4CAF50 0% 30%, #FF9800 30% 70%, #2196F3 70% 100%);
-    border-radius: 50%;
-    position: relative;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-    border: 2px solid #ddd;
-}
-
-/* Pie Chart Labels */
-.pie-chart-labels {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.legend {
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    color: #555;
-}
-
-.legend-color {
-    width: 20px;
-    height: 20px;
-    border-radius: 3px;
-    margin-right: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.electronics { background-color: #4CAF50; }
-.clothing { background-color: #FF9800; }
-.groceries { background-color: #2196F3; }
-.tv{background-color: #f3f021;}
 
 /* Dashboard Containers */
 .dashboard-container {
@@ -149,7 +54,7 @@
     gap: 20px;
     width: 90%;
     max-width: 1000px;
-    margin: 0 auto;
+    margin: 30px auto;
 }
 
 .dashboard-box {
@@ -177,7 +82,7 @@
 .dashboard-value {
     font-size: 32px;
     font-weight: bold;
-    color: #4CAF50;
+    color: #28a745;
 }
 
 /* Table Styles */
@@ -186,7 +91,7 @@
     width: 100%;
     max-width: 1000px;
     background: linear-gradient(180deg, #fff, #f9f9f9);
-    border-radius: 8px;
+    border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
     border: 1px solid #e0e0e0;
@@ -201,7 +106,7 @@
 }
 
 .table-header .show-more {
-    background-color: #4CAF50;
+    background-color: #28a745;
     color: white;
     padding: 8px 15px;
     border: none;
@@ -211,7 +116,7 @@
 }
 
 .table-header .show-more:hover {
-    background-color: #45a049;
+    background-color: #218838;
     transform: scale(1.05);
 }
 
@@ -221,6 +126,7 @@ table {
     margin-top: 20px;
     font-size: 14px;
     color: #333;
+    border-radius: 10px;
 }
 
 th, td {
@@ -230,7 +136,7 @@ th, td {
 }
 
 th {
-    background-color: #4CAF50;
+    background-color: #28a745;
     color: white;
     text-transform: uppercase;
 }
@@ -246,8 +152,6 @@ tr:nth-child(even) td {
 tr:hover td {
     background-color: #f1f1f1;
 }
-
-
 
 .out-of-stock {
     background-color: #ffcdd2;
@@ -266,7 +170,7 @@ tr:hover td {
 }
 .add-stock-btn {
     padding: 5px 10px;
-    background-color: #4CAF50;
+    background-color: #28a745;
     color: white;
     border: none;
     cursor: pointer;

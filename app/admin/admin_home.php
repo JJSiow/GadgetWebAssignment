@@ -5,7 +5,7 @@ require '../_base.php';
 
 auth_admin();
 
-$orderPrices = $_db->query("SELECT * FROM `order`")->fetchAll(PDO::FETCH_ASSOC);
+$orderPrices = $_db->query("SELECT * FROM `order` WHERE order_status = 'delivered'")->fetchAll(PDO::FETCH_ASSOC);
 $totalUser = $_db->query("SELECT COUNT(member_id) AS total FROM `member` WHERE member_status = 'Active'")->fetch(PDO::FETCH_ASSOC);
 $totalGadget = $_db->query("SELECT COUNT(gadget_id) AS total FROM `gadget` WHERE gadget_status = 'Active'")->fetch(PDO::FETCH_ASSOC);
 $totalSales = 0;
@@ -16,26 +16,6 @@ $totalGadgetCount = $totalGadget['total'];
 foreach ($orderPrices as $orderPrice) {
 	$totalSales += $orderPrice['total_order_price'];
 }
-
-// Query to get total sales of all gadgets
-$totalResult = $_db->query("
-SELECT SUM(oi.item_quantity) AS total_quantity_sold 
-FROM order_item oi         
-JOIN `order` o ON oi.order_id = o.order_id
-WHERE o.order_status = 'DELIVERED'")->fetch(PDO::FETCH_ASSOC);
-$totalQty = $totalResult['total_quantity_sold'];
-
-// Query to get top 5 best-selling gadgets
-$topSellingGadgets = $_db->query("
-        SELECT g.gadget_id,g.gadget_name,SUM(oi.item_quantity) AS total_quantity_sold
-        FROM order_item oi
-        JOIN gadget g ON oi.gadget_id = g.gadget_id
-        JOIN `order` o ON oi.order_id = o.order_id
-        WHERE o.order_status = 'DELIVERED'
-        GROUP BY oi.gadget_id
-        ORDER BY total_quantity_sold DESC
-        LIMIT 5;
-    ")->fetchAll(PDO::FETCH_ASSOC);
 
 $query = "SELECT g.gadget_id, g.gadget_name, c.category_name, g.gadget_stock 
 	FROM gadget g
@@ -58,9 +38,10 @@ if (is_post()) {
 				  WHERE gadget_id = ?";
 		$_db->prepare($update_query)->execute([$add_stock, $gadget_id]);
 	}
+	redirect("admin_home.php");
 }
 // ----------------------------------------------------------------------------
-$_title = 'admin Home';
+$_title = '';
 include '../admin/_admin_head.php';
 ?>
 
@@ -88,48 +69,23 @@ include '../admin/_admin_head.php';
 
 <div class="charts-container">
 	<div class="chart-box">
-		<div class="chart-title">Top 5 Best Selling Sold Gadgets</div>
-		<?php if (empty($topSellingGadgets)): ?>
-			<div>
-				<p style="color: #777; font-size: 16px; text-align: center;">There are no gadgets placed.</p>
-			</div>
-		<?php else: ?>
-			<div class="chart-box-content">
-				<div class="bar-chart">
-					<?php
-					foreach ($topSellingGadgets as $index => $gadget) {
-						$percentageValue = ($gadget['total_quantity_sold'] / $totalQty) * 100;
-
-						echo "
-						<div class='bar' style='height: {$percentageValue}%;' data-info='{$gadget['gadget_name']} - {$gadget['total_quantity_sold']} sold'>
-							<span class='bar-value'>" . number_format($percentageValue, 2) . "%</span>
-							<div class='bar-label'>{$gadget['gadget_name']}</div>
-						</div>
-					";
-					}
-					?>
-				</div>
-			</div>
-		<?php endif; ?>
+		<div id="barChartContainer" style="height: 370px; width: 100%;"></div>
+		<script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+		<script src="https://cdn.canvasjs.com/jquery.canvasjs.min.js"></script>
 	</div>
 
 	<div class="chart-box">
-		<div class="chart-title">Product Categories</div>
-		<div class="chart-box-content">
-			<div class="pie-chart"></div>
-			<div class="pie-chart-labels">
-				<div class="legend"><span class="legend-color electronics"></span>Electronics - 30%</div>
-				<div class="legend"><span class="legend-color clothing"></span>Clothing - 40%</div>
-				<div class="legend"><span class="legend-color groceries"></span>Groceries - 30%</div>
-				<div class="legend"><span class="legend-color tv"></span>Groceries - 30%</div>
-			</div>
-		</div>
+		<div id="doughnutChartContainer" style="height: 100%; width: 100%;"></div>
+		<button class="btn invisible" id="backButton">
+			Back</button>
+		<script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+		<script src="https://cdn.canvasjs.com/jquery.canvasjs.min.js"></script>
 	</div>
 </div>
 
 <div class="table-container">
 	<div class="table-header">
-		<h3>Low Gadget Stock</h3>
+		<h3>Low Active Gadget Stock</h3>
 		<button data-get="../admin/admin_products.php?stock=10&operator=<">Show More</button>
 	</div>
 	<table class="table">

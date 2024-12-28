@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/css/brand.css">
 <?php
 require_once '../_base.php';
 
@@ -106,28 +107,32 @@ $p = new SimplePager2(
 
 $arr = $p->result;
 
-$_title = 'Gadget Brand';
+$_title = '';
 include '../admin/_admin_head.php';
 ?>
 
-<form action="add_brand.php" method="post">
-    <input type="text" id="brd_name" name="brd_name" placeholder="Add new brand">
-    <button class="button addProdButton">Add</button>
-    <?php if ($brand_error): ?>
-        <p class="error"><?= htmlspecialchars($brand_error) ?></p>
-    <?php endif; ?>
-</form>
+<div class="title-container">
+    <h1 class="title">Brand Management</h1>
+    <form action="add_brand.php" method="post">
+        <input type="text" id="brd_name" name="brd_name" placeholder="Add new brand">
+        <button class="button addProdButton">Add</button>
+        <?php if ($brand_error): ?>
+            <p class="error"><?= htmlspecialchars($brand_error) ?></p>
+        <?php endif; ?>
+    </form>
+</div>
 
 <form id="mark-all-form" action="delete_brand.php" method="post">
-    <button id="submit-mark-unactive" class="btn btn-primary" data-post="delete_brand.php?action=Unactive" style="display: none;" data-confirm='Are you sure to unactivate all selected brand?'>Unactivate All</button>
-    <button id="submit-mark-active" class="btn btn-primary" data-post="delete_brand.php?action=Active" style="display: none;" data-confirm='Are you sure to activate all selected brand?'>Activate All</button>
+    <div class="hidden-button">
+        <button id="submit-mark-unactive" class="btn btn-primary" data-confirm='Are you sure to deactivate all selected brand?'>Deactivate All</button>
+        <button id="submit-mark-active" class="btn btn-primary" data-confirm='Are you sure to activate all selected brand?'>Activate All</button>
+    </div>
 </form>
 
 <p>
     <?= $p->count ?> of <?= $p->item_count ?> record(s) |
     Page <?= $p->page ?> of <?= $p->page_count ?>
 </p>
-
 
 <table class="table">
     <tr>
@@ -137,12 +142,13 @@ include '../admin/_admin_head.php';
 
     <form method="post">
         <tr>
-            <td><input type="checkbox" id="check-all">All</td>
+            <td><label class="checkbox-wrapper"><input type="checkbox" id="check-all"><span>All</span></label></td>
             <td><?= html_search2('sid', $searchParams['sid']) ?></td>
             <td><?= html_search2('sname', $searchParams['sname']) ?></td>
             <td><?= html_select2('sstatus', $_status, 'All', $searchParams['sstatus']) ?></td>
-            <td><button type="submit">Search</button>
-                <a href="?clear_search=1" class="clear-search-btn">Clear Search</a>
+            <td>
+                <button type="submit">Search</button>
+                <button data-get="?clear_search=1" class="clear-search-btn">Clear</button>
             </td>
         </tr>
     </form>
@@ -162,13 +168,13 @@ include '../admin/_admin_head.php';
                 </td>
                 <td><?= $brand->brand_id ?></td>
                 <td class="edit" data-id="<?= $brand->brand_id ?>" data-update-url="update_brand.php"><?= $brand->brand_name ?></td>
-                <td><?= $brand->brand_status ?></td>
+                <td><span class="status-badge status-<?= $brand->brand_status ?>"><?= $brand->brand_status ?></span></td>
                 <td>
                     <form id="mark-all-form" action="delete_brand.php" method="post">
                         <input type="hidden" name="checkboxName" value="<?= htmlspecialchars($brand->brand_id) ?>">
                         <?php if ($brand->brand_status == 'Active'): ?>
                             <a id="next_unactive" data-post="delete_brand.php?action=Unactive"
-                                data-confirm='Are you sure you want to unactivate this brand?'>Unactivate</a>
+                                data-confirm='Are you sure you want to deactivate this brand?'>Deactivate</a>
                         <?php else: ?>
                             <a id="next_active" data-post="delete_brand.php?action=Active"
                                 data-confirm='Are you sure you want to activate this brand?'>Activate</a>
