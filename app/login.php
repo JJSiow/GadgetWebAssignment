@@ -36,56 +36,60 @@ if (is_post()) {
         $member = $stm->fetch();
 
         if ($member) {
-
-
-
-            $member_EncrptPassword = sha1($member_password);
-            // Verify password
-            if ($member_EncrptPassword === $member->member_password) {
-                if ($member->member_status == 'Disabled') {
-                    $_err['member_email'] = 'Account blocked';
-                } else if ($member->member_status == 'Deleted') {
-                    $_err['member_email'] = 'Account deleted';
-                } else if ($member->member_status == 'Inactive') {
-                    $_err['member_email'] = 'Account Inactive';
-                } else {
-                    // Login successful
-                    temp('info', 'Login successful');
-                    $_SESSION['member'] = $member;
-
-                    // Reset login attempts on successful login
-                    $_db->prepare('UPDATE member SET login_attempt = 0 WHERE member_id = ?')->execute([$member->member_id]);
-
-
-                    if ($remember_me) {
-                        cookies_setting($member->member_id);
-                    } else {
-                        unCookies_setting();
-                    }
-
-                    // Redirect to gadget page
-                    redirect('../page/gadget.php');
-                    login($member);
-                }
+            if ($member->member_status == 'Disabled') {
+                $_err['member_email'] = 'Account is blocked.';
+            } else if ($member->member_status == 'Deleted') {
+                $_err['member_email'] = 'Account has been deleted.';
+            } else if ($member->member_status == 'Inactive') {
+                $_err['member_email'] = 'Account is inactive.';
             } else {
-                $_err['member_password'] = 'Incorrect password';
-
-                // Increment login_attempts
-                $_db->prepare('UPDATE member SET login_attempt = login_attempt + 1 WHERE member_id = ?')->execute([$member->member_id]);
-
-                // Fetch login_attempts
-                $stm = $_db->prepare('SELECT login_attempt FROM member WHERE member_id = ?');
-                $stm->execute([$member->member_id]);
-                $login_attempts = $stm->fetchColumn();
-
-                // Check if max attempts reached
-                if ($login_attempts >= 3) {
-                    // Disable account
-                    $_db->prepare('UPDATE member SET member_status = ? WHERE member_id = ?')->execute(['Disabled', $member->member_id]);
-                    $_err['member_email'] = 'Account blocked';
+                $member_EncryptedPassword = sha1($member_password);
+        
+                if ($member_EncryptedPassword === $member->member_password) {
+                    if ($member->member_status == 'Disabled') {
+                        $_err['member_email'] = 'Account is blocked.';
+                    } else if ($member->member_status == 'Deleted') {
+                        $_err['member_email'] = 'Account has been deleted.';
+                    } else if ($member->member_status == 'Inactive') {
+                        $_err['member_email'] = 'Account is inactive.';
+                    } else {
+                        // Login successful
+                        temp('info', 'Login successful');
+                        $_SESSION['member'] = $member;
+        
+                        // Reset login attempts on successful login
+                        $_db->prepare('UPDATE member SET login_attempt = 0 WHERE member_id = ?')->execute([$member->member_id]);
+        
+                        if ($remember_me) {
+                            cookies_setting($member->member_id);
+                        } else {
+                            unCookies_setting();
+                        }
+        
+                        // Redirect to gadget page
+                        redirect('../page/gadget.php');
+                        login($member);
+                    }
                 } else {
-                    $remaining_attempts = 3 - $login_attempts;
-                    $_err['member_email'] = 'You have ' . $remaining_attempts . ' login attempt(s) remaining.';
+                    $_err['member_password'] = 'Incorrect password';
+
+                    // Increment login_attempts
+                    $_db->prepare('UPDATE member SET login_attempt = login_attempt + 1 WHERE member_id = ?')->execute([$member->member_id]);
+
+                    // Fetch login_attempts
+                    $stm = $_db->prepare('SELECT login_attempt FROM member WHERE member_id = ?');
+                    $stm->execute([$member->member_id]);
+                    $login_attempts = $stm->fetchColumn();
+
+                    // Check if max attempts reached
+                    if ($login_attempts >= 3) {
+                        // Disable account
+                        $_db->prepare('UPDATE member SET member_status = ? WHERE member_id = ?')->execute(['Disabled', $member->member_id]);
+                        $_err['member_email'] = 'Account blocked';
+                    } else {
+                        $remaining_attempts = 3 - $login_attempts;
+                        $_err['member_email'] = 'You have ' . $remaining_attempts . ' login attempt(s) remaining.';
+                    }
                 }
             }
         } else {
