@@ -82,3 +82,17 @@ button:hover{
      90% { top:  100px; opacity: 1; }
     100% { top: -100px; opacity: 0; }
 }
+
+.logo{
+    width: 150px;
+    height: 55px;
+    cursor: pointer;
+}
+
+.user_pic{
+    width: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-left: 10px;
+    background: #fff;
+}

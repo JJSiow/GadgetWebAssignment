@@ -108,6 +108,7 @@ $(() => {
         function toggleMarkAllButton() {
             const isChecked = $('.checkbox:checked').length > 0;
             $('#submit-mark-all').toggle(isChecked);
+            $('.hidden-button').toggle(isChecked);
             
             let statusColumnIndex = null;
             $('th').each(function (index) {

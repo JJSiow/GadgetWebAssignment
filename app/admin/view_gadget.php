@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/css/modalBox.css">
 <?php
 require_once '../_base.php';
 //----------------------------------------------------------------------------- 
@@ -13,9 +14,9 @@ $stm = $_db->prepare(
 $stm->execute([$id]);
 $s = $stm->fetch(PDO::FETCH_OBJ);
 
-$gallery = $_db->prepare('SELECT * FROM gallery WHERE gadget_id = ?');
-$gallery->execute([$id]);
-$s2 = $gallery->fetchAll(PDO::FETCH_ASSOC);
+$images = $_db->prepare('SELECT gallery_id, photo_path FROM gallery WHERE gadget_id = ?');
+$images->execute([$id]);
+$gadget_images = $images->fetchAll();
 
 if (!$s) {
     redirect('/');
@@ -37,40 +38,59 @@ $stock = htmlspecialchars($s->gadget_stock);
         <div class="gadgetInfo">
             <span class="close">&times;</span>
 
-            <div class="gallery-photos-container">
-                <button type="button" class="prev-btn">&#10094;</button>
+            <div class="image-carousel">
+                <button type="button" id="prevPhoto" class="carousel-btn" style="display: none;">&lt;</button>
+                <div class="image-preview-container">
+                    <label for="photos[]" class="upload_gadget" tabindex="0">
+                        <img id="defaultPreview" class="main-preview" alt="Gadget Preview">
+                    </label>
 
-                <div class="gallery-photos">
-                    <?php foreach ($s2 as $index => $photo) { ?>
-                        <img src="../images/<?= htmlspecialchars($photo['photo_path']) ?>"
-                             alt="Gadget Photo"
-                             class="gadget-photo <?= $index === 0 ? 'active' : 'hidden' ?>"
-                             data-index="<?= $index ?>">
-                    <?php } ?>
+                    <!-- Hidden container for existing images -->
+                    <div class="existing-images" style="display: none;">
+                        <?php foreach ($gadget_images as $image): ?>
+                            <img
+                                class="existing-image"
+                                src="<?= htmlspecialchars('../images/' . $image->photo_path) ?>"
+                                data-id="<?= htmlspecialchars($image->gallery_id) ?>"
+                                alt="Gadget Preview">
+                        <?php endforeach; ?>
+                    </div>
                 </div>
-
-                <button type="button" class="next-btn">&#10095;</button>
+                <button type="button" id="nextPhoto" class="carousel-btn" style="display: none;">&gt;</button>
             </div>
 
-            <label for="gname">Gadget Name:</label>
-            <input type="text" name="gname" id="gname" value="<?= $gadgetName ?>" readonly><br>
+            <div class="input-container">
+                <div class="input-field">
+                    <label for="gname">Gadget Name:</label>
+                    <input type="text" name="gname" id="gname" value="<?= $gadgetName ?>" readonly>
+                </div>
 
-            <label for="gcategory">Gadget Category:</label>
-            <input type="text" name="gcategory" id="gcategory" value="<?= $categoryName ?>" readonly><br>
+                <div class="input-field">
+                    <label for="gprice">Gadget Price (RM):</label>
+                    <input type="number" name="gprice" id="gprice" value="<?= $price ?>" readonly>
+                </div>
 
-            <label for="gbrand">Gadget Brand:</label>
-            <input type="text" name="gbrand" id="gbrand" value="<?= $brandName ?>" readonly><br>
+                <div class="input-field">
+                    <label for="gbrand">Gadget Brand:</label>
+                    <input type="text" name="gbrand" id="gbrand" value="<?= $brandName ?>" readonly>
+                </div>
 
-            <label for="gprice">Gadget Price:</label>
-            <input type="number" name="gprice" id="gprice" value="<?= $price ?>" readonly><br>
+                <div class="input-field">
+                    <label for="gcategory">Gadget Category:</label>
+                    <input type="text" name="gcategory" id="gcategory" value="<?= $categoryName ?>" readonly>
+                </div>
 
-            <label for="gstock">Gadget Stock:</label>
-            <input type="number" name="gstock" id="gstock" value="<?= $stock ?>" readonly><br>
+                <div class="input-field centered-field">
+                    <label for="gstock">Gadget Stock:</label>
+                    <input type="number" name="gstock" id="gstock" value="<?= $stock ?>" readonly>
+                </div>
 
-            <label for="gdescribe">Gadget Description:</label>
-            <textarea name="gdescribe" id="gdescribe" readonly><?= $description ?></textarea><br>
-
-            <section>
+                <div class="input-field full-width">
+                    <label for="gdescribe">Gadget Description:</label>
+                    <textarea name="gdescribe" id="gdescribe" readonly><?= $description ?></textarea>
+                </div>
+            </div>
+            <section class="button-container">
                 <button data-get="update_gadget.php?id=<?= $gadgetid ?>">Edit Now</button>
             </section>
         </div>

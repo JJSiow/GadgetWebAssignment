@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/css/products.css">
 <?php
 require_once '../_base.php';
 
@@ -5,11 +6,11 @@ require_once '../_base.php';
 $fields = [
     'gadget_id' => 'Gadget ID',
     'gadget_name' => 'Gadget Name',
-    'brand_name' => 'Gadget Brand',
-    'category_name' => 'Gadget Category',
-    'gadget_price' => 'Gadget Price',
+    'brand_name' => 'Brand',
+    'category_name' => 'Category',
+    'gadget_price' => 'Price (RM)',
     'gadget_stock' => 'Available Stock',
-    'gadget_status' => 'Gadget Status',
+    'gadget_status' => 'Status',
     'action' => 'Action'
 ];
 
@@ -84,6 +85,7 @@ if (is_get()) {
     if ($stock !== '' && $operator !== '') {
         $searchParams['sstock'] = $stock;
         $searchParams['sstock_operator'] = $operator;
+        $searchParams['sstatus'] = 'Active';
         $searchParams['sort'] = 'gadget_stock';
         $searchParams['dir'] = 'asc';
         $searchParams['page'] = 1;
@@ -236,27 +238,33 @@ $p = new SimplePager2(
 $arr = $p->result;
 
 $gadget_images = $_db->query('SELECT gallery_id, photo_path, gadget_id FROM gallery')->fetchAll();
-$_title = 'Gadget';
+$_title = '';
 include '../admin/_admin_head.php';
 ?>
 
+
 <?php if (!empty($newLowStockItems)): ?>
-    <div id="stock-alert" class="stock-alert" style="background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; margin: 10px 0; border-radius: 4px; position: relative;">
-        <button class="dismiss-alert" style="position: absolute; right: 10px; top: 10px; background: none; border: none; cursor: pointer; font-size: 18px;">&times;</button>
-        <strong style="color: #721c24;">Warning: New Low Stock Detected!</strong>
+    <div id="stock-alert" class="stock-alert">
+        <button class="dismiss-alert">&times;</button>
+        <strong>Warning: New Low Stock Detected!</strong>
         <?php foreach ($newLowStockItems as $item): ?>
-            <p style="margin: 5px 0; color: #721c24;">
+            <p>
                 <?= htmlspecialchars($item->gadget_name) ?> has dropped below 10 units (Current stock: <?= $item->gadget_stock ?>)
             </p>
         <?php endforeach; ?>
     </div>
 <?php endif; ?>
 
-<button class="button addProdButton" onclick="window.location.href='add_gadget.php'">Add New Gadget</button>
+<div class="title-container">
+    <h1 class="title">Product Management</h1>
+    <button id="openModal" class="button addProdButton" onclick="window.location.href='add_gadget.php'">+ Add New Gadget</button>
+</div>
 
 <form id="mark-all-form" action="delete_gadget.php" method="post">
-    <button id="submit-mark-unactive" class="btn btn-primary" data-post="delete_gadget.php?action=Unactive" style="display: none;" data-confirm='Are you sure to unactivate all selected gadget?'>Unactivate All</button>
-    <button id="submit-mark-active" class="btn btn-primary" data-post="delete_gadget.php?action=Active" style="display: none;" data-confirm='Are you sure to activate all selected gadget?'>Activate All</button>
+    <div class="hidden-button">
+        <button id="submit-mark-unactive" class="btn btn-primary" data-post="delete_gadget.php?action=Unactive" style="display: none;" data-confirm='Are you sure to deactivate all selected gadget?'>Deactivate All</button>
+        <button id="submit-mark-active" class="btn btn-primary" data-post="delete_gadget.php?action=Active" style="display: none;" data-confirm='Are you sure to activate all selected gadget?'>Activate All</button>
+    </div>
 </form>
 
 <p>
@@ -272,20 +280,20 @@ include '../admin/_admin_head.php';
 
     <form method="post">
         <tr>
-            <td><input type="checkbox" id="check-all">All</td>
+            <td><label class="checkbox-wrapper"><input type="checkbox" id="check-all"><span>All</span></label></td>
             <td><?= html_search2('sid', $searchParams['sid']) ?></td>
             <td><?= html_search2('sname', $searchParams['sname']) ?></td>
             <td><?= html_select2('sbrand', $brands_name,  'All', $searchParams['sbrand'] ?? '') ?></td>
             <td><?= html_select2('scategory', $category_name,  'All', $searchParams['scategory'] ?? '') ?></td>
-            <td><?= html_number('sprice', $searchParams['sprice'] ?? '', ['min' => '0.01', 'max' => '10000.00', 'step' => '0.01'], 'RM '); ?></td>
+            <td><?= html_number('sprice', $searchParams['sprice'] ?? '', ['min' => '0.01', 'max' => '10000.00', 'step' => '0.01']); ?></td>
             <td>
                 <?= html_select2('sstock_operator', $_operators,  '=', $searchParams['sstock_operator'] ?? '') ?>
                 <?= html_number('sstock', $searchParams['sstock'] ?? '', ['min' => '0', 'max' => '1000', 'step' => '1']); ?>
             </td>
             <td><?= html_select2('sstatus', $_status, 'All', $searchParams['sstatus']) ?></td>
-            <td>
+            <td class="search-button">
                 <button type="submit">Search</button>
-                <a href="?clear_search=1" class="clear-search-btn">Clear Search</a>
+                <button data-get="?clear_search=1" class="clear-search-btn">Clear</button>
             </td>
         </tr>
     </form>
@@ -337,18 +345,18 @@ include '../admin/_admin_head.php';
                 <td style="<?= $rowColor ?>"><?= $gadget->brand_name ?></td>
                 <td style="<?= $rowColor ?>"><?= $gadget->category_name ?></td>
                 <td style="<?= $rowColor ?>">RM <?= number_format($gadget->gadget_price, 2) ?></td>
-                <td style="<?= $rowColor ?>"><?= $gadget->gadget_stock  . " (" . $stock_status . ")" ?></td>
-                <td style="<?= $rowColor ?>"><?= $gadget->gadget_status ?></td>
+                <td style="<?= $rowColor ?>"><?= $stock_status . " (" . $gadget->gadget_stock . ")" ?></td>
+                <td style="<?= $rowColor ?>"><span class="status-badge status-<?= $gadget->gadget_status ?>"><?= $gadget->gadget_status ?></span></td>
                 <td style="<?= $rowColor ?>">
-                    <a href="view_gadget.php?id=<?= $gadget->gadget_id ?>">View</a> |
-                    <a data-get="update_gadget.php?id=<?= $gadget->gadget_id ?>">Edit</a> |
+                    <a href="view_gadget.php?id=<?= $gadget->gadget_id ?>" class="action-button view-btn">View</a>
+                    <a data-get="update_gadget.php?id=<?= $gadget->gadget_id ?>" class="action-button edit-btn">Edit</a>
                     <form id="mark-all-form" action="delete_gadget.php" method="post">
                         <input type="hidden" name="checkboxName" value="<?= htmlspecialchars($gadget->gadget_id) ?>">
                         <?php if ($gadget->gadget_status == 'Active'): ?>
-                            <a id="next_unactive" data-post="delete_gadget.php?action=Unactive"
-                                data-confirm='Are you sure you want to unactivate this gadget?'>Unactivate</a>
+                            <a id="next_unactive" data-post="delete_gadget.php?action=Unactive" class="action-button deactive-btn"
+                                data-confirm='Are you sure you want to deactivate this gadget?'>Deactivate</a>
                         <?php else: ?>
-                            <a id="next_active" data-post="delete_gadget.php?action=Active"
+                            <a id="next_active" data-post="delete_gadget.php?action=Active" class="action-button active-btn"
                                 data-confirm='Are you sure you want to activate this gadget?'>Activate</a>
                         <?php endif; ?>
                     </form>

@@ -126,7 +126,7 @@ if (is_post()) {
         $m->send();
 
         temp('info', 'Activate Email sent');
-        redirect('/');
+        redirect('../login.php');
     }
 }
 // ----------------------------------------------------------------------------

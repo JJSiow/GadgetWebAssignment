@@ -119,22 +119,34 @@ function save_photo($f, $folder, $width = 200, $height = 200)
 function save_photos($files, $folder, $width = 200, $height = 200)
 {
     $photos = [];
-
     require_once 'lib/SimpleImage.php';
 
     foreach ($files as $f) {
-        $photo = uniqid() . '.jpg';
+        try {
+            // Validate the file path
+            if (!file_exists($f->tmp_name)) {
+                error_log("File not found: " . $f->tmp_name);
+                continue;
+            }
 
-        $img = new SimpleImage();
-        $img->fromFile($f->tmp_name)
-            ->thumbnail($width, $height)
-            ->toFile("$folder/$photo", 'image/jpeg');
+            // Generate a unique photo name
+            $photo = uniqid() . '.png';
 
-        $photos[] = $photo;
+            // Process the image
+            $img = new SimpleImage();
+            $img->fromFile($f->tmp_name)
+                ->thumbnail($width, $height)
+                ->toFile("$folder/$photo", 'image/jpeg');
+
+            $photos[] = $photo; // Add to the list of successfully saved photos
+        } catch (Exception $e) {
+            error_log("Error processing image: " . $e->getMessage());
+        }
     }
 
     return $photos;
 }
+
 
 // Is money?
 function is_money($value)

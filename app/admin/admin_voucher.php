@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/css/brand.css">
 <?php
 require_once '../_base.php';
 
@@ -112,23 +113,28 @@ $p = new SimplePager2(
 
 $arr = $p->result;
 
-$_title = 'Voucher';
+$_title = '';
 include '../admin/_admin_head.php';
 ?>
 
-<form action="add_voucher.php" method="post">
-    <label for="voc_amount">RM
-        <input type="number" id="voc_amount" name="voc_amount" step="0.10" min="1.00" max="10000.00" placeholder="Enter voucher amount" required style="width: 175px;">
-    </label>
-    <button class="button addProdButton">Add</button>
-    <?php if ($voucher_error): ?>
-        <p class="error"><?= htmlspecialchars($voucher_error) ?></p>
-    <?php endif; ?>
-</form>
+<div class="title-container">
+    <h1 class="title">Voucher Management</h1>
+    <form action="add_voucher.php" method="post">
+        <label for="voc_amount">RM
+            <input type="number" id="voc_amount" name="voc_amount" step="0.10" min="1.00" max="10000.00" placeholder="Enter voucher amount" required style="width: 175px;">
+        </label>
+        <button class="button addProdButton">Add</button>
+        <?php if ($voucher_error): ?>
+            <p class="error"><?= htmlspecialchars($voucher_error) ?></p>
+        <?php endif; ?>
+    </form>
+</div>
 
 <form id="mark-all-form" action="delete_voucher.php" method="post">
-    <button id="submit-mark-unactive" class="btn btn-primary" data-post="delete_voucher.php?action=Unactive" style="display: none;" data-confirm='Are you sure to unactivate all selected voucher?'>Unactivate All</button>
-    <button id="submit-mark-active" class="btn btn-primary" data-post="delete_voucher.php?action=Active" style="display: none;" data-confirm='Are you sure to activate all selected voucher?'>Activate All</button>
+    <div class="hidden-button">
+        <button id="submit-mark-unactive" class="btn btn-primary" data-post="delete_voucher.php?action=Unactive" style="display: none;" data-confirm='Are you sure to deactivate all selected voucher?'>Deactivate All</button>
+        <button id="submit-mark-active" class="btn btn-primary" data-post="delete_voucher.php?action=Active" style="display: none;" data-confirm='Are you sure to activate all selected voucher?'>Activate All</button>
+    </div>
 </form>
 
 <p>
@@ -144,13 +150,13 @@ include '../admin/_admin_head.php';
 
     <form method="post">
         <tr>
-            <td><input type="checkbox" id="check-all">All</td>
+            <td><label class="checkbox-wrapper"><input type="checkbox" id="check-all"><span>All</span></label></td>
             <td><?= html_search2('sid', $searchParams['sid']) ?></td>
             <td><?= html_number('samount', $searchParams['samount'] ?? '', ['min' => '0.01', 'max' => '10000.00', 'step' => '0.01'], 'RM ') ?></td>
             <td><?= html_select2('sstatus', $_status, 'All', $searchParams['sstatus']) ?></td>
             <td>
                 <button type="submit">Search</button>
-                <a href="?clear_search=1" class="clear-search-btn">Clear Search</a>
+                <button data-get="?clear_search=1" class="clear-search-btn">Clear</button>
             </td>
         </tr>
     </form>
@@ -173,13 +179,13 @@ include '../admin/_admin_head.php';
                     data-update-url="update_voucher.php">
                     RM <?= number_format($voucher->voucher_amount, 2) ?>
                 </td>
-                <td><?= htmlspecialchars($voucher->voucher_status) ?></td>
+                <td><span class="status-badge status-<?= htmlspecialchars($voucher->voucher_status) ?>"><?= htmlspecialchars($voucher->voucher_status) ?></span></td>
                 <td>
                     <form id="mark-all-form" action="delete_voucher.php" method="post">
                         <input type="hidden" name="checkboxName" value="<?= htmlspecialchars($voucher->voucher_id) ?>">
                         <?php if ($voucher->voucher_status == 'Active'): ?>
                             <a id="next_unactive" data-post="delete_voucher.php?action=Unactive"
-                                data-confirm='Are you sure you want to unactivate this voucher?'>Unactivate</a>
+                                data-confirm='Are you sure you want to deactivate this voucher?'>Deactivate</a>
                         <?php else: ?>
                             <a id="next_active" data-post="delete_voucher.php?action=Active"
                                 data-confirm='Are you sure you want to activate this voucher?'>Activate</a>

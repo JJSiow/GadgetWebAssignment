@@ -13,6 +13,8 @@ if (is_post()) {
         $_err['brd_name'] = 'Brand Name is required';
     } elseif (strlen($brd_name) > 15) {
         $_err['brd_name'] = 'Maximum length for brand name is 15 characters';
+    } elseif (is_numeric($brd_name)) { 
+        $_err['brd_name'] = 'Brand Name cannot be a number';
     } elseif ($count > 0) {
         $_err['brd_name'] = 'Brand with this name already exists';
     }
