@@ -42,6 +42,7 @@ $_title = 'Member | List of Members';
 include '../admin/_admin_head.php';
 ?>
 
+<link rel="stylesheet" href="/css/app.css">
 <form method="get" action="member_list.php">
     <?= html_select('search_by', $_member_attr) ?>
     <?= html_search('search_value') ?>
