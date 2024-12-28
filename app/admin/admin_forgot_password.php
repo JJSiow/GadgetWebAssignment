@@ -34,10 +34,10 @@ if (is_post()) {
         $stm = $_db->prepare('
             DELETE FROM token WHERE user_id = ?;
 
-            INSERT INTO token (id, expire, user_id)
-            VALUES (?, ADDTIME(NOW(), "00:05"), ?);
+            INSERT INTO token (id, expire, user_id,token_type)
+            VALUES (?, ADDTIME(NOW(), "00:05"), ?,?);
         ');
-        $stm->execute([$u->admin_id, $id, $u->admin_id]);
+        $stm->execute([$u->admin_id, $id, $u->admin_id,'ForgotPassword']);
 
         // TODO: (4) Generate token url
         $url = base("token.php?id=$id&role=admin");
@@ -82,6 +82,3 @@ if (is_post()) {
     <a href="../admin/admin_login.php">Back to Login</a>
 </form>
 </div>
-
-<?php
-include '../_foot.php';
