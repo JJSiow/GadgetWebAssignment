@@ -18,12 +18,31 @@ if (isset($_SESSION['checkout_data'])) {
     $final_price = $checkout_data['final_price'];
     $selected_items = $checkout_data['selected_items'];
     $cart_items = $checkout_data['cart_items'];
+    $shipping_address = $checkout_data['shipped_address'];
 
     // Insert into the `order` table
-    $order_query = "INSERT INTO `order` (member_id, order_date, order_status, voucher_id, total_order_price) VALUES (?, NOW(), 'PENDING', ?, ?)";
+    $order_query = "INSERT INTO `order` (member_id, order_date, order_status, voucher_id, total_order_price, shipped_address) VALUES (?, NOW(), 'PENDING', ?, ?, ?)";
     $order_stmt = $conn->prepare($order_query);
-    $order_stmt->bind_param("ssd", $member_id, $voucher_id, $final_price);
+    $order_stmt->bind_param("ssds", $member_id, $voucher_id, $final_price, $shipping_address);
     $order_stmt->execute();
+
+    $order_id = $order_stmt->insert_id; // Get the generated order ID
+
+    // Prepare order items for email
+    $ordered_items = '';
+
+    // Proceed with checkout if validation passes
+    foreach ($cart_items as $item) {
+        $gadget_id = $item['gadget_id'];
+        $quantity = $item['quantity'];
+        $order_item_price = $item['gadget_price'] * $quantity;
+
+        // Insert into `order_item` table
+        $order_item_query = "INSERT INTO order_item (gadget_id, order_id, order_price, item_quantity, member_id) VALUES (?, ?, ?, ?, ?)";
+        $order_item_stmt = $conn->prepare($order_item_query);
+        $order_item_stmt->bind_param("sdsis", $gadget_id, $order_id, $order_item_price, $quantity, $member_id);
+        $order_item_stmt->execute();
+    }
 
     $order_id = $order_stmt->insert_id; // Get the generated order ID
 

@@ -9,6 +9,7 @@ $arr = $_db->query('SELECT * FROM admin WHERE is_super_admin = "N"')->fetchAll()
 $_title = 'Admin | Admin Management';
 include '../admin/_admin_head.php';
 ?>
+<link rel="stylesheet" href="/css/app.css">
 
 <br>
 <p><button data-get=create_new_admin.php>Create New Admin</button></p>

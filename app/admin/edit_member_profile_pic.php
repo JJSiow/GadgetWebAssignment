@@ -23,6 +23,7 @@ if (is_post()) {
 $_title = '';
 include '../admin/_admin_head.php';
 ?>
+<link rel="stylesheet" href="/css/app.css">
 
 <div class="profile">
     <h1>Edit Member Profile Picture</h2>
