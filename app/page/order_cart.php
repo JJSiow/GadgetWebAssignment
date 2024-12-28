@@ -108,7 +108,11 @@ $result = $stmt->get_result();
                                 value="<?= $item['cart_id'] ?>">
                         </td>
                         <td>
-                            <img src="/images/<?= $item['photo_path'] ?>" alt="<?= $item['gadget_name'] ?>" class="cart-gadget-img" style="width: 100px; height: auto;">
+                            <a href="/page/gadget_details.php?gadget_id=<?= $gadget['gadget_id'] ?>">
+                                <img src="/images/<?= $item['photo_path'] ?>" alt="<?= $item['gadget_name'] ?>"
+                                    class="cart-gadget-img" style="width: 100px; height: auto;">
+                            </a>
+                            
                         </td>
                         <td>
                             <?= $item['gadget_name'] ?>
@@ -129,6 +133,11 @@ $result = $stmt->get_result();
                 <?php endwhile; ?>
             </tbody>
         </table>
+        <div class="form-group">
+            <label>
+                <input type="checkbox" id="select-all" class="form-control"> Select All
+            </label>
+        </div>
 
         <p>Total Price: <span id="total-price">RM 0.00</span></p>
         <button type="submit">Proceed to Checkout</button>

@@ -37,13 +37,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['s
             $stmt = $conn->prepare($update_query);
             $stmt->bind_param("sis", $status, $order_id, $member_id);
             $stmt->execute();
-    
-            // Delete from order_item table
-            $delete_query = "DELETE FROM order_item WHERE order_id = ?";
-            $stmt = $conn->prepare($delete_query);
-            $stmt->bind_param("i", $order_id);
-            $stmt->execute();
-    
+
+            // Restock gadgets based on cancelled order items
+            $restock_query = "
+        UPDATE gadget 
+        JOIN order_item ON gadget.gadget_id = order_item.gadget_id
+        SET gadget.gadget_stock = gadget.gadget_stock + order_item.item_quantity,
+            gadget.gadget_status = CASE 
+                WHEN gadget.gadget_stock + order_item.item_quantity > 0 THEN 'Active' 
+                ELSE gadget_status 
+            END
+        WHERE order_item.order_id = ?";
+            $restock_stmt = $conn->prepare($restock_query);
+            $restock_stmt->bind_param("i", $order_id);
+            $restock_stmt->execute();
+
+
             $conn->commit();
             echo json_encode([
                 'status' => 'success',

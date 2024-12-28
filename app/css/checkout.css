@@ -104,7 +104,7 @@ body {
 .btn {
     display: inline-block;
     padding: 10px 20px;
-    background-color: #27ae60;
+    background-color: #007bff;
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -116,7 +116,7 @@ body {
 }
 
 .btn:hover {
-    background-color: #219150;
+    background-color: #007bff;
     transform: scale(1.05);
 }
 
@@ -139,3 +139,34 @@ body {
         width: 100%;
     }
 }
+
+.voucher-group {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between input and button */
+}
+
+.voucher-group .form-control {
+    flex: 1; /* Input takes up remaining space */
+    padding: 8px 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.voucher-group .btn {
+    padding: 8px 15px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.voucher-group .btn:hover {
+    background-color: #0056b3;
+}
+
+

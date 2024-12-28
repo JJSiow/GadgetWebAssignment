@@ -76,7 +76,7 @@ $gadget = $result->fetch_assoc();
         <!-- Right: Product Details -->
         <div class="product-info">
             <h2 class="product-name"><?= $gadget['gadget_name'] ?></h2>
-            <p class="product-description"><?= $gadget['gadget_description'] ?></p>
+            <p class="product-description"><strong>Description: </strong><?= $gadget['gadget_description'] ?></p>
             <p class="product-price">RM <?= number_format($gadget['gadget_price'], 2) ?></p>
             <p class="product-category"><strong>Category:</strong> <?= $gadget['category_name'] ?></p>
             <p class="product-brand"><strong>Brand:</strong> <?= $gadget['brand_name'] ?></p>

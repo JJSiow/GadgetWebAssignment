@@ -530,7 +530,7 @@ function get_mail()
     $m->Username = 'liaw.casual@gmail.com';
     $m->Password = 'buvq yftx klma vezl';
     $m->CharSet = 'utf-8';
-    $m->setFrom($m->Username, '😺 Admin');
+    $m->setFrom($m->Username, 'SEO Gadget');
 
     return $m;
 }

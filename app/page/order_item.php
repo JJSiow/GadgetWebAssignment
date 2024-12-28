@@ -10,6 +10,8 @@ if ($conn->connect_error) {
 auth_member();
 $member_id = $_member->member_id;
 
+
+
 // Fetch all orders and their items for the member
 $order_query = "
     SELECT 
@@ -43,6 +45,11 @@ while ($row = $order_result->fetch_assoc()) {
     ];
     $orders[$row['order_id']]['items'][] = $row;
 }
+
+
+
+
+
 ?>
 
 <!DOCTYPE html>

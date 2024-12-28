@@ -6,8 +6,7 @@ include '../_head.php';
 
 // ----------------------------------------------------------------------------
 
-auth_member();
-$member_id = $_member->member_id; 
+
 
 // Database connection
 $conn = new mysqli("localhost", "root", "", "gadgetwebdb");
@@ -20,6 +19,9 @@ if ($conn->connect_error) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $gadget_id = $_POST['gadget_id'];
     $quantity = $_POST['quantity'];
+
+    auth_member();
+    $member_id = $_member->member_id;
 
     // Validate gadget_id and quantity
     if (!empty($gadget_id) && !empty($quantity) && $quantity > 0) {
@@ -170,59 +172,72 @@ if (!$result) {
 <body>
     <div class="store-container">
         <!-- Left Sidebar -->
-        <div class="sidebar">
-            <form action="gadget.php" method="GET" id="filterForm" class="filter-form">
-                <!-- Search -->
-                <input type="text" name="search" placeholder="Search gadgets..." value="<?= $search ?>">
+<div class="sidebar">
+    <form action="gadget.php" method="GET" id="filterForm" class="filter-form">
+        <!-- Search -->
+        <input type="text" name="search" placeholder="Search gadgets..." value="<?= $search ?>">
 
-                <!-- Search Button -->
-                <button type="submit" name="search_button" class="search-btn">Search</button>
+        <!-- Search Button -->
+        <button type="submit" name="search_button" class="search-btn">Search</button>
 
-                <h4>Category</h4>
-                <div>
-                    <?php
-                    $category_query = "SELECT DISTINCT category_name FROM category";
-                    $category_result = $conn->query($category_query);
-                    while ($category = $category_result->fetch_assoc()) {
-                        $checked = ($category['category_name'] == $category_filter) ? 'checked' : '';
-                        echo "<label><input type='radio' name='category' value='" . $category['category_name'] . "' onclick='submitForm()' $checked>" . $category['category_name'] . "</label><br>";
-                    }
-                    ?>
-                </div>
-
-                <h4>Brand</h4>
-                <div>
-                    <?php
-                    $brand_query = "SELECT DISTINCT brand_name FROM brand";
-                    $brand_result = $conn->query($brand_query);
-                    while ($brand = $brand_result->fetch_assoc()) {
-                        $checked = ($brand['brand_name'] == $brand_filter) ? 'checked' : '';
-                        echo "<label><input type='radio' name='brand' value='" . $brand['brand_name'] . "' onclick='submitForm()' $checked>" . $brand['brand_name'] . "</label><br>";
-                    }
-                    ?>
-                </div>
-
-                <h4>Price Range</h4>
-                <div>
-                    <?php
-                    $price_options = [
-                        '1-100' => 'RM 1 - RM 100',
-                        '100-1000' => 'RM 100 - RM 1000',
-                        '1000-2000' => 'RM 1000 - RM 2000',
-                        '2000-4000' => 'RM 2000 - RM 4000',
-                        '4000-6000' => 'RM 4000 - RM 6000',
-                        '6000-10000' => 'RM 6000 - RM 10000',
-                        '>10000' => '> RM 10000'
-                    ];
-
-                    foreach ($price_options as $value => $label) {
-                        $checked = ($value == $price_filter) ? 'checked' : '';
-                        echo "<label><input type='radio' name='price' value='$value' onclick='submitForm()' $checked> $label</label><br>";
-                    }
-                    ?>
-                </div>
-            </form>
+        <!-- Category Filter -->
+        <h4>Category</h4>
+        <div>
+            <label>
+                <input type="radio" name="category" value="" onclick="submitForm()" <?= $category_filter == '' ? 'checked' : '' ?>> All
+            </label><br>
+            <?php
+            $category_query = "SELECT DISTINCT category_name FROM category";
+            $category_result = $conn->query($category_query);
+            while ($category = $category_result->fetch_assoc()) {
+                $checked = ($category['category_name'] == $category_filter) ? 'checked' : '';
+                echo "<label><input type='radio' name='category' value='" . $category['category_name'] . "' onclick='submitForm()' $checked>" . $category['category_name'] . "</label><br>";
+            }
+            ?>
         </div>
+
+        <!-- Brand Filter -->
+        <h4>Brand</h4>
+        <div>
+            <label>
+                <input type="radio" name="brand" value="" onclick="submitForm()" <?= $brand_filter == '' ? 'checked' : '' ?>> All
+            </label><br>
+            <?php
+            $brand_query = "SELECT DISTINCT brand_name FROM brand";
+            $brand_result = $conn->query($brand_query);
+            while ($brand = $brand_result->fetch_assoc()) {
+                $checked = ($brand['brand_name'] == $brand_filter) ? 'checked' : '';
+                echo "<label><input type='radio' name='brand' value='" . $brand['brand_name'] . "' onclick='submitForm()' $checked>" . $brand['brand_name'] . "</label><br>";
+            }
+            ?>
+        </div>
+
+        <!-- Price Range Filter -->
+        <h4>Price Range</h4>
+        <div>
+            <label>
+                <input type="radio" name="price" value="" onclick="submitForm()" <?= $price_filter == '' ? 'checked' : '' ?>> All
+            </label><br>
+            <?php
+            $price_options = [
+                '1-100' => 'RM 1 - RM 100',
+                '100-1000' => 'RM 100 - RM 1000',
+                '1000-2000' => 'RM 1000 - RM 2000',
+                '2000-4000' => 'RM 2000 - RM 4000',
+                '4000-6000' => 'RM 4000 - RM 6000',
+                '6000-10000' => 'RM 6000 - RM 10000',
+                '>10000' => '> RM 10000'
+            ];
+
+            foreach ($price_options as $value => $label) {
+                $checked = ($value == $price_filter) ? 'checked' : '';
+                echo "<label><input type='radio' name='price' value='$value' onclick='submitForm()' $checked> $label</label><br>";
+            }
+            ?>
+        </div>
+    </form>
+</div>
+
 
         <!-- Product Grid -->
         <div class="product-grid">
@@ -246,8 +261,8 @@ if (!$result) {
                         <!-- Add to Cart Form -->
                         <form action="gadget.php" method="POST">
                             <input type="hidden" name="gadget_id" value="<?= $gadget['gadget_id'] ?>">
-                            <input type="number" name="quantity" class="quantity-input" value="1" min="1" max="<?= $gadget['gadget_stock'] ?>"
-                                required>
+                            <input type="number" name="quantity" class="quantity-input" value="1" min="1"
+                                max="<?= $gadget['gadget_stock'] ?>" required>
                             <button type="submit" name="add_to_cart" class="add-to-cart-btn">Add to Cart</button>
                         </form>
                     </div>
