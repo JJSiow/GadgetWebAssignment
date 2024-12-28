@@ -62,7 +62,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
     $voucher_id = !empty($_POST['voucher_id']) ? $_POST['voucher_id'] : NULL;  // Handle voucher as NULL if empty
     $payment_method = $_POST['payment_method'];
     $final_price = floatval($_POST['final_price']); // Get the final price
+    $shipping_address_id = isset($_POST['shipping_address']) ? $_POST['shipping_address'] : null;
 
+    if (!$shipping_address_id) {
+        temp('info', 'Please select a shipping address.');
+        header("Location: checkout.php");
+        exit();
+    }
+
+    // Retrieve the full address details
+    $address_query = "SELECT address_detail FROM address WHERE address_id = ? AND member_id = ?";
+    $address_stmt = $conn->prepare($address_query);
+    $address_stmt->bind_param("ss", $shipping_address_id, $member_id);
+    $address_stmt->execute();
+    $address_result = $address_stmt->get_result();
+
+    if ($address_result->num_rows === 0) {
+        temp('info', 'Invalid shipping address selected.');
+        header("Location: checkout.php");
+        exit();
+    }
+
+    $address_data = $address_result->fetch_assoc();
+    $shipping_address = $address_data['address_detail'];
 
 
     // Validate stock before processing the checkout
@@ -101,8 +123,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
         'payment_method' => $payment_method,
         'final_price' => $final_price,
         'selected_items' => $selected_items,
-        'cart_items' => $cart_items
+        'cart_items' => $cart_items,
+        'shipped_address'=>$shipping_address
     ];
+
 
     try {
         $checkout_session = \Stripe\Checkout\Session::create([
@@ -132,9 +156,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
 
 }
 
+// Fetch member addresses
+$address_query = "SELECT address_id, address_detail FROM address WHERE member_id = ?";
+$address_stmt = $conn->prepare($address_query);
+$address_stmt->bind_param("s", $member_id);
+$address_stmt->execute();
+$address_result = $address_stmt->get_result();
 
+$addresses = [];
+while ($address = $address_result->fetch_assoc()) {
+    $addresses[] = $address;
+}
 
+$conn->close();
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -198,7 +235,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
                         <p><strong>Final Price: RM <span
                                     id="final-price"><?= number_format($total_price, 2) ?></span></strong></p>
 
-                        <br><br>
+                        <br>
+                        <label for="shipping_address">Select Shipping Address:</label>
+                        <div class="address-options">
+                            <?php foreach ($addresses as $address): ?>
+                                <div>
+                                    <input type="radio" name="shipping_address"
+                                        value="<?= htmlspecialchars($address['address_id']) ?>" required>
+                                    <?= htmlspecialchars($address['address_detail']) ?>
+                                </div><br>
+                            <?php endforeach; ?>
+                        </div><br>
 
                         <label>Payment Method:</label>
                         <div class="payment-options">

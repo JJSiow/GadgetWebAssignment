@@ -19,6 +19,7 @@ $order_query = "
         o.order_date, 
         o.order_status, 
         o.total_order_price, 
+        o.shipped_address,
         oi.gadget_id, 
         g.gadget_name, 
         g.gadget_price, 
@@ -42,6 +43,7 @@ while ($row = $order_result->fetch_assoc()) {
         'order_date' => $row['order_date'],
         'order_status' => $row['order_status'],
         'total_order_price' => $row['total_order_price'], // Fetch final price
+        'shipped_address' => $row['shipped_address'], // Fetch shipping address
     ];
     $orders[$row['order_id']]['items'][] = $row;
 }
@@ -72,6 +74,7 @@ while ($row = $order_result->fetch_assoc()) {
                     <div class="order-header">
                         <h3>Order ID: <span><?= $order_id ?></span></h3>
                         <p>Date: <?= $order['order_info']['order_date'] ?></p>
+                        <p>Shipping Address: <?= htmlspecialchars($order['order_info']['shipped_address']) ?></p>
                         <p>Status: <span class="status <?= strtolower($order['order_info']['order_status']) ?>" id="status-<?= $order_id ?>">
                             <?= $order['order_info']['order_status'] ?>
                         </span></p>
