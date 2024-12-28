@@ -284,5 +284,5 @@ $conn->close();
 
 <?php
 include '../_foot.php';
-$conn->close();
+// $conn->close();
 ?>
