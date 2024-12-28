@@ -1,6 +1,6 @@
 <?php
 require '../_base.php';
-
+auth_super_admin();
 if(is_post()) {
     $admin_id = req('admin_id');
 

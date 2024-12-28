@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="/css/products.css">
 <?php
 require_once '../_base.php';
-
+auth_admin();
 // (1) Sorting
 $fields = [
     'gadget_id' => 'Gadget ID',

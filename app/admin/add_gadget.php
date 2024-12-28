@@ -1,6 +1,7 @@
 <link rel="stylesheet" href="/css/modalBox.css">
 <?php
 require_once '../_base.php';
+auth_admin();
 
 // Initialize session storage for uploaded photos if not exists
 if (!isset($_SESSION['uploaded_photos'])) {

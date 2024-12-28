@@ -1,7 +1,7 @@
 <?php
 
 require '../_base.php';
-
+auth_member();
 $member_id = req('member_id');
 
 if (is_post()) {

@@ -1,6 +1,6 @@
 <?php
 require_once '../_base.php';
-
+auth_admin();
 //-----------------------------------------------------------------------------
 if (is_post()) {
     $voc_amount = req('voc_amount');

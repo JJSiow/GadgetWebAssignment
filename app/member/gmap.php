@@ -4,11 +4,7 @@ require '../_base.php';
 $_title = 'Gadget Store';
 include '../_head.php';
 
-if (!isset($_SESSION['member'])) {
-  // Redirect to login page if not logged in
-  header("Location: /login.php");
-  exit();
-}
+auth_member();
 
 if (is_post()) {
 

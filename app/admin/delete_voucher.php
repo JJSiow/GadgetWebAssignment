@@ -1,9 +1,8 @@
 <?php
 require_once '../_base.php';
-
+auth_admin();
 if (is_post()) {
     if (!empty($_POST['checkboxName'])) {
-        print_r($_POST['checkboxName']);
         $ids = explode(',', $_POST['checkboxName']);
         if (!empty($ids)) {
             $action = isset($_POST['action']) ? $_POST['action'] : '';

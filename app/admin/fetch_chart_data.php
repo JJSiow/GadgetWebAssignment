@@ -1,6 +1,6 @@
 <?php
 require '../_base.php';
-
+auth_admin();
 // Fetch total quantity sold
 $totalResult = $_db->query("
     SELECT SUM(oi.item_quantity) AS total_quantity_sold 

@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="/css/brand.css">
 <?php
 require_once '../_base.php';
-
+auth_admin();
 $voucher_error = isset($_SESSION['voucher_error']) ? $_SESSION['voucher_error'] : null;
 unset($_SESSION['voucher_error']);
 

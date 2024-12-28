@@ -1,6 +1,6 @@
 <?php
 require_once '../_base.php';
-
+auth_member();
 if (is_post()) {
     $address_id = req('id');
 

@@ -1,6 +1,7 @@
 <link rel="stylesheet" href="/css/modalBox.css">
 <?php
 require_once '../_base.php';
+auth_admin();
 //-----------------------------------------------------------------------------
 $categories = $_db->query("SELECT category_name FROM category WHERE category_status = 'Active'")->fetchAll();
 $brands = $_db->query("SELECT brand_name from brand WHERE brand_status = 'Active'")->fetchAll();
@@ -119,7 +120,7 @@ if (is_post()) {
             gadget_price = ?, 
             category_id = (SELECT category_id FROM category WHERE category_name = ? AND category_status = "Active"), 
             gadget_description = ?, 
-            brand_id = (SELECT brand_id FROM brand WHERE branAD_00002d_name = ? AND brand_status = "Active"), 
+            brand_id = (SELECT brand_id FROM brand WHERE brand_name = ? AND brand_status = "Active"), 
             gadget_stock = ?
         WHERE gadget_id = ?');
 

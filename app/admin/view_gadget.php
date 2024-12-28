@@ -2,7 +2,7 @@
 <?php
 require_once '../_base.php';
 //----------------------------------------------------------------------------- 
-
+auth_admin();
 $id = req('id');
 $stm = $_db->prepare(
     'SELECT g.*, c.category_name, b.brand_name 

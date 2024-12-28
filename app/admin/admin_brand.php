@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="/css/brand.css">
 <?php
 require_once '../_base.php';
-
+auth_admin();
 $brand_error = isset($_SESSION['brand_error']) ? $_SESSION['brand_error'] : null;
 unset($_SESSION['brand_error']);
 

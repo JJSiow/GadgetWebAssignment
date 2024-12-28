@@ -1,6 +1,6 @@
 <?php
 require_once '../_base.php';
-
+auth_admin();
 //-----------------------------------------------------------------------------
 if (isset($_POST['updates'])) {
     $updates = json_decode($_POST['updates'], true);

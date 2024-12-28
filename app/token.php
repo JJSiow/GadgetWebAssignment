@@ -35,7 +35,7 @@ if (is_post()) {
     } else if ($confirm != $password) {
         $_err['confirm'] = 'Not matched';
     }
-var_dump($role);
+
     // DB operation
     if (!$_err) {
         if ($role == 'member') {

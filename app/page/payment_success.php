@@ -42,24 +42,6 @@ if (isset($_SESSION['checkout_data'])) {
         $order_item_stmt = $conn->prepare($order_item_query);
         $order_item_stmt->bind_param("sdsis", $gadget_id, $order_id, $order_item_price, $quantity, $member_id);
         $order_item_stmt->execute();
-    }
-
-    $order_id = $order_stmt->insert_id; // Get the generated order ID
-
-    // Prepare order items for email
-    $ordered_items = '';
-
-    // Proceed with checkout if validation passes
-    foreach ($cart_items as $item) {
-        $gadget_id = $item['gadget_id'];
-        $quantity = $item['quantity'];
-        $order_item_price = $item['gadget_price'] * $quantity;
-
-        // Insert into `order_item` table
-        $order_item_query = "INSERT INTO order_item (gadget_id, order_id, order_price, item_quantity, member_id) VALUES (?, ?, ?, ?, ?)";
-        $order_item_stmt = $conn->prepare($order_item_query);
-        $order_item_stmt->bind_param("sdsis", $gadget_id, $order_id, $order_item_price, $quantity, $member_id);
-        $order_item_stmt->execute();
 
         // Update gadget stock in the `gadget` table and set status to "Unactive" if stock <= 0
         $update_stock_query = "

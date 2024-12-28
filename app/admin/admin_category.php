@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="/css/brand.css">
 <?php
 require_once '../_base.php';
-
+auth_admin();
 $category_error = isset($_SESSION['category_error']) ? $_SESSION['category_error'] : null;
 unset($_SESSION['category_error']);
 

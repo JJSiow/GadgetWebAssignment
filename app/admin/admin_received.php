@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="/css/order.css">
 <?php
 require '../_base.php';
-
+auth_admin();
 // Define fields for table headers
 $fields = [
     'order_id' => 'Order ID',

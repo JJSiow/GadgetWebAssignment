@@ -500,7 +500,7 @@ function auth_admin($requireLogin = true) {
     if ($requireLogin) {
         if ($_admin == null) {
             temp('info', 'Please login as admin');
-            redirect('/');
+            redirect('/admin/admin_login.php');
         }
     } else {
         if ($_admin) {

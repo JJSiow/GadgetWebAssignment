@@ -1,6 +1,6 @@
 <?php
 require '../_base.php';
-
+auth_admin();
 // Summary Query
 $querySummary = "
     SELECT 

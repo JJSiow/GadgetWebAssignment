@@ -1,6 +1,6 @@
 <?php
 require '../_base.php';
-
+auth_admin();
 if (is_post()) {
     $member_id = req('member_id');
 

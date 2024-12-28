@@ -1,5 +1,6 @@
 <?php
 require '../_base.php';
+auth_member();
 // ----------------------------------------------------------------------------
 $_title = 'Gadget Store';
 include '../_head.php';

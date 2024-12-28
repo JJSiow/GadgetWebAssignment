@@ -1,6 +1,6 @@
 <?php
 require '../_base.php';
-
+auth_member();
 // Fetch member's addresses
 $member_id = $_member->member_id;
 
