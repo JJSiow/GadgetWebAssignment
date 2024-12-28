@@ -392,3 +392,222 @@ td:hover {
     background-color: #f0f8ff;
     transition: background-color 0.3s ease;
 }
+
+/* JJ */
+.status-active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-disabled {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status-deleted {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-inactive {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+button.disabled {
+    cursor: not-allowed;
+    background-color: #696969;
+}
+
+nav.pager {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+nav.pager a {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 0 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+nav.pager a:hover {
+    background-color: #e9e9e9;
+    color: #000;
+}
+
+nav.pager a.active {
+    background-color: #333;
+    color: #fff;
+    border-color: #333;
+}
+
+.profile {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Roboto', sans-serif;
+}
+
+.profile h1 {
+    font-size: 2rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.profile input[type="text"],
+.profile input[type="email"],
+.profile input[type="password"],
+.profile input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.profile .upload {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.profile .upload img {
+    max-width: 100px;
+    margin-top: 10px;
+}
+
+.profile button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.profile button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.profile button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.profile button[type="button"] {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.profile button[type="button"]:hover {
+    background-color: #c82333;
+}
+
+.profile .gender {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.profile .gender label {
+    margin-right: 10px;
+    font-weight: normal;
+}
+
+.profile .gender input {
+    margin-right: 5px;
+}
+
+/* Photo Upload ------------------------------------------------------------ */
+
+label.upload img {
+    display: block;
+    border: 1px solid #333;
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.upload {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.upload input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.upload.dragover {
+    border-color: #000;
+}
+
+.preview {
+    max-width: 100px;
+    margin-top: 10px;
+}
+
+.logo{
+    width: 150px;
+    height: 55px;
+    cursor: pointer;
+}
+
+.user_pic{
+    width: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-left: 10px;
+    background: #fff;
+}
+
+.btn {
+    width: 100%;
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px 0;
+    color: #fff;
+    background-color: #ff5e49;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    text-align: center;
+}
+
+.btn:hover {
+    background-color: #ff2323;
+}

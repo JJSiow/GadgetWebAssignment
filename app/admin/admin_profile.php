@@ -86,36 +86,40 @@ if (is_post()) {
     }
 }
 
-$_title = 'Admin | Edit Admin Profile';
-include '../_head.php';
+$_title = '';
+include '../admin/_admin_head.php';
 ?>
 
-<form method="post" class="form" enctype="multipart/form-data">
-    <label for="admin_id">Admin ID</label>
-    <b><?= $admin_id ?></b>
-    <?= err('admin_id') ?>
+<div class="profile">
+    <h1>Admin Profile</h1>
+    <form method="post" enctype="multipart/form-data">
+        <label for="admin_id">Admin ID</label>
+        <b><?= $admin_id ?></b>
+        <?= err('admin_id') ?>
 
-    <label for="admin_name">Name</label>
-    <?= html_text('admin_name', 'maxlength="100"') ?>
-    <?= err('admin_name') ?>
+        <label for="admin_name">Name</label>
+        <?= html_text('admin_name', 'maxlength="100"') ?>
+        <?= err('admin_name') ?>
 
-    <label for="admin_phone_no">Phone No</label>
-    <?= html_text('admin_phone_no', 'maxlength="11"') ?>
-    <?= err('admin_phone_no') ?>
+        <label for="admin_phone_no">Phone No</label>
+        <?= html_text('admin_phone_no', 'maxlength="11"') ?>
+        <?= err('admin_phone_no') ?>
 
-    <label for="admin_email">Email</label>
-    <?= html_text('admin_email', 'maxlength="100"') ?>
-    <?= err('admin_email') ?>
+        <label for="admin_email">Email</label>
+        <?= html_text('admin_email', 'maxlength="100"') ?>
+        <?= err('admin_email') ?>
 
-    <label for="admin_profile_pic">Profile Picture</label>
-    <div class="drop-zone upload" tabindex="0">
-        <p>Drag and drop a file here or click to select a file</p>
-        <?= html_file('admin_profile_pic', 'image/*') ?>
-        <img class="preview" src="../photos/<?= $admin_profile_pic ?>">
-    </div>
-    <?= err('admin_profile_pic') ?>
+        <label for="admin_profile_pic">Profile Picture</label>
+        <div class="drop-zone upload" tabindex="0">
+            <p>Drag and drop a file here or click to select a file</p>
+            <?= html_file('admin_profile_pic', 'image/*') ?>
+            <img class="preview" src="../photos/<?= $admin_profile_pic ?>">
+        </div>
+        <?= err('admin_profile_pic') ?>
 
-    <section>
-        <button type="submit">Save</button>
-    </section>
-</form>
+        <section>
+            <button type="submit">Save</button>
+            <a href="/admin/admin_password.php" class="btn">Change Password</a>
+        </section>
+    </form>
+</div>

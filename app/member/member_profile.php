@@ -53,17 +53,6 @@
             $_err['member_gender'] = 'Invalid value';
         }
 
-        // Validate email
-        if ($member_email == '') {
-            $_err['member_email'] = 'Required';
-        } else if (strlen($member_email) > 100) {
-            $_err['member_email'] = 'Maximum length 100';
-        } else if (!filter_var($member_email, FILTER_VALIDATE_EMAIL)) {
-            $_err['member_email'] = 'Invalid email format';
-        } else if (is_exists($member_email, 'member', 'member_email') && $member->member_email != $member_email) {
-            $_err['member_email'] = 'Email already exists';
-        }
-
         //$f = get_file('member_profile_pic');
         if ($photo) {
             if (!str_starts_with($photo->type, 'image/')) {
@@ -81,8 +70,8 @@
                 $member_profile_pic = save_photo($photo, '../photos');
             }
 
-            $stm = $_db->prepare('UPDATE member SET member_name = ?, member_phone_no = ?, member_gender = ?, member_email = ?, shipping_address = ?, member_profile_pic = ? WHERE member_id = ?');
-            $stm->execute([$member_name, $member_phone_no, $member_gender, $member_email, $shipping_address, $member_profile_pic, $member_id]);
+            $stm = $_db->prepare('UPDATE member SET member_name = ?, member_phone_no = ?, member_gender = ?, shipping_address = ?, member_profile_pic = ? WHERE member_id = ?');
+            $stm->execute([$member_name, $member_phone_no, $member_gender, $shipping_address, $member_profile_pic, $member_id]);
 
             // Refresh session data with updated member information
             $stm = $_db->prepare('SELECT * FROM member WHERE member_id = ?');
@@ -132,7 +121,7 @@
                     </div>
 
                     <label for="member_email">Email</label>
-                    <?= html_text('member_email', 'maxlength="100"') ?>
+                    <?= html_text('member_email', 'maxlength="100" disabled') ?>
                     <?= err('member_email') ?>
 
                     <label for="member_profile_pic">Profile Picture</label>

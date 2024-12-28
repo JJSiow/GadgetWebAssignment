@@ -11,7 +11,7 @@ if (isset($_GET['gadget_id'])) {
     exit();
 }
 
-auth_member();
+// auth_member();
 
 $conn = new mysqli("localhost", "root", "", "gadgetwebdb");
 

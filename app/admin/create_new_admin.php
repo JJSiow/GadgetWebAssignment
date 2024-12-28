@@ -81,9 +81,6 @@ if (is_post()) {
             $_err['admin_profile_pic'] = 'Maximum 8MB';
         }
     }
-    // else {
-    //     $_err['admin_profile_pic'] = 'Required';
-    // }
 
     if (count($_err) == 0) {
         $admin_id = sprintf('A%02d', $no_of_admin + 1);
@@ -103,41 +100,44 @@ if (is_post()) {
 }
 
 // ----------------------------------------------------------------------------
-$_title = 'Admin | Create New Admin';
-include '../_head.php';
+$_title = '';
+include '../admin/_admin_head.php';
 ?>
 
-<form method="post" class="form" enctype="multipart/form-data">
-    <label for="admin_name">Name</label>
-    <?= html_text('admin_name', 'maxlength="100"') ?>
-    <?= err('admin_name') ?>
+<div class="profile">
+    <h1>Create New Admin</h1>
+    <form method="post" enctype="multipart/form-data">
+        <label for="admin_name">Name</label>
+        <?= html_text('admin_name', 'maxlength="100"') ?>
+        <?= err('admin_name') ?>
 
-    <label for="admin_phone_no">Phone No</label>
-    <?= html_text('admin_phone_no', 'maxlength="11"') ?>
-    <?= err('admin_phone_no') ?>
+        <label for="admin_phone_no">Phone No</label>
+        <?= html_text('admin_phone_no', 'maxlength="11"') ?>
+        <?= err('admin_phone_no') ?>
 
-    <label for="admin_email">Email</label>
-    <?= html_text('admin_email', 'maxlength="100"') ?>
-    <?= err('admin_email') ?>
+        <label for="admin_email">Email</label>
+        <?= html_text('admin_email', 'maxlength="100"') ?>
+        <?= err('admin_email') ?>
 
-    <label for="admin_password">Password</label>
-    <?= html_password('admin_password', 'maxlength="100"') ?>
-    <?= err('admin_password') ?>
+        <label for="admin_password">Password</label>
+        <?= html_password('admin_password', 'maxlength="100"') ?>
+        <?= err('admin_password') ?>
 
-    <label for="confirm_password">Confirm Password</label>
-    <?= html_password('confirm_password', 'maxlength="100"') ?>
-    <?= err('confirm_password') ?>
+        <label for="confirm_password">Confirm Password</label>
+        <?= html_password('confirm_password', 'maxlength="100"') ?>
+        <?= err('confirm_password') ?>
 
-    <label for="admin_profile_pic">Profile Picture</label>
-    <div class="drop-zone upload" tabindex="0">
-        <p>Drag and drop a photo here or click to select a photo</p>
-        <?= html_file('admin_profile_pic', 'image/*') ?>
-        <img class="preview" src="../photos/<?= $profile_pic ?>">
-    </div>
-    <?= err('admin_profile_pic') ?>
+        <label for="admin_profile_pic">Profile Picture</label>
+        <div class="drop-zone upload" tabindex="0">
+            <p>Drag and drop a photo here or click to select a photo</p>
+            <?= html_file('admin_profile_pic', 'image/*') ?>
+            <img class="preview" src="../photos/<?= $profile_pic ?>">
+        </div>
+        <?= err('admin_profile_pic') ?>
 
-    <section>
-        <button type="submit">Create</button>
-        <button type="reset">Reset</button>
-    </section>
-</form>
+        <section>
+            <button type="submit">Create</button>
+            <button type="reset">Reset</button>
+        </section>
+    </form>
+</div>

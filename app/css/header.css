@@ -12,6 +12,7 @@ body{
     justify-content: space-between;
     position: relative;
     z-index: 999;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .logo{
@@ -80,12 +81,14 @@ nav ul li{
 
 .sub_menu_profile.open-menu{
     max-height: 400px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .sub_menu{
     background: #f8f4f4;  ;
     padding: 20px;
     margin: 0px;
+    
 }
 
 .user_info{

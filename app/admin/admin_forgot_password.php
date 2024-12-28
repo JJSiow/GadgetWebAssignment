@@ -34,10 +34,10 @@ if (is_post()) {
         $stm = $_db->prepare('
             DELETE FROM token WHERE user_id = ?;
 
-            INSERT INTO token (id, expire, user_id)
-            VALUES (?, ADDTIME(NOW(), "00:05"), ?);
+            INSERT INTO token (id, expire, user_id,token_type)
+            VALUES (?, ADDTIME(NOW(), "00:05"), ?,?);
         ');
-        $stm->execute([$u->admin_id, $id, $u->admin_id]);
+        $stm->execute([$u->admin_id, $id, $u->admin_id,'ForgotPassword']);
 
         // TODO: (4) Generate token url
         $url = base("token.php?id=$id&role=admin");
@@ -61,8 +61,8 @@ if (is_post()) {
         ";
         $m->send();
 
-        temp('info', $u->admin_id, $id,'Email sent');
-        redirect('/');
+        temp('info', 'Email sent');
+        redirect('admin_login.php');
     }
 }
 
@@ -71,17 +71,14 @@ if (is_post()) {
 
 <div class="admin_login_form">
     <h1>Reset Password</h1>
-<form method="post" class="form">
-    <label for="email">Email</label>
-    <?= html_text('email', 'maxlength="100"') ?>
-    <?= err('email') ?>
+    <form method="post" class="form">
+        <label for="email">Email</label>
+        <?= html_text('email', 'maxlength="100"') ?>
+        <?= err('email') ?>
 
-    <section>
-        <button>Submit</button>
-    </section>
-    <a href="../admin/admin_login.php">Back to Login</a>
-</form>
+        <section>
+            <button>Submit</button>
+        </section>
+        <a href="../admin/admin_login.php">Back to Login</a>
+    </form>
 </div>
-
-<?php
-include '../_foot.php';

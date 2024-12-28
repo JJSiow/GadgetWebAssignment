@@ -12,6 +12,7 @@
     <script src="/js/multiple_photo.js"></script>
     <script src="/js/view_gadget.js"></script>
     <script src="/js/chart.js"></script>
+    <script src="/js/admin.js"></script>
     <link rel="stylesheet" href="/css/app.css">
 </head>
 
@@ -20,11 +21,12 @@
     <div id="info"><?= temp('info') ?></div>
     
     <header>
-        <img class="logo" src="images/default_user.jpg" alt="logo">
+        <img class="logo" src="../images/logo2.png" alt="logo">
         <nav class="admin_menu_bar">
             <ul>
-            <li><a href="../index.php">User Login</a></li>
+            <!-- <li><a href="../index.php">User Login</a></li> -->
             <!-- <li><a href="../admin/admin_logout.php">Admin Logout</a></li> -->
+            <li><a href="/admin/admin_home.php">Home</a></li>
             <li><a href="/admin/admin_products.php">Product</a></li>
             <li><a href="/admin/admin_voucher.php">Voucher</a></li>
             <li><a href="/admin/member_list.php">Member List</a></li>
@@ -34,10 +36,11 @@
             <?php if ($_admin->is_super_admin == 'Y'): ?>
             <li><a href="/admin/admin_list.php">Admin List</a></li>
             <?php endif ?>
-            <li><a href="/admin/admin_profile.php">Admin Profile</a></li>
-
-            </ul>
-        </nav>
+            <!-- <li><a href="/admin/admin_password.php">Admin Password</a></li> -->
+            
+        </ul>
+    </nav>
+        <a href="/admin/admin_profile.php"><img src="../photos/<?=$_admin->admin_profile_pic?>" class="user_pic"></a>
         <a class="logout" href="../admin/admin_logout.php"><button>Logout</button></a>
     </header>
     <main>

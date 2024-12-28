@@ -56,7 +56,7 @@ $_title = 'Admin Login';
 
         <button type="submit">Login</button>
         <button type="reset">Reset</button>
-        <a href="../admin/adminForgot_password.php">Forgot password?</a>
+        <a href="../admin/admin_forgot_password.php">Forgot password?</a>
         <a href="../login.php">Member Login</a>
     </form>
 </div>
