@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
                         "currency" => 'myr',
                         "unit_amount" => intval($final_price * 100),
                         "product_data" => [
-                            "name" => "Order for Member ID: $member_id",
+                            "name" => "Order for SEO Gadget with $_member->member_name",
                         ]
                     ]
                 ]
