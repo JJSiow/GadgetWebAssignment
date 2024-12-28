@@ -36,7 +36,6 @@ if (is_post()) {
 // ----------------------------------------------------------------------------
 
 $_title = 'Account Verification';
-include '_head.php';
 ?>
 
 <form method="post" class="form">
@@ -50,4 +49,4 @@ include '_head.php';
 </form>
 
 <?php
-include '_foot.php';
+
