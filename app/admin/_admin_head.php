@@ -36,12 +36,11 @@
             <?php if ($_admin->is_super_admin == 'Y'): ?>
             <li><a href="/admin/admin_list.php">Admin List</a></li>
             <?php endif ?>
-            <li><a href="/admin/admin_profile.php">Profile</a></li>
             <!-- <li><a href="/admin/admin_password.php">Admin Password</a></li> -->
-
-            </ul>
-        </nav>
-        <img src="../photos/<?=$_admin->admin_profile_pic?>" class="user_pic"">
+            
+        </ul>
+    </nav>
+        <a href="/admin/admin_profile.php"><img src="../photos/<?=$_admin->admin_profile_pic?>" class="user_pic"></a>
         <a class="logout" href="../admin/admin_logout.php"><button>Logout</button></a>
     </header>
     <main>
