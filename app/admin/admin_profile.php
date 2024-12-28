@@ -119,7 +119,7 @@ include '../admin/_admin_head.php';
 
         <section>
             <button type="submit">Save</button>
-            <button><a href="/admin/admin_password.php">Change Password</a></button>
+            <a href="/admin/admin_password.php" class="btn">Change Password</a>
         </section>
     </form>
 </div>
